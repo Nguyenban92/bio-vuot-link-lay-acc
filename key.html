@@ -373,38 +373,30 @@
             const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
             /* ==============================================================
-             * 1. KIỂM TRA KEY ĐÃ CẤP HOẶC ĐÃ NHẬN ACC HAY CHƯA (CHỐNG F5)
-             * ============================================================== */
-            let cachedKey = "";
-            if (effectiveSid) {
-                cachedKey = localStorage.getItem("mg_key_for_" + effectiveSid);
-            }
-            if (!cachedKey) {
-                cachedKey = localStorage.getItem("mg_current_active_key");
-            }
-
-            // A. NẾU KEY NÀY ĐÃ ĐƯỢC DÙNG NHẬN ACC THÀNH CÔNG TRÊN BIO
-            if (cachedKey && localStorage.getItem("mg_claimed_key_" + cachedKey) === "true") {
-                renderAlreadyClaimedState(cachedKey);
-                return;
-            }
-
-            // B. NẾU ĐÃ CÓ KEY ĐƯỢC CẤP CHO PHIÊN NÀY (F5 GIỮ NGUYÊN)
-            if (cachedKey && effectiveSid) {
-                renderSuccessState(cachedKey, true);
-                return;
-            }
-
-            /* ==============================================================
-             * 2. NẾU KHÔNG CÓ PHIÊN HỢP LỆ (COPY LINK, MỞ TRỰC TIẾP) -> CHẶN
+             * 1. NẾU KHÔNG CÓ PHIÊN HỢP LỆ (COPY LINK, MỞ TRỰC TIẾP) -> CHẶN
              * ============================================================== */
             if (!effectiveSid) {
-                renderDeniedAccessState("Không tìm thấy phiên vượt link hợp lệ từ trang Bio. Vui lòng quay lại trang chủ và hoàn thành nhiệm vụ để lấy Key!");
+                renderDeniedAccessState("Không tìm thấy phiên vượt link hợp lệ từ trang Bio. Vui lòng quay lại trang chủ, hoàn thành nhiệm vụ và bấm Vượt Link!");
                 return;
             }
 
             /* ==============================================================
-             * 3. GỌI SERVER XÁC THỰC VÀ CẤP 1 KEY DUY NHẤT
+             * 2. KIỂM TRA XEM PHIÊN NÀY ĐÃ ĐƯỢC CẤP KEY CHƯA (CHỐNG F5)
+             * ============================================================== */
+            const sessionKey = localStorage.getItem("mg_key_for_" + effectiveSid);
+            if (sessionKey) {
+                // Nếu Key của phiên này đã được dùng nhận Acc thành công trên Bio:
+                if (localStorage.getItem("mg_claimed_key_" + sessionKey) === "true") {
+                    renderAlreadyClaimedState(sessionKey);
+                    return;
+                }
+                // Nếu Key đã cấp cho phiên này nhưng chưa nhận Acc (F5 giữ nguyên):
+                renderSuccessState(sessionKey, true);
+                return;
+            }
+
+            /* ==============================================================
+             * 3. PHIÊN MỚI TOANH -> GỌI SERVER XÁC THỰC VÀ CẤP 1 KEY DUY NHẤT
              * ============================================================== */
             try {
                 if (!apiUrl) {
