@@ -260,14 +260,26 @@
             const statusMsg = document.getElementById("adminStatusMsg");
             const availEl = document.getElementById("adminAvailableStock");
             const claimEl = document.getElementById("adminClaimedStock");
+            const tableBody = document.getElementById("adminAccTableBody");
+            const btnRefresh = document.getElementById("btnRefreshList");
+            const btnClearSamples = document.getElementById("btnClearSamples");
+            const btnFixVal = document.getElementById("btnFixValidation");
 
-            // Mở khóa bằng mã PIN
+            // Mở khóa giao diện Admin
+            function unlockAdmin() {
+                sounds.playSuccess();
+                sessionStorage.setItem("mg_admin_auth", "true");
+                pinModal.classList.remove("is-active");
+                adminMain.style.display = "flex";
+                loadStats();
+                loadAccountList();
+            }
+
+            // Kiểm tra mã PIN
             function verifyPin() {
-                if (inputPin.value.trim() === ADMIN_PIN) {
-                    sounds.playSuccess();
-                    pinModal.classList.remove("is-active");
-                    adminMain.style.display = "flex";
-                    loadStats();
+                const val = inputPin.value.trim();
+                if (val === ADMIN_PIN) {
+                    unlockAdmin();
                 } else {
                     sounds.playError();
                     pinError.style.display = "block";
@@ -277,13 +289,21 @@
             }
 
             btnConfirmPin.addEventListener("click", verifyPin);
-            inputPin.addEventListener("keypress", (e) => { if (e.key === "Enter") verifyPin(); });
+            inputPin.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") verifyPin();
+            });
+
+            // Tự động đăng nhập nếu đã đăng nhập trong phiên hoặc có param ?pin=123456
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("pin") === ADMIN_PIN || sessionStorage.getItem("mg_admin_auth") === "true") {
+                unlockAdmin();
+            }
 
             // Tải thống kê kho
             async function loadStats() {
                 if (!apiUrl) return;
                 try {
-                    const resp = await fetch(`${apiUrl}?action=get_stats`);
+                    const resp = await fetch(`${apiUrl}?action=get_stats&_t=${Date.now()}`);
                     const data = await resp.json();
                     if (data && data.success && data.stats) {
                         availEl.textContent = data.stats.available || 0;
@@ -292,121 +312,7 @@
                 } catch (e) {}
             }
 
-            // NẠP ACC 1-CLICK TỪ TEXT
-            btnUpload.addEventListener("click", async () => {
-                const text = txtInput.value.trim();
-                if (!text) {
-                    sounds.playError();
-                    alert("Vui lòng dán danh sách Acc từ file .txt vào ô!");
-                    txtInput.focus();
-                    return;
-                }
-
-                sounds.playClick();
-                btnUpload.disabled = true;
-                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp Acc lên hệ thống...`;
-
-                statusMsg.style.display = "none";
-
-                try {
-                    const resp = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({
-                            action: "import_txt",
-                            text: text
-                        })
-                    });
-                    const res = await resp.json();
-
-                    if (res && res.success) {
-                        sounds.playSuccess();
-                        statusMsg.style.display = "block";
-                        statusMsg.style.background = "rgba(16, 185, 129, 0.15)";
-                        statusMsg.style.border = "1px solid #10b981";
-                        statusMsg.style.color = "#34d399";
-                        statusMsg.textContent = res.message || `Đã nạp thành công ${res.added_count} Acc vào kho!`;
-
-                        txtInput.value = "";
-                        loadStats();
-                    } else {
-                        sounds.playError();
-                        statusMsg.style.display = "block";
-                        statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
-                        statusMsg.style.border = "1px solid #ef4444";
-                        statusMsg.style.color = "#f87171";
-                        statusMsg.textContent = res.message || "Lỗi khi nạp Acc!";
-                    }
-                } catch (err) {
-                    sounds.playError();
-                    statusMsg.style.display = "block";
-                    statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
-                    statusMsg.style.border = "1px solid #ef4444";
-                    statusMsg.style.color = "#f87171";
-                    statusMsg.textContent = "Lỗi kết nối máy chủ!";
-                } finally {
-                    btnUpload.disabled = false;
-                    btnUpload.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>`;
-                }
-            });
-
-            // TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H
-            const btnFixVal = document.getElementById("btnFixValidation");
-            if (btnFixVal) {
-                btnFixVal.addEventListener("click", async () => {
-                    sounds.playClick();
-                    btnFixVal.disabled = true;
-                    btnFixVal.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang gỡ bỏ quy tắc lỗi...`;
-                    try {
-                        const resp = await fetch(`${apiUrl}?action=fix_validation`);
-                        const res = await resp.json();
-                        if (res && res.success) {
-                            sounds.playSuccess();
-                            alert("✅ ĐÃ GỠ BỎ LỖI XÁC THỰC CỘT H THÀNH CÔNG!\nBây giờ khách hoặc sếp có thể nhập Key nhận Acc mượt mà 100%.");
-                        } else {
-                            alert(res.message || "Chưa thể gỡ tự động, sếp mở Google Sheet và xóa Data Validation ở Cột H bằng tay nhé!");
-                        }
-                    } catch (e) {
-                        alert("Vui lòng mở Google Sheet ➔ Bôi đen Cột H ➔ Chuột phải ➔ Xác thực dữ liệu ➔ Xóa quy tắc!");
-                    } finally {
-                        btnFixVal.disabled = false;
-                        btnFixVal.innerHTML = `<i class="fa-solid fa-wrench"></i> <span>TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H TRÊN SHEET</span>`;
-                    }
-                });
-            }
-
-            // XÓA 11 ACC MẪU DEMO
-            const btnClearSamples = document.getElementById("btnClearSamples");
-            if (btnClearSamples) {
-                btnClearSamples.addEventListener("click", async () => {
-                    if (!confirm("Sếp có chắc chắn muốn xóa 11 Acc mẫu demo ban đầu không?\n(Chỉ giữ lại các Acc thật do sếp nạp)")) return;
-                    sounds.playClick();
-                    btnClearSamples.disabled = true;
-                    btnClearSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang dọn dẹp kho...`;
-                    try {
-                        const resp = await fetch(`${apiUrl}?action=clear_samples`);
-                        const res = await resp.json();
-                        if (res && res.success) {
-                            sounds.playSuccess();
-                            alert(res.message);
-                            loadStats();
-                            loadAccountList();
-                        } else {
-                            alert(res.message || "Chưa thể xóa tự động, sếp xóa hàng 2 đến 12 trên Google Sheet bằng tay nhé!");
-                        }
-                    } catch (e) {
-                        alert("Lỗi kết nối. Sếp mở Google Sheet và xóa hàng mẫu bằng tay nhé!");
-                    } finally {
-                        btnClearSamples.disabled = false;
-                        btnClearSamples.innerHTML = `<i class="fa-solid fa-trash-can"></i> <span>🧹 XÓA 11 ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA BẠN)</span>`;
-                    }
-                });
-            }
-
-            // TẢI BẢNG DANH SÁCH ACC TRONG KHO
-            const tableBody = document.getElementById("adminAccTableBody");
-            const btnRefresh = document.getElementById("btnRefreshList");
-
+            // Tải danh sách Acc trong kho theo đúng thứ tự
             async function loadAccountList() {
                 if (!apiUrl || !tableBody) return;
                 tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--cyan);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách...</td></tr>`;
@@ -447,26 +353,116 @@
                 });
             }
 
-            // Gọi tải danh sách khi mở admin
-            const origVerifyPin = verifyPin;
-            // Ghi đè hàm mở sau pin
-            btnConfirmPin.removeEventListener("click", verifyPin);
-            function verifyPinWithList() {
-                if (inputPin.value.trim() === ADMIN_PIN) {
-                    sounds.playSuccess();
-                    pinModal.classList.remove("is-active");
-                    adminMain.style.display = "flex";
-                    loadStats();
-                    loadAccountList();
-                } else {
+            // NẠP ACC 1-CLICK TỪ TEXT
+            btnUpload.addEventListener("click", async () => {
+                const text = txtInput.value.trim();
+                if (!text) {
                     sounds.playError();
-                    pinError.style.display = "block";
-                    inputPin.value = "";
-                    inputPin.focus();
+                    alert("Vui lòng dán danh sách Acc từ file .txt vào ô!");
+                    txtInput.focus();
+                    return;
                 }
+
+                sounds.playClick();
+                btnUpload.disabled = true;
+                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp Acc lên hệ thống...`;
+                statusMsg.style.display = "none";
+
+                try {
+                    const resp = await fetch(apiUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({
+                            action: "import_txt",
+                            text: text
+                        })
+                    });
+                    const res = await resp.json();
+
+                    if (res && res.success) {
+                        sounds.playSuccess();
+                        statusMsg.style.display = "block";
+                        statusMsg.style.background = "rgba(16, 185, 129, 0.15)";
+                        statusMsg.style.border = "1px solid #10b981";
+                        statusMsg.style.color = "#34d399";
+                        statusMsg.textContent = res.message || `Đã nạp thành công ${res.added_count} Acc vào kho!`;
+
+                        txtInput.value = "";
+                        loadStats();
+                        loadAccountList();
+                    } else {
+                        sounds.playError();
+                        statusMsg.style.display = "block";
+                        statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
+                        statusMsg.style.border = "1px solid #ef4444";
+                        statusMsg.style.color = "#f87171";
+                        statusMsg.textContent = res.message || "Lỗi khi nạp Acc!";
+                    }
+                } catch (err) {
+                    sounds.playError();
+                    statusMsg.style.display = "block";
+                    statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
+                    statusMsg.style.border = "1px solid #ef4444";
+                    statusMsg.style.color = "#f87171";
+                    statusMsg.textContent = "Lỗi kết nối máy chủ!";
+                } finally {
+                    btnUpload.disabled = false;
+                    btnUpload.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>LƯU VÀO KHO ACC</span>`;
+                }
+            });
+
+            // TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H
+            if (btnFixVal) {
+                btnFixVal.addEventListener("click", async () => {
+                    sounds.playClick();
+                    btnFixVal.disabled = true;
+                    btnFixVal.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang gỡ bỏ quy tắc lỗi...`;
+                    try {
+                        const resp = await fetch(`${apiUrl}?action=fix_validation`);
+                        const res = await resp.json();
+                        if (res && res.success) {
+                            sounds.playSuccess();
+                            alert("✅ ĐÃ GỠ BỎ LỖI XÁC THỰC CỘT H THÀNH CÔNG!\nBây giờ khách hoặc sếp có thể nhập Key nhận Acc mượt mà 100%.");
+                        } else {
+                            alert(res.message || "Chưa thể gỡ tự động, sếp mở Google Sheet và xóa Data Validation ở Cột H bằng tay nhé!");
+                        }
+                    } catch (e) {
+                        alert("Vui lòng mở Google Sheet ➔ Bôi đen Cột H ➔ Chuột phải ➔ Xác thực dữ liệu ➔ Xóa quy tắc!");
+                    } finally {
+                        btnFixVal.disabled = false;
+                        btnFixVal.innerHTML = `<i class="fa-solid fa-wrench"></i> <span>SỬA LỖI CỘT H</span>`;
+                    }
+                });
             }
-            btnConfirmPin.addEventListener("click", verifyPinWithList);
-            inputPin.addEventListener("keypress", (e) => { if (e.key === "Enter") verifyPinWithList(); });
+
+            // XÓA 11 ACC MẪU DEMO
+            if (btnClearSamples) {
+                btnClearSamples.addEventListener("click", async () => {
+                    if (!confirm("Sếp có chắc chắn muốn xóa các Acc mẫu demo ban đầu không?\n(Chỉ giữ lại các Acc thật do sếp nạp)")) return;
+                    sounds.playClick();
+                    btnClearSamples.disabled = true;
+                    btnClearSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang dọn dẹp kho...`;
+                    try {
+                        const resp = await fetch(`${apiUrl}?action=clear_samples`);
+                        const res = await resp.json();
+                        if (res && res.success) {
+                            sounds.playSuccess();
+                            alert(res.message);
+                            loadStats();
+                            loadAccountList();
+                        } else {
+                            alert(res.message || "Chưa thể xóa tự động, sếp xóa hàng 2 đến 12 trên Google Sheet bằng tay nhé!");
+                        }
+                    } catch (e) {
+                        alert("Lỗi kết nối. Sếp mở Google Sheet và xóa hàng mẫu bằng tay nhé!");
+                    } finally {
+                        btnClearSamples.disabled = false;
+                        btnClearSamples.innerHTML = `<i class="fa-solid fa-trash-can"></i> <span>XÓA ACC MẪU CŨ</span>`;
+                    }
+                });
+            }
+        })();
+    </script>
     </script>
 </body>
 </html>

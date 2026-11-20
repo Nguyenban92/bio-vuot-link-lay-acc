@@ -269,26 +269,34 @@
         }, 25);
     }
 
-    /* ================= 6. MODAL ĐÓNG/MỞ ================= */
+    /* ================= 6. MODAL ĐÓNG/MỞ TOÀN DIỆN ================= */
+
+    window.closeAllModals = function () {
+        if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.classList.remove('is-active');
+        });
+        document.body.style.overflow = '';
+    };
 
     function initModals() {
-        document.querySelectorAll('.modal-close-trigger').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                sounds.playClick();
-                const modal = e.target.closest('.modal-overlay');
-                if (modal && window.bypassManager) {
-                    window.bypassManager.closeModal(modal.id);
-                }
-            });
+        document.addEventListener('click', (e) => {
+            // Bấm nút đóng (x) hoặc nút Đóng
+            if (e.target.closest('.modal-close-trigger') || e.target.closest('.btn-close-modal') || e.target.closest('.btn-sub-action')) {
+                window.closeAllModals();
+                return;
+            }
+            // Bấm vào vùng nền đen bên ngoài modal card
+            if (e.target.classList && e.target.classList.contains('modal-overlay')) {
+                window.closeAllModals();
+            }
         });
 
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal && window.bypassManager) {
-                    sounds.playClick();
-                    window.bypassManager.closeModal(modal.id);
-                }
-            });
+        // Nhấn phím Escape đóng mọi cửa sổ
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.closeAllModals();
+            }
         });
     }
 

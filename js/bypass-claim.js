@@ -409,4 +409,5 @@ class BypassClaimManager {
 let bypassManager = null;
 document.addEventListener("DOMContentLoaded", () => {
     bypassManager = new BypassClaimManager();
+    window.bypassManager = bypassManager;
 });

@@ -155,7 +155,7 @@
     <!-- ============================================================== -->
     <div class="modal-overlay" id="lootboxRewardModal">
         <div class="modal-card">
-            <button type="button" class="modal-close-trigger" aria-label="Đóng">
+            <button type="button" class="modal-close-trigger" onclick="closeAllModals()" aria-label="Đóng">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
@@ -166,7 +166,7 @@
                 </div>
                 <h3 style="font-family: var(--font-heading); color: #ffffff; font-size: 18px;">ĐANG KÍCH HOẠT KEY...</h3>
                 <p style="font-size: 12px; color: var(--text-secondary);">Mã Key: <b id="decryptTokenText" style="color: var(--cyan);">...</b></p>
-                <div style="font-size: 11px; color: var(--gold);"><i class="fa-solid fa-spinner fa-spin"></i> Đang đối soát và xuất Acc từ Google Sheets...</div>
+                <div style="font-size: 11px; color: var(--gold);"><i class="fa-solid fa-spinner fa-spin"></i> Đang mở khóa và xuất tài khoản...</div>
             </div>
 
             <!-- TRẠNG THÁI 2: THÀNH CÔNG -> HIỂN THỊ THÔNG TIN ACC -->
@@ -175,8 +175,7 @@
                     <div class="lootbox-icon-glow">
                         <i class="fa-solid fa-trophy"></i>
                     </div>
-                    <h3 style="font-family: var(--font-heading); color: #10b981; font-size: 18px;">🎉 CHÚC MỪNG BẠN!</h3>
-                    <p style="font-size: 12px; color: var(--text-secondary);">Kích hoạt Key thành công • Đã nhận tài khoản game độc quyền</p>
+                    <h3 style="font-family: var(--font-heading); color: #10b981; font-size: 18px;">🎉 NHẬN ACC THÀNH CÔNG</h3>
                 </div>
 
                 <div class="acc-card-revealed">
@@ -187,7 +186,7 @@
 
                     <!-- TÀI KHOẢN -->
                     <div class="acc-field-row">
-                        <label class="acc-field-label">Tài Khoản (Username / Email):</label>
+                        <label class="acc-field-label">Tài Khoản (User):</label>
                         <div class="acc-field-input-wrap">
                             <input type="text" class="acc-field-input" id="accDisplayUser" readonly>
                             <button type="button" class="btn-field-copy" onclick="copyToClipboard(document.getElementById('accDisplayUser').value, 'Đã copy tài khoản!')" title="Sao chép">
@@ -209,7 +208,7 @@
 
                     <!-- GHI CHÚ / 2FA -->
                     <div class="acc-field-row">
-                        <label class="acc-field-label">Thông Tin / 2FA / Lưu Ý:</label>
+                        <label class="acc-field-label">Ghi Chú / 2FA:</label>
                         <div id="accDisplayNote" style="font-size: 12px; color: #fbbf24; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; border: 1px dashed rgba(251,191,36,0.3);">
                             ...
                         </div>
@@ -220,10 +219,15 @@
                         <span>Mã Key: <b id="accDisplayToken">...</b></span>
                     </div>
 
-                    <!-- NÚT SAO CHÉP TẤT CẢ -->
-                    <button type="button" class="btn-copy-full-acc" onclick="copyFullAccCredentials()">
-                        <i class="fa-solid fa-copy"></i> SAO CHÉP TOÀN BỘ THÔNG TIN
-                    </button>
+                    <!-- NÚT SAO CHÉP & ĐÓNG -->
+                    <div style="display:flex; gap:10px; margin-top:6px;">
+                        <button type="button" class="btn-copy-full-acc" style="flex:2;" onclick="copyFullAccCredentials()">
+                            <i class="fa-solid fa-copy"></i> SAO CHÉP TOÀN BỘ
+                        </button>
+                        <button type="button" class="btn-sub-action" style="flex:1; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:10px; color:#fff; font-weight:800; cursor:pointer;" onclick="closeAllModals()">
+                            <i class="fa-solid fa-xmark"></i> ĐÓNG
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -236,8 +240,8 @@
                 <p id="lootboxErrorMsg" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5;">
                     Mã Key này đã được sử dụng hoặc không tồn tại!
                 </p>
-                <button type="button" class="btn-sub-action" style="margin: 16px auto 0 auto; display: inline-flex; background:rgba(255,255,255,0.08); padding:8px 16px; border-radius:8px; border:none; color:#fff; cursor:pointer;" onclick="document.querySelector('#lootboxRewardModal .modal-close-trigger').click()">
-                    Đóng cửa sổ
+                <button type="button" class="btn-sub-action" style="margin: 16px auto 0 auto; display: inline-flex; background:rgba(255,255,255,0.12); padding:10px 24px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); color:#fff; font-weight:700; cursor:pointer;" onclick="closeAllModals()">
+                    <i class="fa-solid fa-xmark"></i> Đóng
                 </button>
             </div>
         </div>
@@ -248,7 +252,7 @@
     <!-- ============================================================== -->
     <div class="modal-overlay" id="bypassConfirmModal">
         <div class="modal-card">
-            <button type="button" class="modal-close-trigger" aria-label="Đóng">
+            <button type="button" class="modal-close-trigger" onclick="closeAllModals()" aria-label="Đóng">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
