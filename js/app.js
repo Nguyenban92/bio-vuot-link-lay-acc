@@ -54,14 +54,11 @@
         const n = document.getElementById("accDisplayNote") ? document.getElementById("accDisplayNote").textContent : "";
         const cat = document.getElementById("accDisplayCat") ? document.getElementById("accDisplayCat").textContent : "";
 
-        const fullText = `👑 MA GIÁO AOV - TÀI KHOẢN GAME NHẬN THƯỞNG\n` +
-                         `• Loại Acc: ${cat}\n` +
-                         `• Tài khoản: ${u}\n` +
-                         `• Mật khẩu: ${p}\n` +
-                         `• Ghi chú: ${n}\n` +
-                         `• Trang nhận: ${window.location.origin}\n` +
-                         `Chúc bạn leo rank vui vẻ!`;
-        window.copyToClipboard(fullText, "Đã sao chép toàn bộ thông tin Acc!");
+        const fullText = `MA GIÁO AOV • TÀI KHOẢN GAME\n` +
+                         `Tài khoản: ${u}\n` +
+                         `Mật khẩu: ${p}\n` +
+                         (n && n.trim() && !n.includes("...") ? `Ghi chú: ${n.trim()}` : "");
+        window.copyToClipboard(fullText.trim(), "Đã sao chép toàn bộ thông tin Acc!");
     };
 
     /* ================= 2. ĐỒNG HỒ & LỜI CHÀO REAL-TIME ================= */

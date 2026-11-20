@@ -130,66 +130,54 @@
         <!-- Header -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <div class="clock-pill">
+                <div class="brand-badge-pill">
                     <i class="fa-solid fa-shield-halved text-warning"></i>
                     <span>ADMIN MA GIÁO AOV</span>
                 </div>
             </div>
-            <a href="index.html" class="greeting-tag" style="text-decoration:none; color:var(--cyan);">
-                <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
+            <a href="index.html" class="greeting-tag" style="text-decoration:none; color:var(--cyan); border-radius: 999px; padding: 6px 14px;">
+                <i class="fa-solid fa-arrow-left"></i> Về Bio
             </a>
         </header>
 
         <!-- Khung Nạp Acc Bằng .TXT -->
         <section class="admin-box">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-file-lines text-cyan"></i>
-                    <span>NẠP KHO ACC TỪ FILE .TXT</span>
+                    <span>NẠP ACC TỪ FILE TXT</span>
                 </div>
-                <span class="badge-success-mini"><i class="fa-solid fa-bolt"></i> 1-Click</span>
             </div>
 
             <!-- Thống kê kho -->
             <div class="stock-badge-row">
                 <div class="stock-box-mini">
                     <div class="stock-num text-success" id="adminAvailableStock">...</div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Acc Chưa Phát (Còn)</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Chưa Phát (Còn)</div>
                 </div>
                 <div class="stock-box-mini">
                     <div class="stock-num text-warning" id="adminClaimedStock">...</div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Acc Đã Phát (Xong)</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Đã Phát (Xong)</div>
                 </div>
             </div>
 
-            <!-- Hướng dẫn định dạng -->
-            <div style="font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; line-height: 1.5;">
-                📋 <b>ĐỊNH DẠNG HỖ TRỢ:</b> Copy toàn bộ nội dung từ file <code>.txt</code> của bạn dán vào ô bên dưới. Hệ thống tự hiểu mọi định dạng:<br>
-                • <code>tai_khoan|mat_khau|ghi_chu</code><br>
-                • <code>tai_khoan:mat_khau</code> (hoặc cách nhau bằng dấu cách/tab)
-            </div>
-
             <!-- Ô Dán Văn Bản TXT -->
-            <textarea id="adminTxtInput" class="admin-txt-area" placeholder="Dán danh sách Acc từ file .txt của bạn vào đây...
-Ví dụ:
-garena_acc1|Pass123|Liên Quân 90 skin
-garena_acc2|Pass456|Trắng TT
-garena_acc3:Pass789:Rank Cao Thủ"></textarea>
+            <textarea id="adminTxtInput" class="admin-txt-area" placeholder="Dán danh sách Acc từ file .txt vào đây (mỗi dòng 1 nick: User|Pass hoặc User:Pass)..."></textarea>
 
             <!-- Nút Nạp 1-Click -->
             <button type="button" id="btnAdminUploadTxt" class="btn-admin-submit">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>
+                <span>LƯU VÀO KHO ACC</span>
             </button>
 
             <!-- Hộp công cụ quản lý kho -->
-            <div style="display:flex; flex-direction:column; gap: 8px; margin-top: 6px;">
-                <button type="button" id="btnClearSamples" style="width:100%; padding: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    <i class="fa-solid fa-trash-can"></i> <span>🧹 XÓA 11 ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA BẠN)</span>
+            <div style="display:flex; gap: 8px; margin-top: 4px;">
+                <button type="button" id="btnClearSamples" style="flex:1; padding: 9px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <i class="fa-solid fa-trash-can"></i> <span>XÓA ACC MẪU CŨ</span>
                 </button>
 
-                <button type="button" id="btnFixValidation" style="width:100%; padding: 9px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    <i class="fa-solid fa-wrench"></i> <span>TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H TRÊN SHEET</span>
+                <button type="button" id="btnFixValidation" style="flex:1; padding: 9px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <i class="fa-solid fa-wrench"></i> <span>SỬA LỖI CỘT H</span>
                 </button>
             </div>
 
@@ -201,7 +189,7 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-list-ol text-cyan"></i>
-                    <span>KHO ACC THỰC TẾ (PHÁT THEO THỨ TỰ)</span>
+                    <span>THỨ TỰ PHÁT ACC TRONG KHO</span>
                 </div>
                 <button type="button" id="btnRefreshList" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; padding:4px 8px; font-size:11px; cursor:pointer;">
                     <i class="fa-solid fa-rotate"></i> Làm mới
@@ -228,11 +216,10 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
                 </table>
             </div>
         </section>
-        </section>
 
         <!-- Footer -->
         <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
-            <p>© 2026 MA GIÁO AOV • Trang Quản Trị Kho Acc</p>
+            <p>© 2026 MA GIÁO AOV • All rights reserved.</p>
         </footer>
 
     </main>

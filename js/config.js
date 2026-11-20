@@ -16,14 +16,11 @@ const CONFIG = {
     // Thông tin thương hiệu Ma Giáo AOV
     brand: {
         name: "MA GIÁO AOV",
-        handle: "Ma Giáo AOV • Thách Đấu VIP",
-        verifiedBadge: "Creator Đã Xác Minh • Game AOV",
+        handle: "@magiaoaov",
+        verifiedBadge: "Creator Đã Xác Minh",
         avatar: "assets/avatar.jpg",
-        description: "Hệ thống phát Acc Liên Quân Mobile VIP độc quyền. Hoàn thành 3 nhiệm vụ để mở link vượt, lấy mã Key và kích hoạt nhận Acc ngay!",
-        crownText: "Vương Miện Thách Đấu - Ma Giáo AOV",
-        onlineBase: 168,
-        visitorsBase: 24500,
-        viewsBase: 68900
+        description: "Kênh phát Acc Liên Quân VIP miễn phí mỗi ngày",
+        crownText: "Ma Giáo AOV"
     },
 
     // 🎯 3 NHIỆM VỤ BẮT BUỘC ĐỂ MỞ KHÓA LINK VƯỢT

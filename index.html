@@ -31,16 +31,15 @@
         <!-- THANH TRÊN CÙNG (TOP BAR) -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <div class="clock-pill">
-                    <i class="fa-solid fa-clock"></i>
-                    <span id="clockText">00:00:00</span>
+                <div class="brand-badge-pill">
+                    <i class="fa-solid fa-shield-halved text-cyan"></i>
+                    <span>MA GIÁO AOV</span>
                 </div>
-                <span class="greeting-tag" id="greetingText">Chào bạn ✨</span>
             </div>
 
             <div class="top-bar-actions">
                 <!-- Mini Audio Player -->
-                <div class="mini-music-player" id="musicToggleBtn" title="Bật/Tắt nhạc nền VIP">
+                <div class="mini-music-player" id="musicToggleBtn" title="Bật/Tắt nhạc nền">
                     <div class="vinyl-disc" id="musicVinylDisc">
                         <div class="disc-center-dot"></div>
                     </div>
@@ -52,13 +51,13 @@
                 </div>
 
                 <!-- SFX Sound Toggle -->
-                <button type="button" class="top-icon-btn" id="soundMuteBtn" title="Bật/Tắt âm thanh hiệu ứng" aria-label="Âm thanh">
+                <button type="button" class="top-icon-btn" id="soundMuteBtn" title="Bật/Tắt âm thanh" aria-label="Âm thanh">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
             </div>
         </header>
 
-        <!-- PROFILE & KHUNG AVATAR THÁCH ĐẤU -->
+        <!-- PROFILE & KHUNG AVATAR -->
         <section class="profile-section">
             <div class="conqueror-avatar-wrapper">
                 <div class="avatar-ring-outer"></div>
@@ -68,37 +67,16 @@
                 </div>
             </div>
 
-            <div class="verified-pill">
-                <i class="fa-solid fa-circle-check"></i>
-                <span id="profileBadgeText">Creator Đã Xác Minh • Thách Đấu</span>
-            </div>
-
             <div class="brand-name-wrap">
                 <h1 class="brand-name" id="profileName">MA GIÁO AOV</h1>
-                <div class="crown-badge" title="Vương Miện Thách Đấu">
-                    <i class="fa-solid fa-crown"></i>
+                <div class="verified-icon" title="Creator Đã Xác Minh">
+                    <i class="fa-solid fa-circle-check"></i>
                 </div>
             </div>
 
             <p class="profile-desc" id="profileDesc">
-                Hệ thống phát Acc Liên Quân Mobile VIP độc quyền. Hoàn thành 3 nhiệm vụ để mở link vượt, lấy mã Key và kích hoạt nhận Acc ngay!
+                Kênh phát Acc Liên Quân VIP miễn phí mỗi ngày
             </p>
-        </section>
-
-        <!-- BẢNG THỐNG KÊ (REAL-TIME STATS) -->
-        <section class="stats-box">
-            <div class="stat-item">
-                <div class="stat-value" id="statVisitors">0</div>
-                <div class="stat-label"><i class="fa-solid fa-users"></i> Người truy cập</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statViews">0</div>
-                <div class="stat-label"><i class="fa-solid fa-chart-line"></i> Lượt xem bio</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statOnline">0</div>
-                <div class="stat-label"><span class="stat-dot-live"></span> Đang online</div>
-            </div>
         </section>
 
         <!-- Ô THÔNG TIN LIÊN HỆ: 3 HÀNG NGANG -->
@@ -107,22 +85,18 @@
         </nav>
 
         <!-- ============================================================== -->
-        <!-- TRỌNG TÂM DUY NHẤT: VƯỢT LINK NHẬN ACC                         -->
+        <!-- KHỐI CHỨC NĂNG DUY NHẤT: VƯỢT LINK NHẬN ACC                     -->
         <!-- ============================================================== -->
         <section class="claim-container-box" id="claimSection">
             <div class="claim-header-row">
-                <div class="claim-event-badge">
-                    <i class="fa-solid fa-bolt"></i> SỰ KIỆN DUY NHẤT
+                <div class="claim-title-clean">
+                    <i class="fa-solid fa-gift text-cyan"></i>
+                    <span>VƯỢT LINK NHẬN ACC</span>
                 </div>
                 <div class="claim-stock-badge">
                     <span class="stat-dot-live"></span>
-                    <span>KHO ACC CÒN: <b id="stockCountReady">...</b></span>
+                    <span>Kho: <b id="stockCountReady">...</b> acc</span>
                 </div>
-            </div>
-
-            <div class="claim-title-center">
-                <h2>VƯỢT LINK NHẬN ACC</h2>
-                <p>Hoàn thành 3 nhiệm vụ để mở link vượt lấy Key • Nhập Key để nhận Acc</p>
             </div>
 
             <!-- Live Ticker Người Vừa Nhận -->
@@ -130,13 +104,10 @@
                 <!-- Render từ bypass-claim.js -->
             </div>
 
-            <!-- BƯỚC 1: KHỐI 3 NHIỆM VỤ GỌN TINH TẾ -->
+            <!-- KHỐI 3 NHIỆM VỤ GỌN GÀNG -->
             <div class="tasks-compact-box">
                 <div class="tasks-compact-head">
-                    <div class="tasks-compact-label">
-                        <i class="fa-solid fa-list-check text-cyan"></i>
-                        <span>Bước 1: Làm 3 Nhiệm Vụ</span>
-                    </div>
+                    <span class="tasks-compact-label">Nhiệm Vụ Mở Khóa Link</span>
                     <span class="tasks-prog-pill" id="taskProgressPill">0/3 Hoàn thành</span>
                 </div>
 
@@ -149,40 +120,32 @@
                 </div>
             </div>
 
-            <!-- BƯỚC 2: NÚT VƯỢT LINK LẤY KEY (KHÓA KHI CHƯA XONG 3 NHIỆM VỤ) -->
+            <!-- NÚT VƯỢT LINK LẤY KEY -->
             <button type="button" class="btn-main-bypass is-locked" id="btnMainBypass" disabled>
                 <i class="fa-solid fa-lock"></i>
                 <span>HOÀN THÀNH 3 NHIỆM VỤ ĐỂ MỞ LINK</span>
             </button>
 
-            <div class="bypass-lock-hint" id="bypassLockHint">
-                <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng hoàn thành đủ 3 nhiệm vụ phía trên để mở link!
-            </div>
-
-            <!-- BƯỚC 3: KHUNG NHẬP MÃ KEY ĐỂ KÍCH HOẠT NHẬN ACC -->
+            <!-- KHUNG NHẬP MÃ KEY ĐỂ KÍCH HOẠT NHẬN ACC -->
             <div class="key-activate-card">
                 <div class="key-activate-head">
                     <i class="fa-solid fa-key text-warning"></i>
-                    <span>BƯỚC 3: NHẬP KEY KÍCH HOẠT NHẬN ACC</span>
+                    <span>NHẬP KEY KÍCH HOẠT ACC</span>
                 </div>
 
                 <div class="key-activate-input-wrap">
-                    <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Dán mã Key vừa vượt link vào đây (VD: MG-KEY-XXXX)..." autocomplete="off">
+                    <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Nhập mã Key vào đây..." autocomplete="off">
                     <button type="button" id="btnActivateKey" class="btn-activate-submit">
-                        <i class="fa-solid fa-gift"></i>
-                        <span>KÍCH HOẠT</span>
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>NHẬN ACC</span>
                     </button>
-                </div>
-
-                <div class="key-activate-hint">
-                    💡 Vượt link xong sẽ ra trang cấp Key. Nhập mã Key vào ô trên để hệ thống tự động bốc 1 Acc trong kho gửi về cho bạn!
                 </div>
             </div>
         </section>
 
         <!-- FOOTER -->
-        <footer style="text-align:center; padding: 12px 0 4px 0; font-size: 11px; color: var(--text-muted);">
-            <p>© 2026 MA GIÁO AOV • Hệ Thống Cấp Acc Tự Động Bằng Key • Google Sheets</p>
+        <footer style="text-align:center; padding: 14px 0 6px 0; font-size: 11px; color: var(--text-muted);">
+            <p>© 2026 MA GIÁO AOV • All rights reserved.</p>
         </footer>
 
     </main>

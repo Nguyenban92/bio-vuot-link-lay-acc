@@ -129,12 +129,9 @@ class BypassClaimManager {
                 bypassBtn.disabled = false;
                 bypassBtn.innerHTML = `
                     <i class="fa-solid fa-bolt"></i>
-                    <span>LẤY LINK VƯỢT (LẤY MÃ KEY)</span>
+                    <span>VƯỢT LINK LẤY KEY</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 `;
-                if (bypassLockHint) {
-                    bypassLockHint.innerHTML = `<span style="color:#10b981;"><i class="fa-solid fa-circle-check"></i> Đã mở khóa! Bấm nút để mở link vượt và lấy mã Key.</span>`;
-                }
             } else {
                 bypassBtn.classList.add("is-locked");
                 bypassBtn.classList.remove("is-unlocked");
@@ -143,22 +140,18 @@ class BypassClaimManager {
                     <i class="fa-solid fa-lock"></i>
                     <span>HOÀN THÀNH 3 NHIỆM VỤ ĐỂ MỞ LINK</span>
                 `;
-                if (bypassLockHint) {
-                    bypassLockHint.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Vui lòng hoàn thành đủ 3 nhiệm vụ phía trên để mở link!`;
-                }
             }
         }
     }
 
     bindEvents() {
-        // Nút mở link vượt
+        // Nút mở link vượt - mở thẳng tab mới ngay lập tức
         const bypassBtn = document.getElementById("btnMainBypass");
         if (bypassBtn) {
             bypassBtn.addEventListener("click", () => {
-                sounds.playClick();
-                // Nếu Admin đã điền link rút gọn kiếm tiền thì mở link rút gọn, nếu chưa thì mở key.html
+                sounds.playLootboxOpen();
                 const targetUrl = this.shortenedUrl || "key.html";
-                this.openBypassConfirmModal(targetUrl);
+                window.open(targetUrl, "_blank");
             });
         }
 
