@@ -243,7 +243,23 @@ class BypassClaimManager {
             if (this.apiUrl) {
                 // Gọi Google Apps Script Web App
                 const resp = await fetch(`${this.apiUrl}?action=activate_key&key=${encodeURIComponent(key)}&client_info=${encodeURIComponent(navigator.userAgent)}`);
-                result = await resp.json();
+                const textResp = await resp.text();
+                try {
+                    result = JSON.parse(textResp);
+                } catch (parseErr) {
+                    console.error("Lỗi phản hồi Google Apps Script:", textResp);
+                    if (textResp.includes("vi phạm các quy tắc xác thực")) {
+                        result = {
+                            success: false,
+                            message: "Lỗi Google Sheet: Cột H đang bị dính quy tắc Xác thực dữ liệu cũ. Vui lòng mở Google Sheet và xóa Xác thực dữ liệu ở Cột H!"
+                        };
+                    } else {
+                        result = {
+                            success: false,
+                            message: "Máy chủ Google Apps Script đang bận hoặc phản hồi không đúng định dạng. Vui lòng thử lại sau vài giây!"
+                        };
+                    }
+                }
             } else {
                 // Mô phỏng Demo khi chưa kết nối
                 await new Promise(r => setTimeout(r, 1600));
@@ -299,7 +315,7 @@ class BypassClaimManager {
             if (decryptBox) decryptBox.style.display = "none";
             if (errorBox) {
                 errorBox.style.display = "block";
-                document.getElementById("lootboxErrorMsg").textContent = "Lỗi kết nối máy chủ Google Sheets. Vui lòng kiểm tra lại đường truyền!";
+                document.getElementById("lootboxErrorMsg").textContent = (err && err.message) ? err.message : "Lỗi kết nối máy chủ Google Sheets. Vui lòng kiểm tra lại đường truyền!";
             }
         } finally {
             this.isProcessing = false;

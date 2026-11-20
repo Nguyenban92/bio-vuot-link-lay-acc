@@ -182,6 +182,13 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
                 <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>
             </button>
 
+            <!-- Hộp công cụ sửa lỗi Sheet -->
+            <div style="display:flex; gap: 8px; margin-top: 4px;">
+                <button type="button" id="btnFixValidation" style="flex:1; padding: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i class="fa-solid fa-wrench"></i> <span>TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H TRÊN SHEET</span>
+                </button>
+            </div>
+
             <div id="adminStatusMsg" style="display:none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;"></div>
         </section>
 
@@ -317,6 +324,31 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
                     btnUpload.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>`;
                 }
             });
+
+            // TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H
+            const btnFixVal = document.getElementById("btnFixValidation");
+            if (btnFixVal) {
+                btnFixVal.addEventListener("click", async () => {
+                    sounds.playClick();
+                    btnFixVal.disabled = true;
+                    btnFixVal.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang gỡ bỏ quy tắc lỗi...`;
+                    try {
+                        const resp = await fetch(`${apiUrl}?action=fix_validation`);
+                        const res = await resp.json();
+                        if (res && res.success) {
+                            sounds.playSuccess();
+                            alert("✅ ĐÃ GỠ BỎ LỖI XÁC THỰC CỘT H THÀNH CÔNG!\nBây giờ khách hoặc sếp có thể nhập Key nhận Acc mượt mà 100%.");
+                        } else {
+                            alert(res.message || "Chưa thể gỡ tự động, sếp mở Google Sheet và xóa Data Validation ở Cột H bằng tay nhé!");
+                        }
+                    } catch (e) {
+                        alert("Vui lòng mở Google Sheet ➔ Bôi đen Cột H ➔ Chuột phải ➔ Xác thực dữ liệu ➔ Xóa quy tắc!");
+                    } finally {
+                        btnFixVal.disabled = false;
+                        btnFixVal.innerHTML = `<i class="fa-solid fa-wrench"></i> <span>TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H TRÊN SHEET</span>`;
+                    }
+                });
+            }
         })();
     </script>
 </body>

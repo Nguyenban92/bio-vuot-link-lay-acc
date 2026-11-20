@@ -16,12 +16,22 @@ function onOpen() {
   ui.createMenu("⚡ MA GIÁO AOV - KHO ACC & KEY")
     .addItem("🚀 Khởi Tạo Hệ Thống Bảng Tính (1-Click)", "setupFullSystem")
     .addSeparator()
+    .addItem("🛠️ Sửa Lỗi Xác Thực Cột H (Data Validation)", "fixDataValidation")
     .addItem("➕ Nạp Acc Hàng Loạt Vào Kho (Dán Text)", "showQuickAddAccModal")
     .addItem("🎲 Tạo Thêm 20 Key Dự Phòng", "generateBatchKeys")
     .addSeparator()
     .addItem("📊 Xem Báo Cáo Thống Kê Kho Acc & Key", "showStockStats")
     .addItem("🔄 Reset Toàn Bộ Acc Về Chưa Phát (Test)", "resetAllAccToAvailable")
     .addToUi();
+}
+
+function fixDataValidation() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetAcc = ss.getSheetByName(TAB_KHO_ACC);
+  if (sheetAcc) {
+    sheetAcc.getRange("F2:H3000").clearDataValidations();
+    SpreadsheetApp.getUi().alert("✅ ĐÃ SỬA LỖI THÀNH CÔNG!\nĐã gỡ bỏ toàn bộ quy tắc xác thực cũ trên cột H. Khách nhập Key sẽ nhận Acc bình thường!");
+  }
 }
 
 /**
@@ -37,6 +47,9 @@ function setupFullSystem() {
   } else {
     sheetAcc.clear();
   }
+  
+  // Đảm bảo không còn Data Validation cũ ở các cột F, G, H
+  sheetAcc.getRange("F1:H3000").clearDataValidations();
   
   const headersAcc = [
     "STT",
@@ -295,6 +308,15 @@ function handleRequest(e) {
   }
   
   try {
+    // Tự động gỡ bỏ mọi ràng buộc Data Validation cũ trên Cột F, G, H nếu có
+    try {
+      const ssAuto = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetAccAuto = ssAuto.getSheetByName(TAB_KHO_ACC);
+      if (sheetAccAuto) {
+        sheetAccAuto.getRange("F2:H3000").clearDataValidations();
+      }
+    } catch (eClean) {}
+
     const params = (e && e.parameter) ? e.parameter : {};
     let postData = {};
     if (e && e.postData && e.postData.contents) {
@@ -303,6 +325,16 @@ function handleRequest(e) {
     
     const action = params.action || postData.action || "get_stats";
     
+    // 0. ACTION: SỬA LỖI XÁC THỰC CỘT H (TỰ ĐỘNG)
+    if (action === "fix_validation" || action === "fix_column_h") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetAcc = ss.getSheetByName(TAB_KHO_ACC);
+      if (sheetAcc) {
+        sheetAcc.getRange("F2:H3000").clearDataValidations();
+      }
+      return jsonResponse({ success: true, message: "Đã gỡ bỏ toàn bộ quy tắc xác thực gây lỗi trên Cột H thành công!" });
+    }
+
     // 1. ACTION: LẤY THỐNG KÊ KHO
     if (action === "get_stats") {
       const stats = calculateStockStats();
@@ -330,7 +362,7 @@ function handleRequest(e) {
       });
     }
     
-    // 3. ACTION: CẤP 1 KEY CHO TRANG key.html SAU KHI VƯỢT LINK
+    // 3. ACTION: CẤP 1 KEY CHO TRANG key.html SAU KHI VƯỢT LINK (MỖI LẦN CẤP 1 KEY DUY NHẤT)
     if (action === "get_key" || action === "generate_key") {
       const keyData = issueUniqueKey(params.client_info || postData.client_info);
       return jsonResponse(keyData);
@@ -374,28 +406,15 @@ function handleRequest(e) {
 function issueUniqueKey(clientInfo) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheetKey = ss.getSheetByName(TAB_KHO_KEY);
-  if (!sheetKey) return { success: false, message: "Chưa có kho Key!" };
+  if (!sheetKey) {
+    sheetKey = ss.insertSheet(TAB_KHO_KEY);
+  }
   
   const nowStr = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm");
-  let availableKey = "";
-  const lastRow = sheetKey.getLastRow();
+  const newKey = generateUniqueKey();
+  sheetKey.appendRow([newKey, "🟢 CHƯA DÙNG", nowStr, "", "", clientInfo || "Vừa vượt link"]);
   
-  if (lastRow >= 2) {
-    const data = sheetKey.getRange(2, 1, lastRow - 1, 2).getValues();
-    for (let i = 0; i < data.length; i++) {
-      if (String(data[i][1] || "").includes("CHƯA DÙNG")) {
-        availableKey = String(data[i][0]).trim();
-        break;
-      }
-    }
-  }
-  
-  if (!availableKey) {
-    availableKey = generateUniqueKey();
-    sheetKey.appendRow([availableKey, "🟢 CHƯA DÙNG", nowStr, "", "", clientInfo || "Vừa vượt link"]);
-  }
-  
-  return { success: true, key: availableKey, issued_at: nowStr };
+  return { success: true, key: newKey, issued_at: nowStr };
 }
 
 function processActivateKey(key, clientInfo) {
@@ -407,6 +426,11 @@ function processActivateKey(key, clientInfo) {
   
   if (!sheetKey || !sheetAcc) return { success: false, message: "Hệ thống chưa được thiết lập!" };
   
+  // Đảm bảo không bị Data Validation cũ chặn ghi dữ liệu
+  try {
+    sheetAcc.getRange("F2:H3000").clearDataValidations();
+  } catch (eVal) {}
+
   const keyLastRow = sheetKey.getLastRow();
   if (keyLastRow < 2) return { success: false, error: "INVALID_KEY", message: "Mã Key không tồn tại!" };
   
@@ -454,16 +478,24 @@ function processActivateKey(key, clientInfo) {
   const pass = String(targetAcc[2] || "").trim();
   const note = String(targetAcc[3] || "").trim();
   
-  // Cập nhật trạng thái
-  sheetAcc.getRange(foundAccIndex, 5).setValue("🔴 ĐÃ PHÁT");
-  sheetAcc.getRange(foundAccIndex, 6).setValue(key);
-  sheetAcc.getRange(foundAccIndex, 7).setValue(nowFormatted);
-  sheetAcc.getRange(foundAccIndex, 8).setValue(clientInfo || "Web");
+  // Cập nhật trạng thái an toàn tuyệt đối
+  try {
+    sheetAcc.getRange(foundAccIndex, 5).setValue("🔴 ĐÃ PHÁT");
+    sheetAcc.getRange(foundAccIndex, 6).setValue(key);
+    sheetAcc.getRange(foundAccIndex, 7).setValue(nowFormatted);
+  } catch (errAcc) {}
+
+  try {
+    sheetAcc.getRange(foundAccIndex, 8).clearDataValidations().setValue(clientInfo || "Web");
+  } catch (errH) {}
   
-  sheetKey.getRange(foundKeyIndex, 2).setValue("🔴 ĐÃ DÙNG");
-  sheetKey.getRange(foundKeyIndex, 4).setValue(user);
-  sheetKey.getRange(foundKeyIndex, 5).setValue(nowFormatted);
-  sheetKey.getRange(foundKeyIndex, 6).setValue(clientInfo || "Web");
+  try {
+    sheetKey.getRange(foundKeyIndex, 2).setValue("🔴 ĐÃ DÙNG");
+    sheetKey.getRange(foundKeyIndex, 4).setValue(user);
+    sheetKey.getRange(foundKeyIndex, 5).setValue(nowFormatted);
+    sheetKey.getRange(foundKeyIndex, 6).setValue(clientInfo || "Web");
+  } catch (errKey) {}
+  
   
   return {
     success: true,
