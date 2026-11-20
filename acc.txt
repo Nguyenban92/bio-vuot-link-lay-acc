@@ -1,0 +1,8 @@
+# ==============================================================
+# DÁN DANH SÁCH ACC CỦA BẠN VÀO DƯỚI ĐÂY (MỖI DÒNG 1 ACC):
+# Định dạng hỗ trợ: TàiKhoản|MậtKhẩu|GhiChú
+# Hoặc: TàiKhoản:MậtKhẩu
+# ==============================================================
+garena_sample_01|Pass@123|Liên Quân 90 skin
+garena_sample_02|Pass@456|Acc Trắng TT
+garena_sample_03:Pass@789

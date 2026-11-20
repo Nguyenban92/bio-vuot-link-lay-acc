@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚡ QUẢN TRỊ VIÊN • NẠP KHO ACC TỪ FILE TXT</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon-128x128.png">
+    
+    <!-- Google Fonts & Font Awesome 6.5.1 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-box {
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(251, 191, 36, 0.45);
+            border-radius: 18px;
+            padding: 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+
+        .admin-txt-area {
+            width: 100%;
+            height: 220px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            outline: none;
+            resize: vertical;
+        }
+
+        .admin-txt-area:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        .btn-admin-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-admin-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        }
+
+        .pin-modal-card {
+            background: #0f1426;
+            border: 1.5px solid rgba(251, 191, 36, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fbbf24;
+            font-family: monospace;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 6px;
+            outline: none;
+        }
+
+        .stock-badge-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stock-box-mini {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stock-num {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fxCanvas"></canvas>
+
+    <main class="app-container" id="adminMainContent" style="display:none;">
+
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <div class="clock-pill">
+                    <i class="fa-solid fa-shield-halved text-warning"></i>
+                    <span>ADMIN MA GIÁO AOV</span>
+                </div>
+            </div>
+            <a href="index.html" class="greeting-tag" style="text-decoration:none; color:var(--cyan);">
+                <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
+            </a>
+        </header>
+
+        <!-- Khung Nạp Acc Bằng .TXT -->
+        <section class="admin-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-file-lines text-cyan"></i>
+                    <span>NẠP KHO ACC TỪ FILE .TXT</span>
+                </div>
+                <span class="badge-success-mini"><i class="fa-solid fa-bolt"></i> 1-Click</span>
+            </div>
+
+            <!-- Thống kê kho -->
+            <div class="stock-badge-row">
+                <div class="stock-box-mini">
+                    <div class="stock-num text-success" id="adminAvailableStock">...</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Acc Chưa Phát (Còn)</div>
+                </div>
+                <div class="stock-box-mini">
+                    <div class="stock-num text-warning" id="adminClaimedStock">...</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Acc Đã Phát (Xong)</div>
+                </div>
+            </div>
+
+            <!-- Hướng dẫn định dạng -->
+            <div style="font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; line-height: 1.5;">
+                📋 <b>ĐỊNH DẠNG HỖ TRỢ:</b> Copy toàn bộ nội dung từ file <code>.txt</code> của bạn dán vào ô bên dưới. Hệ thống tự hiểu mọi định dạng:<br>
+                • <code>tai_khoan|mat_khau|ghi_chu</code><br>
+                • <code>tai_khoan:mat_khau</code> (hoặc cách nhau bằng dấu cách/tab)
+            </div>
+
+            <!-- Ô Dán Văn Bản TXT -->
+            <textarea id="adminTxtInput" class="admin-txt-area" placeholder="Dán danh sách Acc từ file .txt của bạn vào đây...
+Ví dụ:
+garena_acc1|Pass123|Liên Quân 90 skin
+garena_acc2|Pass456|Trắng TT
+garena_acc3:Pass789:Rank Cao Thủ"></textarea>
+
+            <!-- Nút Nạp 1-Click -->
+            <button type="button" id="btnAdminUploadTxt" class="btn-admin-submit">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>
+            </button>
+
+            <div id="adminStatusMsg" style="display:none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
+            <p>© 2026 MA GIÁO AOV • Trang Quản Trị Kho Acc</p>
+        </footer>
+
+    </main>
+
+    <!-- POPUP NHẬP MÃ PIN ADMIN -->
+    <div class="modal-overlay is-active" id="pinModal">
+        <div class="pin-modal-card">
+            <div style="font-size: 36px; color: var(--gold); margin-bottom: 2px;">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 style="font-family: var(--font-heading); color: #ffffff; font-size: 18px;">BẢO MẬT ADMIN</h3>
+            <p style="font-size: 12px; color: var(--text-secondary);">Nhập mã PIN để mở khóa trang nạp Acc</p>
+
+            <input type="password" id="inputPin" class="pin-input" maxlength="6" placeholder="••••••" autofocus>
+
+            <button type="button" id="btnConfirmPin" class="btn-admin-submit" style="padding: 10px; font-size: 13px;">
+                <span>XÁC NHẬN</span>
+            </button>
+            <div id="pinError" style="font-size: 11px; color: #ef4444; display:none;">Mã PIN không đúng!</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/sound.js"></script>
+    <script>
+        (function () {
+            const ADMIN_PIN = "123456"; // Mã PIN mặc định
+            const pinModal = document.getElementById("pinModal");
+            const inputPin = document.getElementById("inputPin");
+            const btnConfirmPin = document.getElementById("btnConfirmPin");
+            const pinError = document.getElementById("pinError");
+            const adminMain = document.getElementById("adminMainContent");
+
+            const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
+            const btnUpload = document.getElementById("btnAdminUploadTxt");
+            const txtInput = document.getElementById("adminTxtInput");
+            const statusMsg = document.getElementById("adminStatusMsg");
+            const availEl = document.getElementById("adminAvailableStock");
+            const claimEl = document.getElementById("adminClaimedStock");
+
+            // Mở khóa bằng mã PIN
+            function verifyPin() {
+                if (inputPin.value.trim() === ADMIN_PIN) {
+                    sounds.playSuccess();
+                    pinModal.classList.remove("is-active");
+                    adminMain.style.display = "flex";
+                    loadStats();
+                } else {
+                    sounds.playError();
+                    pinError.style.display = "block";
+                    inputPin.value = "";
+                    inputPin.focus();
+                }
+            }
+
+            btnConfirmPin.addEventListener("click", verifyPin);
+            inputPin.addEventListener("keypress", (e) => { if (e.key === "Enter") verifyPin(); });
+
+            // Tải thống kê kho
+            async function loadStats() {
+                if (!apiUrl) return;
+                try {
+                    const resp = await fetch(`${apiUrl}?action=get_stats`);
+                    const data = await resp.json();
+                    if (data && data.success && data.stats) {
+                        availEl.textContent = data.stats.available || 0;
+                        claimEl.textContent = data.stats.claimed || 0;
+                    }
+                } catch (e) {}
+            }
+
+            // NẠP ACC 1-CLICK TỪ TEXT
+            btnUpload.addEventListener("click", async () => {
+                const text = txtInput.value.trim();
+                if (!text) {
+                    sounds.playError();
+                    alert("Vui lòng dán danh sách Acc từ file .txt vào ô!");
+                    txtInput.focus();
+                    return;
+                }
+
+                sounds.playClick();
+                btnUpload.disabled = true;
+                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp Acc lên hệ thống...`;
+
+                statusMsg.style.display = "none";
+
+                try {
+                    const resp = await fetch(apiUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({
+                            action: "import_txt",
+                            text: text
+                        })
+                    });
+                    const res = await resp.json();
+
+                    if (res && res.success) {
+                        sounds.playSuccess();
+                        statusMsg.style.display = "block";
+                        statusMsg.style.background = "rgba(16, 185, 129, 0.15)";
+                        statusMsg.style.border = "1px solid #10b981";
+                        statusMsg.style.color = "#34d399";
+                        statusMsg.textContent = res.message || `Đã nạp thành công ${res.added_count} Acc vào kho!`;
+
+                        txtInput.value = "";
+                        loadStats();
+                    } else {
+                        sounds.playError();
+                        statusMsg.style.display = "block";
+                        statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
+                        statusMsg.style.border = "1px solid #ef4444";
+                        statusMsg.style.color = "#f87171";
+                        statusMsg.textContent = res.message || "Lỗi khi nạp Acc!";
+                    }
+                } catch (err) {
+                    sounds.playError();
+                    statusMsg.style.display = "block";
+                    statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
+                    statusMsg.style.border = "1px solid #ef4444";
+                    statusMsg.style.color = "#f87171";
+                    statusMsg.textContent = "Lỗi kết nối máy chủ!";
+                } finally {
+                    btnUpload.disabled = false;
+                    btnUpload.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>`;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
