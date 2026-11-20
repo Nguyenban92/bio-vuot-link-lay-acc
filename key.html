@@ -204,38 +204,34 @@
             const btnCopy = document.getElementById("btnCopyKey");
             const btnReturn = document.getElementById("btnReturnToBio");
 
-            // Kiểm tra session để tránh reload làm mất key hoặc spam key mới
-            let currentKey = sessionStorage.getItem("mg_session_key");
+            let currentKey = "";
+            const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
-            if (!currentKey) {
-                const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
-                if (apiUrl) {
-                    try {
-                        const resp = await fetch(`${apiUrl}?action=get_key&client_info=${encodeURIComponent(navigator.userAgent)}`);
-                        const data = await resp.json();
-                        if (data && data.success && data.key) {
-                            currentKey = data.key;
-                            sessionStorage.setItem("mg_session_key", currentKey);
-                        }
-                    } catch (e) {
-                        console.error(e);
+            if (apiUrl) {
+                try {
+                    // Luôn sinh 1 Key MỚI TOANH trên hệ thống Google Sheets tại thời điểm này
+                    const resp = await fetch(`${apiUrl}?action=get_key&_t=${Date.now()}&client_info=${encodeURIComponent(navigator.userAgent)}`);
+                    const data = await resp.json();
+                    if (data && data.success && data.key) {
+                        currentKey = data.key;
                     }
+                } catch (e) {
+                    console.error("Lỗi lấy Key từ máy chủ:", e);
                 }
+            }
 
-                // Nếu không lấy được hoặc đang demo
-                if (!currentKey) {
-                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-                    const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
-                    currentKey = `MG-KEY-${randP(4)}-${randP(4)}`;
-                    sessionStorage.setItem("mg_session_key", currentKey);
-                }
+            // Nếu mạng lỗi hoặc đang chạy offline độc lập
+            if (!currentKey) {
+                const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
+                currentKey = `MG-KEY-${randP(4)}-${randP(4)}`;
             }
 
             // Hiển thị Key
             keyTextEl.textContent = currentKey;
             sounds.playSuccess();
 
-            // Link về Bio tự động kích hoạt
+            // Link về Bio tự động điền mã Key và kích hoạt nhận Acc
             btnReturn.href = `index.html?key=${encodeURIComponent(currentKey)}`;
 
             // Copy Key
