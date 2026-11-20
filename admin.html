@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ QUẢN TRỊ VIÊN • NẠP KHO ACC TỪ FILE TXT</title>
+    <title>MA GIÁO AOV • Quản Trị Kho Acc & Thống Kê</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon-128x128.png">
@@ -11,79 +11,518 @@
     <!-- Google Fonts & Font Awesome 6.5.1 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
     <style>
-        .admin-box {
-            background: linear-gradient(145deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 1.5px solid rgba(251, 191, 36, 0.45);
-            border-radius: 18px;
-            padding: 18px 14px;
+        :root {
+            --bg-base: #060913;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --cyan: #38bdf8;
+            --gold: #fbbf24;
+            --success: #10b981;
+            --rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Manrope', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 650px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(50px);
+        }
+
+        .admin-wrapper {
+            width: 100%;
+            max-width: 980px;
+            padding: 20px 16px 40px 16px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Header Bar */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 18px;
+            backdrop-filter: blur(12px);
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-brand-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--cyan);
+            display: grid;
+            place-items: center;
+            font-size: 15px;
+        }
+
+        .admin-title {
+            font-family: var(--font-heading);
+            font-size: 17px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .btn-nav-bio {
+            text-decoration: none;
+            color: var(--cyan);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-nav-bio:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        /* 3 Thẻ Thống Kê Tổng Quan */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .kpi-card.kpi-total::after { background: var(--cyan); }
+        .kpi-card.kpi-claimed::after { background: var(--rose); }
+        .kpi-card.kpi-available::after { background: var(--success); }
+
+        .kpi-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .kpi-icon {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .kpi-value {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .kpi-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Khung Quản Trị Chính */
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 14px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            margin-top: 10px;
+            backdrop-filter: blur(12px);
         }
 
-        .admin-txt-area {
+        /* Action Toolbar */
+        .toolbar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.is-active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-action-sm {
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-toggle-deposit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+        }
+
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Ô Tìm Kiếm */
+        .search-box-wrap {
+            position: relative;
             width: 100%;
-            height: 220px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 12px;
-            color: #38bdf8;
-            font-family: monospace;
-            font-size: 13px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 9px 12px 9px 34px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Khung Nạp Acc Bằng TXT (Collapsible) */
+        .deposit-drawer {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px dashed rgba(56, 189, 248, 0.35);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .deposit-drawer.is-open {
+            display: flex;
+        }
+
+        .deposit-txt-area {
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            font-size: 12px;
             line-height: 1.6;
             outline: none;
             resize: vertical;
         }
 
-        .admin-txt-area:focus {
+        .deposit-txt-area:focus {
             border-color: var(--cyan);
-            box-shadow: 0 0 15px var(--cyan-glow);
         }
 
-        .btn-admin-submit {
-            width: 100%;
-            padding: 14px;
+        .deposit-btn-row {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn-submit-deposit {
+            padding: 10px 18px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             color: #ffffff;
-            font-family: var(--font-heading);
-            font-size: 15px;
-            font-weight: 900;
+            font-weight: 800;
+            font-size: 13px;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-clean-samples {
+            padding: 10px 14px;
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-radius: 8px;
+            color: #fda4af;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Bảng Danh Sách Acc */
+        .table-responsive-card {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.25);
+            max-height: 540px;
+            overflow-y: auto;
+        }
+
+        table.stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 12px;
+            min-width: 680px;
+        }
+
+        table.stock-table thead {
+            background: #090e1a;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        table.stock-table th {
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        table.stock-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        table.stock-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .val-stt {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .val-mono {
+            font-family: var(--font-mono);
+            color: #ffffff;
+            cursor: pointer;
+            user-select: all;
+        }
+
+        .val-mono:hover {
+            color: var(--cyan);
+        }
+
+        .badge-status-claimed {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fda4af;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .badge-status-ready {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .tag-key {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--cyan);
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .val-time {
+            color: #cbd5e1;
+            font-size: 11px;
+        }
+
+        .val-time-date {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        /* Popup Nhập Mã PIN */
+        .pin-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-            transition: all 0.2s ease;
+            z-index: 999;
+            backdrop-filter: blur(8px);
         }
 
-        .btn-admin-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        .pin-modal-overlay.is-hidden {
+            display: none;
         }
 
-        .pin-modal-card {
+        .pin-card {
             background: #0f1426;
-            border: 1.5px solid rgba(251, 191, 36, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
-            padding: 24px;
+            padding: 28px;
+            max-width: 340px;
+            width: 90%;
             text-align: center;
-            max-width: 360px;
-            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
         .pin-input {
@@ -92,281 +531,453 @@
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            color: #fbbf24;
-            font-family: monospace;
-            font-size: 20px;
+            color: var(--gold);
+            font-family: var(--font-mono);
+            font-size: 22px;
             text-align: center;
             letter-spacing: 6px;
             outline: none;
         }
 
-        .stock-badge-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        .pin-input:focus {
+            border-color: var(--cyan);
         }
 
-        .stock-box-mini {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .btn-pin-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
             border-radius: 10px;
-            padding: 10px;
-            text-align: center;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
         }
 
-        .stock-num {
-            font-family: var(--font-heading);
-            font-size: 20px;
-            font-weight: 800;
+        /* Toast thông báo */
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="fxCanvas"></canvas>
+    <!-- GIAO DIỆN CHÍNH ADMIN (Hiển thị sau khi mở khóa) -->
+    <main class="admin-wrapper" id="adminMainContent" style="display:none;">
 
-    <main class="app-container" id="adminMainContent" style="display:none;">
-
-        <!-- Header -->
-        <header class="top-bar">
-            <div class="top-bar-left">
-                <div class="brand-badge-pill">
-                    <i class="fa-solid fa-shield-halved text-warning"></i>
-                    <span>ADMIN MA GIÁO AOV</span>
+        <!-- 1. Thanh tiêu đề -->
+        <header class="admin-header">
+            <div class="admin-brand">
+                <div class="admin-brand-icon">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+                <div>
+                    <h1 class="admin-title">MA GIÁO AOV • QUẢN TRỊ KHO ACC</h1>
+                    <p class="admin-sub">Hệ thống cấp tài khoản tự động theo thứ tự (1 Key = 1 Acc)</p>
                 </div>
             </div>
-            <a href="index.html" class="greeting-tag" style="text-decoration:none; color:var(--cyan); border-radius: 999px; padding: 6px 14px;">
-                <i class="fa-solid fa-arrow-left"></i> Về Bio
+            <a href="index.html" class="btn-nav-bio">
+                <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
             </a>
         </header>
 
-        <!-- Khung Nạp Acc Bằng .TXT -->
-        <section class="admin-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-file-lines text-cyan"></i>
-                    <span>NẠP ACC TỪ FILE TXT</span>
+        <!-- 2. Thống Kê 3 Chỉ Số Quan Trọng Nhất (Tổng, Đã phát, Chưa phát) -->
+        <section class="kpi-grid">
+            <!-- Tổng số Acc -->
+            <div class="kpi-card kpi-total">
+                <div class="kpi-top-row">
+                    <span class="kpi-label">Tổng Số Acc</span>
+                    <i class="fa-solid fa-database kpi-icon" style="color:var(--cyan);"></i>
                 </div>
+                <div class="kpi-value" id="kpiTotal">0</div>
+                <div class="kpi-hint">Toàn bộ tài khoản có trong kho</div>
             </div>
 
-            <!-- Thống kê kho -->
-            <div class="stock-badge-row">
-                <div class="stock-box-mini">
-                    <div class="stock-num text-success" id="adminAvailableStock">...</div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Chưa Phát (Còn)</div>
+            <!-- Đã phát -->
+            <div class="kpi-card kpi-claimed">
+                <div class="kpi-top-row">
+                    <span class="kpi-label">Đã Phát (Xong)</span>
+                    <i class="fa-solid fa-circle-check kpi-icon" style="color:var(--rose);"></i>
                 </div>
-                <div class="stock-box-mini">
-                    <div class="stock-num text-warning" id="adminClaimedStock">...</div>
-                    <div style="font-size: 11px; color: var(--text-secondary);">Đã Phát (Xong)</div>
-                </div>
+                <div class="kpi-value" style="color:#fb7185;" id="kpiClaimed">0</div>
+                <div class="kpi-hint">Đã kích hoạt gửi cho khách</div>
             </div>
 
-            <!-- Ô Dán Văn Bản TXT -->
-            <textarea id="adminTxtInput" class="admin-txt-area" placeholder="Dán danh sách Acc từ file .txt vào đây (mỗi dòng 1 nick: User|Pass hoặc User:Pass)..."></textarea>
-
-            <!-- Nút Nạp 1-Click -->
-            <button type="button" id="btnAdminUploadTxt" class="btn-admin-submit">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span>LƯU VÀO KHO ACC</span>
-            </button>
-
-            <!-- Hộp công cụ quản lý kho -->
-            <div style="display:flex; gap: 8px; margin-top: 4px;">
-                <button type="button" id="btnClearSamples" style="flex:1; padding: 9px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <i class="fa-solid fa-trash-can"></i> <span>XÓA ACC MẪU CŨ</span>
-                </button>
-
-                <button type="button" id="btnFixValidation" style="flex:1; padding: 9px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <i class="fa-solid fa-wrench"></i> <span>SỬA LỖI CỘT H</span>
-                </button>
+            <!-- Chưa phát -->
+            <div class="kpi-card kpi-available">
+                <div class="kpi-top-row">
+                    <span class="kpi-label">Chưa Phát (Còn)</span>
+                    <i class="fa-solid fa-bolt kpi-icon" style="color:var(--success);"></i>
+                </div>
+                <div class="kpi-value" style="color:#34d399;" id="kpiAvailable">0</div>
+                <div class="kpi-hint">Sẵn sàng cấp cho lượt tiếp theo</div>
             </div>
-
-            <div id="adminStatusMsg" style="display:none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;"></div>
         </section>
 
-        <!-- Danh Sách Kho Acc Theo Thứ Tự Thực Tế -->
-        <section class="admin-box" style="margin-top:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-list-ol text-cyan"></i>
-                    <span>THỨ TỰ PHÁT ACC TRONG KHO</span>
-                </div>
-                <button type="button" id="btnRefreshList" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; padding:4px 8px; font-size:11px; cursor:pointer;">
-                    <i class="fa-solid fa-rotate"></i> Làm mới
-                </button>
-            </div>
-            
-            <p style="font-size:11px; color:var(--text-secondary); margin:0;">
-                Hệ thống luôn phát lần lượt từ trên xuống dưới (STT 1 ➔ STT 2 ➔ STT 3...)
-            </p>
+        <!-- 3. Khu vực Quản Trị & Danh Sách Acc -->
+        <section class="dashboard-card">
 
-            <div style="max-height: 280px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
-                <table style="width:100%; border-collapse: collapse; font-size:11px; text-align:left;">
-                    <thead style="background: rgba(0,0,0,0.6); color: var(--text-muted); position: sticky; top:0;">
+            <!-- Toolbar trên đầu bảng -->
+            <div class="toolbar-row">
+                <!-- Bộ lọc trạng thái -->
+                <div class="filter-tabs">
+                    <button type="button" class="filter-btn is-active" data-filter="all" id="btnFilterAll">Tất Cả (<span id="countAll">0</span>)</button>
+                    <button type="button" class="filter-btn" data-filter="ready" id="btnFilterReady">🟢 Chưa Phát (<span id="countReady">0</span>)</button>
+                    <button type="button" class="filter-btn" data-filter="claimed" id="btnFilterClaimed">🔴 Đã Phát (<span id="countClaimed">0</span>)</button>
+                </div>
+
+                <!-- Các nút hành động nhanh -->
+                <div class="toolbar-actions">
+                    <button type="button" class="btn-action-sm btn-toggle-deposit" id="btnToggleDeposit">
+                        <i class="fa-solid fa-plus"></i> Nạp Acc (TXT)
+                    </button>
+                    <button type="button" class="btn-action-sm btn-refresh" id="btnRefresh" title="Làm mới dữ liệu">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Khung Nạp Acc Bằng File TXT (Mở ra khi bấm nút) -->
+            <div class="deposit-drawer" id="depositDrawer">
+                <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
+                    <span>📋 <b>Dán danh sách nick từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
+                    <button type="button" id="btnCloseDeposit" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
+                        <i class="fa-solid fa-xmark"></i> Đóng
+                    </button>
+                </div>
+                <textarea id="depositInput" class="deposit-txt-area" placeholder="garena_acc1|Pass123|Ghi chú...&#10;garena_acc2:Pass456&#10;garena_acc3|Pass789"></textarea>
+                
+                <div class="deposit-btn-row">
+                    <button type="button" class="btn-clean-samples" id="btnCleanSamples">
+                        <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Cũ
+                    </button>
+                    <button type="button" class="btn-submit-deposit" id="btnSubmitDeposit">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc
+                    </button>
+                </div>
+                <div id="depositFeedback" style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:700;"></div>
+            </div>
+
+            <!-- Ô Tìm Kiếm Thực Tế -->
+            <div class="search-box-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm theo Tài khoản, Mật khẩu, Mã Key, Ghi chú...">
+            </div>
+
+            <!-- Bảng Dữ Liệu Acc (Có Ngày Giờ Phát Rõ Ràng) -->
+            <div class="table-responsive-card">
+                <table class="stock-table">
+                    <thead>
                         <tr>
-                            <th style="padding:6px;">STT</th>
-                            <th style="padding:6px;">Tài Khoản</th>
-                            <th style="padding:6px;">Trạng Thái</th>
-                            <th style="padding:6px;">Key Phát</th>
+                            <th style="width:55px;">STT</th>
+                            <th>Tài Khoản (User)</th>
+                            <th>Mật Khẩu (Pass)</th>
+                            <th>Ghi Chú</th>
+                            <th style="width:125px;">Trạng Thái</th>
+                            <th style="width:140px;">Mã Key</th>
+                            <th style="width:160px;">Ngày Giờ Phát</th>
                         </tr>
                     </thead>
-                    <tbody id="adminAccTableBody">
-                        <tr><td colspan="4" style="text-align:center; padding:15px; color:var(--text-muted);">Đang tải dữ liệu...</td></tr>
+                    <tbody id="stockTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu kho Acc...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+
         </section>
 
         <!-- Footer -->
-        <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
-            <p>© 2026 MA GIÁO AOV • All rights reserved.</p>
+        <footer style="text-align:center; padding:10px 0; font-size:11px; color:var(--text-muted);">
+            © 2026 MA GIÁO AOV • Quản Trị Hệ Thống Tự Động
         </footer>
 
     </main>
 
-    <!-- POPUP NHẬP MÃ PIN ADMIN -->
-    <div class="modal-overlay is-active" id="pinModal">
-        <div class="pin-modal-card">
-            <div style="font-size: 36px; color: var(--gold); margin-bottom: 2px;">
+    <!-- HỘP THOẠI ĐĂNG NHẬP MÃ PIN ADMIN -->
+    <div class="pin-modal-overlay" id="pinModalOverlay">
+        <div class="pin-card">
+            <div style="font-size: 32px; color: var(--gold);">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h3 style="font-family: var(--font-heading); color: #ffffff; font-size: 18px;">BẢO MẬT ADMIN</h3>
-            <p style="font-size: 12px; color: var(--text-secondary);">Nhập mã PIN để mở khóa trang nạp Acc</p>
+            <div>
+                <h3 style="font-family: var(--font-heading); font-size: 18px; color: #ffffff;">XÁC THỰC ADMIN</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top:2px;">Nhập mã PIN để truy cập bảng quản trị</p>
+            </div>
 
-            <input type="password" id="inputPin" class="pin-input" maxlength="6" placeholder="••••••" autofocus>
-
-            <button type="button" id="btnConfirmPin" class="btn-admin-submit" style="padding: 10px; font-size: 13px;">
-                <span>XÁC NHẬN</span>
+            <input type="password" id="inputAdminPin" class="pin-input" maxlength="6" placeholder="••••••" autofocus autocomplete="off">
+            
+            <button type="button" id="btnAdminLogin" class="btn-pin-submit">
+                ĐĂNG NHẬP
             </button>
-            <div id="pinError" style="font-size: 11px; color: #ef4444; display:none;">Mã PIN không đúng!</div>
+            <div id="pinAlertError" style="font-size: 11px; color: var(--rose); display: none;">Mã PIN không chính xác!</div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <div class="toast-msg" id="toastMsg"></div>
+
+    <!-- Nạp Cấu Hình & Logic Điều Khiển -->
     <script src="js/config.js"></script>
     <script src="js/sound.js"></script>
     <script>
         (function () {
-            const ADMIN_PIN = "123456"; // Mã PIN mặc định
-            const pinModal = document.getElementById("pinModal");
-            const inputPin = document.getElementById("inputPin");
-            const btnConfirmPin = document.getElementById("btnConfirmPin");
-            const pinError = document.getElementById("pinError");
+            'use strict';
+
+            const ADMIN_PIN = "123456";
+            const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
+
+            const pinOverlay = document.getElementById("pinModalOverlay");
+            const pinInput = document.getElementById("inputAdminPin");
+            const pinBtn = document.getElementById("btnAdminLogin");
+            const pinError = document.getElementById("pinAlertError");
             const adminMain = document.getElementById("adminMainContent");
 
-            const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
-            const btnUpload = document.getElementById("btnAdminUploadTxt");
-            const txtInput = document.getElementById("adminTxtInput");
-            const statusMsg = document.getElementById("adminStatusMsg");
-            const availEl = document.getElementById("adminAvailableStock");
-            const claimEl = document.getElementById("adminClaimedStock");
-            const tableBody = document.getElementById("adminAccTableBody");
-            const btnRefresh = document.getElementById("btnRefreshList");
-            const btnClearSamples = document.getElementById("btnClearSamples");
-            const btnFixVal = document.getElementById("btnFixValidation");
+            // KPI elements
+            const kpiTotal = document.getElementById("kpiTotal");
+            const kpiClaimed = document.getElementById("kpiClaimed");
+            const kpiAvailable = document.getElementById("kpiAvailable");
 
-            // Mở khóa giao diện Admin
-            function unlockAdmin() {
-                sounds.playSuccess();
-                sessionStorage.setItem("mg_admin_auth", "true");
-                pinModal.classList.remove("is-active");
+            // Filter counts
+            const countAll = document.getElementById("countAll");
+            const countReady = document.getElementById("countReady");
+            const countClaimed = document.getElementById("countClaimed");
+
+            // Table & controls
+            const tableBody = document.getElementById("stockTableBody");
+            const searchInput = document.getElementById("searchInput");
+            const btnRefresh = document.getElementById("btnRefresh");
+
+            // Drawer
+            const btnToggleDeposit = document.getElementById("btnToggleDeposit");
+            const btnCloseDeposit = document.getElementById("btnCloseDeposit");
+            const depositDrawer = document.getElementById("depositDrawer");
+            const depositInput = document.getElementById("depositInput");
+            const btnSubmitDeposit = document.getElementById("btnSubmitDeposit");
+            const btnCleanSamples = document.getElementById("btnCleanSamples");
+            const depositFeedback = document.getElementById("depositFeedback");
+
+            let fullAccountList = [];
+            let currentFilter = "all";
+
+            /* ================= 1. ĐĂNG NHẬP AN TOÀN ================= */
+            function grantAccess() {
+                if (typeof sounds !== 'undefined' && sounds.playSuccess) sounds.playSuccess();
+                sessionStorage.setItem("mg_admin_authorized", "true");
+                pinOverlay.classList.add("is-hidden");
                 adminMain.style.display = "flex";
-                loadStats();
-                loadAccountList();
+                loadDashboardData();
             }
 
-            // Kiểm tra mã PIN
-            function verifyPin() {
-                const val = inputPin.value.trim();
-                if (val === ADMIN_PIN) {
-                    unlockAdmin();
+            function attemptLogin() {
+                if (pinInput.value.trim() === ADMIN_PIN) {
+                    grantAccess();
                 } else {
-                    sounds.playError();
+                    if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
                     pinError.style.display = "block";
-                    inputPin.value = "";
-                    inputPin.focus();
+                    pinInput.value = "";
+                    pinInput.focus();
                 }
             }
 
-            btnConfirmPin.addEventListener("click", verifyPin);
-            inputPin.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") verifyPin();
+            pinBtn.addEventListener("click", attemptLogin);
+            pinInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") attemptLogin();
             });
 
-            // Tự động đăng nhập nếu đã đăng nhập trong phiên hoặc có param ?pin=123456
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("pin") === ADMIN_PIN || sessionStorage.getItem("mg_admin_auth") === "true") {
-                unlockAdmin();
+            // Tự động vào nếu có param ?pin=123456 hoặc đã đăng nhập trong session
+            const urlQuery = new URLSearchParams(window.location.search);
+            if (urlQuery.get("pin") === ADMIN_PIN || sessionStorage.getItem("mg_admin_authorized") === "true") {
+                grantAccess();
             }
 
-            // Tải thống kê kho
-            async function loadStats() {
+            /* ================= 2. TẢI DỮ LIỆU BẢNG & THỐNG KÊ ================= */
+            async function loadDashboardData() {
                 if (!apiUrl) return;
-                try {
-                    const resp = await fetch(`${apiUrl}?action=get_stats&_t=${Date.now()}`);
-                    const data = await resp.json();
-                    if (data && data.success && data.stats) {
-                        availEl.textContent = data.stats.available || 0;
-                        claimEl.textContent = data.stats.claimed || 0;
-                    }
-                } catch (e) {}
-            }
-
-            // Tải danh sách Acc trong kho theo đúng thứ tự
-            async function loadAccountList() {
-                if (!apiUrl || !tableBody) return;
-                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--cyan);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách...</td></tr>`;
+                
+                btnRefresh.querySelector("i").classList.add("fa-spin");
+                
                 try {
                     const resp = await fetch(`${apiUrl}?action=admin_get_list&_t=${Date.now()}`);
                     const res = await resp.json();
+
                     if (res && res.success && Array.isArray(res.list)) {
-                        if (res.list.length === 0) {
-                            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--text-muted);">Kho đang trống, hãy dán text để nạp!</td></tr>`;
-                            return;
-                        }
-                        tableBody.innerHTML = res.list.map(item => {
-                            const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
-                            const statusBadge = isClaimed 
-                                ? `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle"></i> ĐÃ PHÁT</span>`
-                                : `<span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-circle"></i> CHƯA PHÁT</span>`;
-                            const rowBg = isClaimed ? "background:rgba(239,68,68,0.06);" : "";
-                            return `
-                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05); ${rowBg}">
-                                    <td style="padding:6px 8px; font-weight:700; color:var(--gold);">#${item.stt}</td>
-                                    <td style="padding:6px 8px; font-family:monospace; color:#fff;">${item.user}</td>
-                                    <td style="padding:6px 8px;">${statusBadge}</td>
-                                    <td style="padding:6px 8px; font-size:10px; color:var(--text-muted); font-family:monospace;">${item.key || "---"}</td>
-                                </tr>
-                            `;
-                        }).join("");
+                        fullAccountList = res.list;
+                        updateStatsAndCounts();
+                        renderTable();
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải dữ liệu từ máy chủ Google Sheets.</td></tr>`;
                     }
-                } catch (e) {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:#ef4444;">Lỗi tải dữ liệu kho!</td></tr>`;
+                } catch (err) {
+                    console.error("Lỗi kết nối:", err);
+                    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Lỗi kết nối máy chủ!</td></tr>`;
+                } finally {
+                    btnRefresh.querySelector("i").classList.remove("fa-spin");
                 }
             }
 
-            if (btnRefresh) {
-                btnRefresh.addEventListener("click", () => {
-                    sounds.playClick();
-                    loadStats();
-                    loadAccountList();
+            /* ================= 3. THỐNG KÊ & BỘ ĐẾM ================= */
+            function updateStatsAndCounts() {
+                const total = fullAccountList.length;
+                let claimed = 0;
+                let available = 0;
+
+                fullAccountList.forEach(item => {
+                    if (String(item.status || "").includes("ĐÃ PHÁT")) claimed++;
+                    else available++;
                 });
+
+                kpiTotal.textContent = total;
+                kpiClaimed.textContent = claimed;
+                kpiAvailable.textContent = available;
+
+                countAll.textContent = total;
+                countReady.textContent = available;
+                countClaimed.textContent = claimed;
             }
 
-            // NẠP ACC 1-CLICK TỪ TEXT
-            btnUpload.addEventListener("click", async () => {
-                const text = txtInput.value.trim();
-                if (!text) {
-                    sounds.playError();
-                    alert("Vui lòng dán danh sách Acc từ file .txt vào ô!");
-                    txtInput.focus();
+            /* ================= 4. HIỂN THỊ BẢNG ACC & NGÀY GIỜ PHÁT ================= */
+            function renderTable() {
+                const searchKeyword = searchInput.value.trim().toLowerCase();
+
+                let filtered = fullAccountList.filter(item => {
+                    const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
+                    if (currentFilter === "ready" && isClaimed) return false;
+                    if (currentFilter === "claimed" && !isClaimed) return false;
+
+                    if (searchKeyword) {
+                        const u = String(item.user || "").toLowerCase();
+                        const p = String(item.pass || "").toLowerCase();
+                        const k = String(item.key || "").toLowerCase();
+                        const n = String(item.note || "").toLowerCase();
+                        return u.includes(searchKeyword) || p.includes(searchKeyword) || k.includes(searchKeyword) || n.includes(searchKeyword);
+                    }
+                    return true;
+                });
+
+                if (filtered.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Không tìm thấy tài khoản nào phù hợp.</td></tr>`;
                     return;
                 }
 
-                sounds.playClick();
-                btnUpload.disabled = true;
-                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp Acc lên hệ thống...`;
-                statusMsg.style.display = "none";
+                tableBody.innerHTML = filtered.map(item => {
+                    const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
+                    
+                    const statusBadge = isClaimed
+                        ? `<span class="badge-status-claimed"><i class="fa-solid fa-circle"></i> Đã phát</span>`
+                        : `<span class="badge-status-ready"><i class="fa-solid fa-circle"></i> Chưa phát</span>`;
+
+                    const keyTag = (item.key && String(item.key).trim())
+                        ? `<span class="tag-key">${item.key}</span>`
+                        : `<span style="color:var(--text-muted);">---</span>`;
+
+                    const timeFormatted = formatClaimTime(item.time);
+
+                    return `
+                        <tr>
+                            <td class="val-stt">#${item.stt}</td>
+                            <td>
+                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép">
+                                    ${escapeHtml(item.user)}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.pass)}', 'Đã chép Pass!')" title="Click để sao chép" style="color:#fde047;">
+                                    ${escapeHtml(item.pass)}
+                                </span>
+                            </td>
+                            <td style="color:var(--text-secondary); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                ${escapeHtml(item.note || "---")}
+                            </td>
+                            <td>${statusBadge}</td>
+                            <td>${keyTag}</td>
+                            <td>${timeFormatted}</td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            /* Định dạng ngày giờ chuẩn Việt Nam: HH:mm:ss • dd/MM/yyyy */
+            function formatClaimTime(rawTime) {
+                if (!rawTime || !String(rawTime).trim()) {
+                    return `<span style="color:var(--text-muted);">---</span>`;
+                }
+
+                try {
+                    const d = new Date(rawTime);
+                    if (isNaN(d.getTime())) {
+                        return `<span class="val-time">${escapeHtml(rawTime)}</span>`;
+                    }
+
+                    const timePart = d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                    const datePart = d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+                    
+                    return `
+                        <div>
+                            <span class="val-time">${timePart}</span>
+                            <span class="val-time-date">${datePart}</span>
+                        </div>
+                    `;
+                } catch (e) {
+                    return `<span class="val-time">${escapeHtml(rawTime)}</span>`;
+                }
+            }
+
+            /* ================= 5. TÌM KIẾM & BỘ LỌC TABS ================= */
+            searchInput.addEventListener("input", renderTable);
+
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("is-active"));
+                    btn.classList.add("is-active");
+                    currentFilter = btn.dataset.filter;
+                    renderTable();
+                });
+            });
+
+            btnRefresh.addEventListener("click", () => {
+                if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                loadDashboardData();
+            });
+
+            /* ================= 6. NẠP ACC TỪ FILE TXT ================= */
+            btnToggleDeposit.addEventListener("click", () => {
+                depositDrawer.classList.toggle("is-open");
+                if (depositDrawer.classList.contains("is-open")) {
+                    depositInput.focus();
+                }
+            });
+
+            btnCloseDeposit.addEventListener("click", () => {
+                depositDrawer.classList.remove("is-open");
+            });
+
+            btnSubmitDeposit.addEventListener("click", async () => {
+                const text = depositInput.value.trim();
+                if (!text) {
+                    alert("Vui lòng dán danh sách tài khoản từ file .txt!");
+                    depositInput.focus();
+                    return;
+                }
+
+                btnSubmitDeposit.disabled = true;
+                btnSubmitDeposit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp...`;
+                depositFeedback.style.display = "none";
 
                 try {
                     const resp = await fetch(apiUrl, {
@@ -380,89 +991,82 @@
                     const res = await resp.json();
 
                     if (res && res.success) {
-                        sounds.playSuccess();
-                        statusMsg.style.display = "block";
-                        statusMsg.style.background = "rgba(16, 185, 129, 0.15)";
-                        statusMsg.style.border = "1px solid #10b981";
-                        statusMsg.style.color = "#34d399";
-                        statusMsg.textContent = res.message || `Đã nạp thành công ${res.added_count} Acc vào kho!`;
+                        depositFeedback.style.display = "block";
+                        depositFeedback.style.background = "rgba(16, 185, 129, 0.15)";
+                        depositFeedback.style.border = "1px solid #10b981";
+                        depositFeedback.style.color = "#34d399";
+                        depositFeedback.textContent = res.message || `Đã nạp thành công ${res.added_count} Acc vào kho!`;
 
-                        txtInput.value = "";
-                        loadStats();
-                        loadAccountList();
+                        depositInput.value = "";
+                        loadDashboardData();
                     } else {
-                        sounds.playError();
-                        statusMsg.style.display = "block";
-                        statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
-                        statusMsg.style.border = "1px solid #ef4444";
-                        statusMsg.style.color = "#f87171";
-                        statusMsg.textContent = res.message || "Lỗi khi nạp Acc!";
+                        depositFeedback.style.display = "block";
+                        depositFeedback.style.background = "rgba(244, 63, 94, 0.15)";
+                        depositFeedback.style.border = "1px solid #f43f5e";
+                        depositFeedback.style.color = "#fda4af";
+                        depositFeedback.textContent = res.message || "Lỗi khi nạp Acc!";
                     }
-                } catch (err) {
-                    sounds.playError();
-                    statusMsg.style.display = "block";
-                    statusMsg.style.background = "rgba(239, 68, 68, 0.15)";
-                    statusMsg.style.border = "1px solid #ef4444";
-                    statusMsg.style.color = "#f87171";
-                    statusMsg.textContent = "Lỗi kết nối máy chủ!";
+                } catch (e) {
+                    depositFeedback.style.display = "block";
+                    depositFeedback.style.background = "rgba(244, 63, 94, 0.15)";
+                    depositFeedback.style.border = "1px solid #f43f5e";
+                    depositFeedback.style.color = "#fda4af";
+                    depositFeedback.textContent = "Lỗi kết nối máy chủ!";
                 } finally {
-                    btnUpload.disabled = false;
-                    btnUpload.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>LƯU VÀO KHO ACC</span>`;
+                    btnSubmitDeposit.disabled = false;
+                    btnSubmitDeposit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc`;
                 }
             });
 
-            // TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H
-            if (btnFixVal) {
-                btnFixVal.addEventListener("click", async () => {
-                    sounds.playClick();
-                    btnFixVal.disabled = true;
-                    btnFixVal.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang gỡ bỏ quy tắc lỗi...`;
-                    try {
-                        const resp = await fetch(`${apiUrl}?action=fix_validation`);
-                        const res = await resp.json();
-                        if (res && res.success) {
-                            sounds.playSuccess();
-                            alert("✅ ĐÃ GỠ BỎ LỖI XÁC THỰC CỘT H THÀNH CÔNG!\nBây giờ khách hoặc sếp có thể nhập Key nhận Acc mượt mà 100%.");
-                        } else {
-                            alert(res.message || "Chưa thể gỡ tự động, sếp mở Google Sheet và xóa Data Validation ở Cột H bằng tay nhé!");
-                        }
-                    } catch (e) {
-                        alert("Vui lòng mở Google Sheet ➔ Bôi đen Cột H ➔ Chuột phải ➔ Xác thực dữ liệu ➔ Xóa quy tắc!");
-                    } finally {
-                        btnFixVal.disabled = false;
-                        btnFixVal.innerHTML = `<i class="fa-solid fa-wrench"></i> <span>SỬA LỖI CỘT H</span>`;
+            /* ================= 7. XÓA CÁC ACC MẪU CŨ ================= */
+            btnCleanSamples.addEventListener("click", async () => {
+                if (!confirm("Sếp có chắc chắn muốn xóa sạch các Acc mẫu demo cũ không?\n(Chỉ giữ lại các Acc thật do sếp nạp)")) return;
+
+                btnCleanSamples.disabled = true;
+                btnCleanSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xóa...`;
+
+                try {
+                    const resp = await fetch(`${apiUrl}?action=clear_samples`);
+                    const res = await resp.json();
+                    if (res && res.success) {
+                        alert(res.message);
+                        loadDashboardData();
+                    } else {
+                        alert(res.message || "Chưa thể xóa tự động, sếp mở Google Sheet xóa bằng tay nhé!");
                     }
-                });
+                } catch (e) {
+                    alert("Lỗi kết nối máy chủ!");
+                } finally {
+                    btnCleanSamples.disabled = false;
+                    btnCleanSamples.innerHTML = `<i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Cũ`;
+                }
+            });
+
+            /* ================= 8. TIỆN ÍCH COPY NHANH ================= */
+            window.copySnippet = function (text, note) {
+                if (!text) return;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text);
+                }
+                const toast = document.getElementById("toastMsg");
+                if (toast) {
+                    toast.textContent = note || "Đã sao chép!";
+                    toast.style.display = "block";
+                    setTimeout(() => toast.style.display = "none", 1800);
+                }
+            };
+
+            function escapeHtml(str) {
+                if (!str) return "";
+                return String(str)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
 
-            // XÓA 11 ACC MẪU DEMO
-            if (btnClearSamples) {
-                btnClearSamples.addEventListener("click", async () => {
-                    if (!confirm("Sếp có chắc chắn muốn xóa các Acc mẫu demo ban đầu không?\n(Chỉ giữ lại các Acc thật do sếp nạp)")) return;
-                    sounds.playClick();
-                    btnClearSamples.disabled = true;
-                    btnClearSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang dọn dẹp kho...`;
-                    try {
-                        const resp = await fetch(`${apiUrl}?action=clear_samples`);
-                        const res = await resp.json();
-                        if (res && res.success) {
-                            sounds.playSuccess();
-                            alert(res.message);
-                            loadStats();
-                            loadAccountList();
-                        } else {
-                            alert(res.message || "Chưa thể xóa tự động, sếp xóa hàng 2 đến 12 trên Google Sheet bằng tay nhé!");
-                        }
-                    } catch (e) {
-                        alert("Lỗi kết nối. Sếp mở Google Sheet và xóa hàng mẫu bằng tay nhé!");
-                    } finally {
-                        btnClearSamples.disabled = false;
-                        btnClearSamples.innerHTML = `<i class="fa-solid fa-trash-can"></i> <span>XÓA ACC MẪU CŨ</span>`;
-                    }
-                });
-            }
         })();
-    </script>
     </script>
 </body>
 </html>
