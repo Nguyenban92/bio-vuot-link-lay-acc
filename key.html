@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎉 VƯỢT LINK THÀNH CÔNG • LẤY KEY NHẬN ACC</title>
+    <title>⚡ MA GIÁO AOV • Kích Hoạt Key Nhận Acc</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon-128x128.png">
@@ -19,101 +19,125 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .key-page-card {
-            background: linear-gradient(145deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 1.5px solid rgba(251, 191, 36, 0.45);
-            border-radius: 20px;
-            padding: 24px 18px;
+            background: linear-gradient(180deg, rgba(22, 28, 48, 0.95) 0%, rgba(12, 16, 28, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px;
+            padding: 28px 20px 24px 20px;
             text-align: center;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(168, 85, 247, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.05);
             margin-top: 15px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            transition: all 0.3s ease;
+            gap: 18px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .key-page-card.card-denied {
-            border-color: rgba(239, 68, 68, 0.5);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(239, 68, 68, 0.25);
+        .key-page-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #38bdf8, #a855f7, transparent);
+            opacity: 0.8;
         }
 
-        .key-page-card.card-claimed {
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.25);
+        .key-page-card.card-claimed::before {
+            background: linear-gradient(90deg, transparent, #10b981, #34d399, transparent);
         }
 
+        .key-page-card.card-denied::before {
+            background: linear-gradient(90deg, transparent, #ef4444, #f43f5e, transparent);
+        }
+
+        /* Biểu Tượng Trung Tâm Cao Cấp */
         .key-icon-wrapper {
-            width: 72px;
-            height: 72px;
+            width: 68px;
+            height: 68px;
             margin: 0 auto;
             border-radius: 20px;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(168, 85, 247, 0.3));
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
             border: 1.5px solid var(--gold);
             display: grid;
             place-items: center;
-            font-size: 32px;
+            font-size: 30px;
             color: var(--gold);
-            box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
-            animation: pulseLootbox 2s ease-in-out infinite alternate;
-        }
-
-        .key-icon-wrapper.icon-denied {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(153, 27, 27, 0.4));
-            border-color: #ef4444;
-            color: #ef4444;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
-            animation: none;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.35);
+            animation: pulseLootbox 2.5s ease-in-out infinite alternate;
         }
 
         .key-icon-wrapper.icon-claimed {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.4));
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.1) 100%);
             border-color: #10b981;
             color: #10b981;
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);
             animation: none;
         }
 
-        .key-display-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1.5px dashed var(--cyan);
-            border-radius: 14px;
-            padding: 16px 12px;
+        .key-icon-wrapper.icon-denied {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(153, 27, 27, 0.15) 100%);
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.35);
+            animation: none;
+        }
+
+        /* Khung Hiển Thị Key Đang Sẵn Sàng */
+        .key-vault-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1.5px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 16px 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 10px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .vault-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 8px;
         }
 
-        .key-display-box.box-used {
-            border-color: rgba(244, 63, 94, 0.4);
-            background: rgba(244, 63, 94, 0.05);
+        .vault-tag {
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .key-text-value {
-            font-family: monospace;
+        .key-text-highlight {
+            font-family: var(--font-mono);
             font-size: 24px;
-            font-weight: 800;
+            font-weight: 900;
             color: #38bdf8;
-            letter-spacing: 2px;
+            letter-spacing: 2.5px;
             word-break: break-all;
             user-select: all;
-            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
-        }
-
-        .key-text-value.text-muted-used {
-            color: #94a3b8;
-            text-decoration: line-through;
-            text-shadow: none;
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+            padding: 4px 0;
         }
 
         .key-status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
         }
 
         .pill-fresh {
@@ -128,33 +152,122 @@
             color: #38bdf8;
         }
 
-        .pill-claimed {
-            background: rgba(244, 63, 94, 0.15);
-            border: 1px solid rgba(244, 63, 94, 0.4);
-            color: #fda4af;
+        /* Vé Xác Nhận Điện Tử (Receipt Style - Khi Đã Nhận Acc) */
+        .claimed-receipt-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .key-sub-hint {
-            font-size: 11.5px;
+        .receipt-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .receipt-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-code {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 800;
+            color: #cbd5e1;
+            letter-spacing: 1px;
+        }
+
+        .receipt-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            width: 100%;
+        }
+
+        .receipt-badge-used {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #6ee7b7;
+        }
+
+        .receipt-note-clean {
+            font-size: 12px;
             color: var(--text-muted);
             line-height: 1.5;
+            text-align: center;
+            margin-top: -4px;
         }
 
+        /* Các Nút Bấm Gaming Cao Cấp */
         .key-actions-col {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .btn-copy-key {
+        .btn-gaming-primary {
+            width: 100%;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 14px;
+            color: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 15px;
+            font-weight: 900;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-gaming-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.55);
+        }
+
+        .btn-gaming-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-gaming-cyan {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-gaming-cyan:hover {
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.55);
+        }
+
+        .btn-gaming-secondary {
             width: 100%;
             padding: 13px;
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
-            color: var(--cyan);
+            color: #e2e8f0;
             font-family: var(--font-heading);
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 800;
             cursor: pointer;
             display: flex;
@@ -164,66 +277,19 @@
             transition: all 0.2s ease;
         }
 
-        .btn-copy-key:hover {
-            background: var(--cyan);
-            color: #000;
-        }
-
-        .btn-return-bio {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border: none;
-            border-radius: 12px;
+        .btn-gaming-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            font-family: var(--font-heading);
-            font-size: 15px;
-            font-weight: 900;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-            transition: all 0.2s ease;
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
-        .btn-return-bio:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
-        }
-
-        .btn-rebypass {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border: none;
-            border-radius: 12px;
-            color: #ffffff;
-            font-family: var(--font-heading);
-            font-size: 15px;
-            font-weight: 900;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-            transition: all 0.2s ease;
-        }
-
-        .btn-rebypass:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.6);
-        }
-
-        .denied-alert-box {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 14px;
+        .denied-card-clean {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 16px;
+            padding: 16px;
             color: #fca5a5;
-            font-size: 12px;
+            font-size: 12.5px;
             line-height: 1.6;
             text-align: left;
         }
@@ -256,21 +322,20 @@
             </div>
 
             <div>
-                <h1 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #ffffff;" id="keyTitle">
+                <h1 style="font-family: var(--font-heading); font-size: 20px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;" id="keyTitle">
                     ĐANG XÁC THỰC PHIÊN VƯỢT LINK...
                 </h1>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;" id="keySubtitle">
-                    Hệ thống đang kiểm tra tính hợp lệ của phiên vượt link.
+                <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 5px;" id="keySubtitle">
+                    Hệ thống đang kiểm tra phiên bảo mật 1-Time 1-Key.
                 </p>
             </div>
 
-            <!-- Khu Vực Hiển Thị Key / Cảnh Báo -->
+            <!-- Khu Vực Hiển Thị Nội Dung -->
             <div id="keyContentContainer">
-                <div class="key-display-box" id="keyDisplayBox">
-                    <div class="key-text-value" id="generatedKeyText">
+                <div class="key-vault-card">
+                    <div class="key-text-highlight" id="generatedKeyText">
                         <i class="fa-solid fa-circle-notch fa-spin"></i>
                     </div>
-                    <div id="keyPillContainer"></div>
                 </div>
             </div>
 
@@ -281,7 +346,7 @@
         </section>
 
         <!-- Footer -->
-        <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
+        <footer style="text-align:center; padding: 18px 0; font-size: 11px; color: var(--text-muted);">
             <p>© 2026 MA GIÁO AOV • Bảo mật phiên vượt link 1-Time 1-Key.</p>
         </footer>
 
@@ -308,8 +373,7 @@
             const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
             /* ==============================================================
-             * 1. KIỂM TRA XEM ĐÃ CÓ KEY LƯU CỤC BỘ CHO PHIÊN NÀY HAY CHƯA
-             *    (CHỐNG F5 HOÀN TOÀN: NẾU ĐÃ CẤP KEY THÌ GIỮ NGUYÊN MÃ CŨ)
+             * 1. KIỂM TRA KEY ĐÃ CẤP HOẶC ĐÃ NHẬN ACC HAY CHƯA (CHỐNG F5)
              * ============================================================== */
             let cachedKey = "";
             if (effectiveSid) {
@@ -319,33 +383,31 @@
                 cachedKey = localStorage.getItem("mg_current_active_key");
             }
 
-            // Nếu Key này đã được dùng để nhận Acc thành công trên Bio
+            // A. NẾU KEY NÀY ĐÃ ĐƯỢC DÙNG NHẬN ACC THÀNH CÔNG TRÊN BIO
             if (cachedKey && localStorage.getItem("mg_claimed_key_" + cachedKey) === "true") {
                 renderAlreadyClaimedState(cachedKey);
                 return;
             }
 
-            // Nếu đã có Key được cấp cho phiên này trong localStorage (F5 / tải lại trang)
+            // B. NẾU ĐÃ CÓ KEY ĐƯỢC CẤP CHO PHIÊN NÀY (F5 GIỮ NGUYÊN)
             if (cachedKey && effectiveSid) {
                 renderSuccessState(cachedKey, true);
                 return;
             }
 
             /* ==============================================================
-             * 3. NẾU KHÔNG CÓ PHIÊN VƯỢT LINK HỢP LỆ (COPY LINK, MỞ TRỰC TIẾP)
-             *    -> KHÓA CHẶT TRUY CẬP, KHÔNG TỰ SINH KEY
+             * 2. NẾU KHÔNG CÓ PHIÊN HỢP LỆ (COPY LINK, MỞ TRỰC TIẾP) -> CHẶN
              * ============================================================== */
             if (!effectiveSid) {
-                renderDeniedAccessState("Không tìm thấy phiên vượt link hợp lệ! Vui lòng quay lại trang Bio, làm nhiệm vụ và bấm nút 'VƯỢT LINK LẤY KEY'. Hệ thống nghiêm cấm copy link hoặc mở trực tiếp trang này để gian lận Key.");
+                renderDeniedAccessState("Không tìm thấy phiên vượt link hợp lệ từ trang Bio. Vui lòng quay lại trang chủ và hoàn thành nhiệm vụ để lấy Key!");
                 return;
             }
 
             /* ==============================================================
-             * 4. GỌI SERVER GOOGLE APPS SCRIPT ĐỂ XÁC THỰC VÀ CẤP 1 KEY DUY NHẤT
+             * 3. GỌI SERVER XÁC THỰC VÀ CẤP 1 KEY DUY NHẤT
              * ============================================================== */
             try {
                 if (!apiUrl) {
-                    // Chế độ demo khi chưa có URL máy chủ
                     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
                     const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
                     const demoKey = `MG-KEY-${randP(4)}-${randP(4)}`;
@@ -361,17 +423,13 @@
                     saveSessionKey(effectiveSid, data.key);
                     renderSuccessState(data.key, !!data.is_reused);
                 } else {
-                    // Phiên không tồn tại hoặc lỗi máy chủ
-                    renderDeniedAccessState(data.message || "Phiên vượt link không tồn tại hoặc đã hết hạn! Vui lòng quay lại Bio để vượt link mới.");
+                    renderDeniedAccessState(data.message || "Phiên vượt link không tồn tại hoặc đã hết hạn!");
                 }
             } catch (err) {
                 console.error("Lỗi xác thực Key:", err);
-                renderDeniedAccessState("Không thể kết nối đến máy chủ xác thực. Vui lòng quay lại trang Bio để thử lại!");
+                renderDeniedAccessState("Không thể kết nối đến máy chủ. Vui lòng quay lại Bio để thử lại!");
             }
 
-            /* ==============================================================
-             * HÀM LƯU KEY VÀO SESSION/LOCAL
-             * ============================================================== */
             function saveSessionKey(sid, key) {
                 if (sid) {
                     localStorage.setItem("mg_key_for_" + sid, key);
@@ -380,7 +438,7 @@
             }
 
             /* ==============================================================
-             * GIAO DIỆN: CẤP KEY THÀNH CÔNG (HOẶC HIỂN THỊ LẠI KEY HỢP LỆ)
+             * GIAO DIỆN 1: CẤP KEY THÀNH CÔNG (CHƯA NHẬN ACC)
              * ============================================================== */
             function renderSuccessState(key, isReused) {
                 sounds.playSuccess();
@@ -388,31 +446,34 @@
                 iconWrap.className = "key-icon-wrapper";
                 iconEl.className = "fa-solid fa-gift";
 
-                titleEl.textContent = isReused ? "MÃ KEY HỢP LỆ CỦA BẠN" : "MÃ KEY KÍCH HOẠT CỦA BẠN";
-                subtitleEl.textContent = "Mỗi phiên vượt link chỉ nhận được 1 Key duy nhất để kích hoạt nhận 1 Acc.";
+                titleEl.textContent = isReused ? "MÃ KEY ĐÃ BẢO LƯU" : "MÃ KEY KÍCH HOẠT CỦA BẠN";
+                subtitleEl.textContent = "Kích hoạt trên trang Bio để tự động mở khóa tài khoản.";
 
                 const pillHtml = isReused 
-                    ? `<span class="key-status-pill pill-locked"><i class="fa-solid fa-lock"></i> ĐÃ BẢO LƯU • F5 KHÔNG SINH THÊM KEY</span>`
-                    : `<span class="key-status-pill pill-fresh"><i class="fa-solid fa-bolt"></i> VỪA CẤP THÀNH CÔNG</span>`;
+                    ? `<span class="key-status-pill pill-locked"><i class="fa-solid fa-lock"></i> ĐÃ BẢO LƯU</span>`
+                    : `<span class="key-status-pill pill-fresh"><i class="fa-solid fa-bolt"></i> VỪA CẤP</span>`;
 
                 contentBox.innerHTML = `
-                    <div class="key-display-box">
-                        <div class="key-text-value" id="generatedKeyText">${escapeHtml(key)}</div>
-                        <div id="keyPillContainer">${pillHtml}</div>
+                    <div class="key-vault-card">
+                        <div class="vault-header">
+                            <span class="vault-tag"><i class="fa-solid fa-key text-cyan"></i> MÃ KÍCH HOẠT</span>
+                            ${pillHtml}
+                        </div>
+                        <div class="key-text-highlight" id="generatedKeyText">${escapeHtml(key)}</div>
                     </div>
-                    <p class="key-sub-hint" style="margin-top: 8px;">
-                        Bấm <b>Về Bio Nhận Acc Ngay</b> để tự động nhận tài khoản, hoặc sao chép mã dán vào ô kích hoạt trên Bio.
+                    <p class="receipt-note-clean" style="margin-top: 6px;">
+                        Bấm <b>Nhận Acc Ngay</b> để về Bio mở hòm, hoặc sao chép mã dán vào ô kích hoạt.
                     </p>
                 `;
 
                 actionsBox.innerHTML = `
-                    <a href="index.html?key=${encodeURIComponent(key)}" class="btn-return-bio" id="btnReturnToBio">
+                    <a href="index.html?key=${encodeURIComponent(key)}" class="btn-gaming-primary btn-gaming-cyan" id="btnReturnToBio">
                         <i class="fa-solid fa-bolt"></i>
                         <span>VỀ BIO NHẬN ACC NGAY</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
 
-                    <button type="button" class="btn-copy-key" id="btnCopyKey">
+                    <button type="button" class="btn-gaming-secondary" id="btnCopyKey">
                         <i class="fa-regular fa-copy"></i>
                         <span>SAO CHÉP MÃ KEY</span>
                     </button>
@@ -431,7 +492,7 @@
             }
 
             /* ==============================================================
-             * GIAO DIỆN: KEY ĐÃ ĐƯỢC DÙNG ĐỂ NHẬN ACC THÀNH CÔNG
+             * GIAO DIỆN 2: KEY ĐÃ NHẬN ACC (THIẾT KẾ BIÊN LAI GAMING ĐẲNG CẤP)
              * ============================================================== */
             function renderAlreadyClaimedState(key) {
                 sounds.playSuccess();
@@ -439,31 +500,37 @@
                 iconWrap.className = "key-icon-wrapper icon-claimed";
                 iconEl.className = "fa-solid fa-circle-check";
 
-                titleEl.textContent = "BẠN ĐÃ NHẬN ACC THÀNH CÔNG!";
-                subtitleEl.textContent = "Mỗi phiên vượt link chỉ nhận được 1 tài khoản duy nhất.";
+                titleEl.textContent = "ACC ĐÃ ĐƯỢC TRAO TAY";
+                subtitleEl.textContent = "Tài khoản game đã được chuyển về máy của bạn thành công.";
 
                 contentBox.innerHTML = `
-                    <div class="key-display-box box-used">
-                        <div class="key-text-value text-muted-used">${escapeHtml(key)}</div>
-                        <div>
-                            <span class="key-status-pill pill-claimed"><i class="fa-solid fa-circle-xmark"></i> MÃ KEY NÀY ĐÃ ĐƯỢC SỬ DỤNG</span>
+                    <div class="claimed-receipt-card">
+                        <div class="receipt-row">
+                            <span class="receipt-label">MÃ KÍCH HOẠT</span>
+                            <span class="receipt-code">${escapeHtml(key)}</span>
+                        </div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-row">
+                            <span class="receipt-label">TRẠNG THÁI</span>
+                            <span class="receipt-badge-used"><i class="fa-solid fa-check"></i> ĐÃ NHẬN VÀO KHO</span>
                         </div>
                     </div>
-                    <div class="denied-alert-box" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; margin-top: 10px;">
-                        <i class="fa-solid fa-circle-info"></i> Mã Key này đã phát Acc vào kho của bạn trước đó. Bạn không thể F5 hoặc dùng lại mã này để lấy thêm Acc. Để nhận thêm Acc khác, vui lòng quay lại trang Bio để thực hiện lượt vượt link mới!
-                    </div>
+                    <p class="receipt-note-clean" style="margin-top: 4px;">
+                        Mỗi lượt vượt link nhận 1 tài khoản. Bấm nút bên dưới để nhận thêm acc mới!
+                    </p>
                 `;
 
                 actionsBox.innerHTML = `
-                    <a href="index.html" class="btn-rebypass">
-                        <i class="fa-solid fa-rotate"></i>
-                        <span>VỀ TRANG BIO VƯỢT LINK MỚI</span>
+                    <a href="index.html" class="btn-gaming-primary">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>VƯỢT LINK NHẬN ACC MỚI</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 `;
             }
 
             /* ==============================================================
-             * GIAO DIỆN: TRUY CẬP BỊ TỪ CHỐI (COPY LINK, MỞ TRỰC TIẾP)
+             * GIAO DIỆN 3: TRUY CẬP BỊ TỪ CHỐI (COPY LINK, MỞ TRỰC TIẾP)
              * ============================================================== */
             function renderDeniedAccessState(message) {
                 sounds.playError();
@@ -475,13 +542,13 @@
                 subtitleEl.textContent = "Hệ thống bảo vệ mã Key một lần duy nhất.";
 
                 contentBox.innerHTML = `
-                    <div class="denied-alert-box">
+                    <div class="denied-card-clean">
                         <i class="fa-solid fa-triangle-exclamation"></i> <b>Cảnh Báo:</b> ${escapeHtml(message)}
                     </div>
                 `;
 
                 actionsBox.innerHTML = `
-                    <a href="index.html" class="btn-return-bio" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <a href="index.html" class="btn-gaming-primary" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>QUAY LẠI TRANG CHỦ BIO</span>
                     </a>
