@@ -23,11 +23,13 @@ const CONFIG = {
         crownText: "Ma Giáo AOV"
     },
 
-    // 🎯 3 NHIỆM VỤ BẮT BUỘC ĐỂ MỞ KHÓA LINK VƯỢT
+    // 🎯 3 NHIỆM VỤ BẮT BUỘC ĐỂ MỞ KHÓA LINK VƯỢT (3 Ô HÀNG NGANG)
     tasks: [
         {
             id: "task_tiktok",
-            name: "Follow TikTok Ma Giáo",
+            platform: "TikTok",
+            name: "TikTok Ma Giáo",
+            actionLabel: "Follow Kênh",
             icon: "fa-brands fa-tiktok",
             url: "https://www.tiktok.com/@magiaoaov",
             actionText: "Thực Hiện",
@@ -36,7 +38,9 @@ const CONFIG = {
         },
         {
             id: "task_telegram",
-            name: "Tham Gia Telegram",
+            platform: "Telegram",
+            name: "Telegram AOV",
+            actionLabel: "Vào Nhóm",
             icon: "fa-brands fa-telegram",
             url: "https://t.me/Magiao_AOV",
             actionText: "Tham Gia",
@@ -45,7 +49,9 @@ const CONFIG = {
         },
         {
             id: "task_youtube",
-            name: "Đăng Ký YouTube",
+            platform: "YouTube",
+            name: "YouTube Ma Giáo",
+            actionLabel: "Đăng Ký",
             icon: "fa-brands fa-youtube",
             url: "https://www.youtube.com",
             actionText: "Đăng Ký",

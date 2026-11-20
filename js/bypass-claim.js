@@ -35,23 +35,35 @@ class BypassClaimManager {
         this.checkUrlForActivationKey();
     }
 
-    // Render 3 nhiệm vụ gọn gàng
+    // Render 3 nhiệm vụ 1 hàng ngang với Logo lớn và nút nằm dưới
     renderTasks() {
         const container = document.getElementById("tasksListContainer");
         if (!container) return;
 
         container.innerHTML = CONFIG.tasks.map((task, index) => {
             const isDone = !!this.taskState[task.id];
+            const platformName = task.platform || (index === 0 ? "TikTok" : index === 1 ? "Telegram" : "YouTube");
+            const actionLabel = task.actionLabel || (index === 0 ? "Follow Kênh" : index === 1 ? "Vào Nhóm" : "Đăng Ký");
+
             return `
-                <div class="task-compact-item ${isDone ? 'is-completed' : ''}" id="taskCard_${task.id}">
-                    <div class="task-compact-left">
-                        <div class="task-compact-icon" style="color: ${task.color}; border-color: ${task.color}35;">
-                            <i class="${task.icon}"></i>
-                        </div>
-                        <div class="task-compact-name">${task.name}</div>
+                <div class="task-grid-card ${isDone ? 'is-completed' : ''}" id="taskCard_${task.id}" style="--brand-color: ${task.color};">
+                    <div class="task-card-header">
+                        <span class="task-badge-step">${isDone ? '<i class="fa-solid fa-check"></i>' : `#0${index + 1}`}</span>
+                        <span class="task-badge-platform">${platformName}</span>
                     </div>
-                    <button type="button" class="btn-compact-task ${isDone ? 'btn-task-done' : ''}" id="btnTask_${task.id}" data-task-id="${task.id}">
-                        ${isDone ? '<i class="fa-solid fa-check"></i> Đã Xong' : `${task.actionText} <i class="fa-solid fa-arrow-up-right-from-square"></i>`}
+
+                    <div class="task-logo-large" style="color: ${task.color}; border-color: ${task.color}45;">
+                        <i class="${task.icon}"></i>
+                    </div>
+
+                    <div class="task-info-block">
+                        <div class="task-action-title">${actionLabel}</div>
+                    </div>
+
+                    <button type="button" class="btn-grid-action ${isDone ? 'is-done' : ''}" id="btnTask_${task.id}" data-task-id="${task.id}">
+                        ${isDone 
+                            ? `<i class="fa-solid fa-circle-check"></i> <span>Hoàn Thành</span>` 
+                            : `<span>${task.actionText || 'Thực Hiện'}</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>`}
                     </button>
                 </div>
             `;
@@ -80,13 +92,14 @@ class BypassClaimManager {
         if (!btn) return;
 
         btn.disabled = true;
+        btn.classList.add("is-waiting");
         let countdown = task.verifySeconds || 5;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Chờ ${countdown}s`;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Chờ ${countdown}s</span>`;
 
         const timer = setInterval(() => {
             countdown--;
             if (countdown > 0) {
-                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Chờ ${countdown}s`;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Chờ ${countdown}s</span>`;
             } else {
                 clearInterval(timer);
                 this.taskState[task.id] = true;
@@ -94,9 +107,14 @@ class BypassClaimManager {
                 
                 sounds.playSuccess();
                 btn.disabled = false;
-                btn.className = "btn-compact-task btn-task-done";
-                btn.innerHTML = `<i class="fa-solid fa-check"></i> Đã Xong`;
-                if (card) card.classList.add("is-completed");
+                btn.classList.remove("is-waiting");
+                btn.classList.add("is-done");
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Hoàn Thành</span>`;
+                if (card) {
+                    card.classList.add("is-completed");
+                    const stepBadge = card.querySelector(".task-badge-step");
+                    if (stepBadge) stepBadge.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                }
 
                 this.showToast(`Đã hoàn thành: ${task.name}!`, "success");
                 this.updateTaskProgressUI();
