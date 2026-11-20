@@ -184,13 +184,7 @@ class BypassClaimManager {
                 }
                 
                 // 4. Mở link vượt link
-                let targetUrl = this.shortenedUrl;
-                if (!targetUrl) {
-                    targetUrl = `key.html?sid=${encodeURIComponent(sessionId)}`;
-                } else {
-                    if (targetUrl.includes("?")) targetUrl += `&sid=${encodeURIComponent(sessionId)}`;
-                    else targetUrl += `?sid=${encodeURIComponent(sessionId)}`;
-                }
+                const targetUrl = this.shortenedUrl || `key.html?sid=${encodeURIComponent(sessionId)}`;
                 window.open(targetUrl, "_blank");
             });
         }

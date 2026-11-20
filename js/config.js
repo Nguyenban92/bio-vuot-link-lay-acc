@@ -11,7 +11,7 @@ const CONFIG = {
     // 🔗 LINK RÚT GỌN KIẾM TIỀN CỦA BẠN (Dán link rút gọn của bạn vào đây):
     // (Link rút gọn này bạn rút gọn từ trang: https://bio-cua-ban/key.html)
     // Nếu để trống, hệ thống sẽ mở trực tiếp trang key.html để bạn test thử!
-    SHORTENED_BYPASS_URL: "", 
+    SHORTENED_BYPASS_URL: "https://link4m.net/nSRfjk", 
 
     // Thông tin thương hiệu Ma Giáo AOV
     brand: {
@@ -34,7 +34,7 @@ const CONFIG = {
             url: "https://www.tiktok.com/@magiaoaov",
             actionText: "Thực Hiện",
             color: "#ff0050",
-            verifySeconds: 5
+            verifySeconds: 3
         },
         {
             id: "task_telegram",
@@ -45,7 +45,7 @@ const CONFIG = {
             url: "https://t.me/Magiao_AOV",
             actionText: "Tham Gia",
             color: "#229ed9",
-            verifySeconds: 5
+            verifySeconds: 3
         },
         {
             id: "task_youtube",
@@ -56,7 +56,7 @@ const CONFIG = {
             url: "https://www.youtube.com",
             actionText: "Đăng Ký",
             color: "#ff0000",
-            verifySeconds: 5
+            verifySeconds: 3
         }
     ],
 
