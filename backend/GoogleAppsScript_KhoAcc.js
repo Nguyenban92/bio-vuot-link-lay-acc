@@ -420,9 +420,80 @@ function handleRequest(e) {
       });
     }
     
-    // 3. ACTION: CẤP 1 KEY CHO TRANG key.html SAU KHI VƯỢT LINK (MỖI LẦN CẤP 1 KEY DUY NHẤT)
-    if (action === "get_key" || action === "generate_key") {
-      const keyData = issueUniqueKey(params.client_info || postData.client_info);
+    // 2.1 ACTION: ĐĂNG KÝ PHIÊN VƯỢT LINK TỪ BIO (BẮT BUỘC ĐỂ ĐƯỢC CẤP KEY)
+    if (action === "start_bypass_session" || action === "init_bypass") {
+      const sessionId = (params.session_id || postData.session_id || "").trim();
+      if (!sessionId) {
+        return jsonResponse({ success: false, error: "MISSING_SESSION", message: "Thiếu session_id hợp lệ!" });
+      }
+      const cache = CacheService.getScriptCache();
+      const sessionData = {
+        session_id: sessionId,
+        status: "PENDING",
+        created_at: new Date().getTime(),
+        client_info: params.client_info || postData.client_info || "Web"
+      };
+      cache.put("BYPASS_" + sessionId, JSON.stringify(sessionData), 3600); // Hiệu lực 60 phút
+      return jsonResponse({ success: true, session_id: sessionId, message: "Đã khởi tạo phiên vượt link thành công!" });
+    }
+
+    // 3. ACTION: CẤP 1 KEY CHO TRANG key.html (CHỈ CẤP DUY NHẤT 1 LẦN CHO MỖI PHIÊN VƯỢT LINK)
+    if (action === "get_key" || action === "claim_bypass_key" || action === "generate_key") {
+      const sessionId = (params.session_id || postData.session_id || "").trim();
+      const adminPin = (params.admin_pin || postData.admin_pin || "").trim();
+      const clientInfo = params.client_info || postData.client_info || "Vừa vượt link";
+      
+      // Cho phép Admin test nhanh nếu có PIN 123456
+      if (adminPin === "123456") {
+        const keyData = issueUniqueKey("Admin Test Key");
+        return jsonResponse(keyData);
+      }
+      
+      // Nếu không có session_id truyền lên -> Chặn truy cập trực tiếp
+      if (!sessionId) {
+        return jsonResponse({
+          success: false,
+          error: "UNAUTHORIZED_ACCESS",
+          message: "Truy cập không hợp lệ! Vui lòng hoàn thành vượt link từ trang Bio để lấy Key."
+        });
+      }
+      
+      const cache = CacheService.getScriptCache();
+      const cachedSession = cache.get("BYPASS_" + sessionId);
+      
+      if (!cachedSession) {
+        // Không tìm thấy phiên hoặc phiên đã quá hạn
+        return jsonResponse({
+          success: false,
+          error: "INVALID_SESSION",
+          message: "Phiên vượt link không tồn tại hoặc đã hết hạn! Vui lòng quay lại Bio để vượt link mới."
+        });
+      }
+      
+      const sessionObj = JSON.parse(cachedSession);
+      
+      // NẾU PHIÊN NÀY ĐÃ ĐƯỢC CẤP KEY TRƯỚC ĐÓ (F5 HOẶC MỞ LẠI):
+      // TUYỆT ĐỐI KHÔNG TẠO THÊM KEY MỚI! CHỈ TRẢ VỀ ĐÚNG MÃ KEY CŨ!
+      if (sessionObj.status === "CLAIMED" && sessionObj.issued_key) {
+        return jsonResponse({
+          success: true,
+          key: sessionObj.issued_key,
+          is_reused: true,
+          issued_at: sessionObj.issued_at,
+          message: "Mã Key của phiên vượt link này đã được cấp trước đó."
+        });
+      }
+      
+      // NẾU LÀ PHIÊN HỢP LỆ VÀ ĐANG CHỜ (PENDING):
+      // Sinh 1 Key DUY NHẤT và khóa vĩnh viễn phiên này sang trạng thái CLAIMED!
+      const keyData = issueUniqueKey(clientInfo);
+      if (keyData && keyData.success && keyData.key) {
+        sessionObj.status = "CLAIMED";
+        sessionObj.issued_key = keyData.key;
+        sessionObj.issued_at = keyData.issued_at;
+        cache.put("BYPASS_" + sessionId, JSON.stringify(sessionObj), 3600);
+      }
+      
       return jsonResponse(keyData);
     }
     

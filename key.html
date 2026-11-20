@@ -29,9 +29,20 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            transition: all 0.3s ease;
         }
 
-        .key-trophy-icon {
+        .key-page-card.card-denied {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(239, 68, 68, 0.25);
+        }
+
+        .key-page-card.card-claimed {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.25);
+        }
+
+        .key-icon-wrapper {
             width: 72px;
             height: 72px;
             margin: 0 auto;
@@ -46,6 +57,22 @@
             animation: pulseLootbox 2s ease-in-out infinite alternate;
         }
 
+        .key-icon-wrapper.icon-denied {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(153, 27, 27, 0.4));
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+            animation: none;
+        }
+
+        .key-icon-wrapper.icon-claimed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.4));
+            border-color: #10b981;
+            color: #10b981;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+            animation: none;
+        }
+
         .key-display-box {
             background: rgba(0, 0, 0, 0.5);
             border: 1.5px dashed var(--cyan);
@@ -54,7 +81,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+        }
+
+        .key-display-box.box-used {
+            border-color: rgba(244, 63, 94, 0.4);
+            background: rgba(244, 63, 94, 0.05);
         }
 
         .key-text-value {
@@ -68,9 +100,44 @@
             text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
         }
 
-        .key-sub-hint {
+        .key-text-value.text-muted-used {
+            color: #94a3b8;
+            text-decoration: line-through;
+            text-shadow: none;
+        }
+
+        .key-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 8px;
             font-size: 11px;
+            font-weight: 700;
+        }
+
+        .pill-fresh {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            color: #fde047;
+        }
+
+        .pill-locked {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+        }
+
+        .pill-claimed {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fda4af;
+        }
+
+        .key-sub-hint {
+            font-size: 11.5px;
             color: var(--text-muted);
+            line-height: 1.5;
         }
 
         .key-actions-col {
@@ -125,6 +192,41 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
         }
+
+        .btn-rebypass {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 15px;
+            font-weight: 900;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-rebypass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.6);
+        }
+
+        .denied-alert-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            color: #fca5a5;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -146,43 +248,41 @@
             </a>
         </header>
 
-        <!-- Khung Cấp Key Chính -->
-        <section class="key-page-card">
-            <div class="key-trophy-icon">
-                <i class="fa-solid fa-gift"></i>
+        <!-- Khung Cấp Key Chính (Render Động Theo Trạng Thái) -->
+        <section class="key-page-card" id="keyMainCard">
+            
+            <div class="key-icon-wrapper" id="keyIconWrap">
+                <i class="fa-solid fa-spinner fa-spin" id="keyIcon"></i>
             </div>
 
-            <div style="text-align:center;">
-                <h1 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #ffffff;">
-                    MÃ KEY KÍCH HOẠT CỦA BẠN
+            <div>
+                <h1 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #ffffff;" id="keyTitle">
+                    ĐANG XÁC THỰC PHIÊN VƯỢT LINK...
                 </h1>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;" id="keySubtitle">
+                    Hệ thống đang kiểm tra tính hợp lệ của phiên vượt link.
+                </p>
             </div>
 
-            <!-- Hộp Hiển Thị Mã Key -->
-            <div class="key-display-box">
-                <div class="key-text-value" id="generatedKeyText">
-                    <i class="fa-solid fa-spinner fa-spin"></i> ĐANG TẠO KEY...
+            <!-- Khu Vực Hiển Thị Key / Cảnh Báo -->
+            <div id="keyContentContainer">
+                <div class="key-display-box" id="keyDisplayBox">
+                    <div class="key-text-value" id="generatedKeyText">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    </div>
+                    <div id="keyPillContainer"></div>
                 </div>
             </div>
 
             <!-- Các Nút Hành Động -->
-            <div class="key-actions-col">
-                <a href="#" class="btn-return-bio" id="btnReturnToBio">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span>VỀ BIO NHẬN ACC NGAY</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-
-                <button type="button" class="btn-copy-key" id="btnCopyKey">
-                    <i class="fa-regular fa-copy"></i>
-                    <span>SAO CHÉP MÃ KEY</span>
-                </button>
+            <div class="key-actions-col" id="keyActionsContainer">
+                <!-- Nút sẽ được render động theo trạng thái -->
             </div>
         </section>
 
         <!-- Footer -->
         <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
-            <p>© 2026 MA GIÁO AOV • All rights reserved.</p>
+            <p>© 2026 MA GIÁO AOV • Bảo mật phiên vượt link 1-Time 1-Key.</p>
         </footer>
 
     </main>
@@ -192,51 +292,236 @@
     <script src="js/sound.js"></script>
     <script>
         (async function () {
-            const keyTextEl = document.getElementById("generatedKeyText");
-            const btnCopy = document.getElementById("btnCopyKey");
-            const btnReturn = document.getElementById("btnReturnToBio");
+            const mainCard = document.getElementById("keyMainCard");
+            const iconWrap = document.getElementById("keyIconWrap");
+            const iconEl = document.getElementById("keyIcon");
+            const titleEl = document.getElementById("keyTitle");
+            const subtitleEl = document.getElementById("keySubtitle");
+            const contentBox = document.getElementById("keyContentContainer");
+            const actionsBox = document.getElementById("keyActionsContainer");
 
-            let currentKey = "";
+            const urlParams = new URLSearchParams(window.location.search);
+            const adminPin = urlParams.get("admin_pin") || urlParams.get("pin");
+            const paramSid = urlParams.get("sid") || urlParams.get("session") || urlParams.get("session_id");
+            const localSid = localStorage.getItem("mg_active_bypass_session");
+            const effectiveSid = paramSid || localSid;
+
             const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
-            if (apiUrl) {
+            /* ==============================================================
+             * 1. NẾU LÀ ADMIN TEST (CÓ PIN ADMIN 123456)
+             * ============================================================== */
+            if (adminPin === "123456") {
+                renderAdminTestKey();
+                return;
+            }
+
+            /* ==============================================================
+             * 2. KIỂM TRA XEM ĐÃ CÓ KEY LƯU CỤC BỘ CHO PHIÊN NÀY HAY CHƯA
+             *    (CHỐNG F5 HOÀN TOÀN: NẾU ĐÃ CẤP KEY THÌ GIỮ NGUYÊN MÃ CŨ)
+             * ============================================================== */
+            let cachedKey = "";
+            if (effectiveSid) {
+                cachedKey = localStorage.getItem("mg_key_for_" + effectiveSid);
+            }
+            if (!cachedKey) {
+                cachedKey = localStorage.getItem("mg_current_active_key");
+            }
+
+            // Nếu Key này đã được dùng để nhận Acc thành công trên Bio
+            if (cachedKey && localStorage.getItem("mg_claimed_key_" + cachedKey) === "true") {
+                renderAlreadyClaimedState(cachedKey);
+                return;
+            }
+
+            // Nếu đã có Key được cấp cho phiên này trong localStorage (F5 / tải lại trang)
+            if (cachedKey && effectiveSid) {
+                renderSuccessState(cachedKey, true);
+                return;
+            }
+
+            /* ==============================================================
+             * 3. NẾU KHÔNG CÓ PHIÊN VƯỢT LINK HỢP LỆ (COPY LINK, MỞ TRỰC TIẾP)
+             *    -> KHÓA CHẶT TRUY CẬP, KHÔNG TỰ SINH KEY
+             * ============================================================== */
+            if (!effectiveSid) {
+                renderDeniedAccessState("Không tìm thấy phiên vượt link hợp lệ! Vui lòng quay lại trang Bio, làm nhiệm vụ và bấm nút 'VƯỢT LINK LẤY KEY'. Hệ thống nghiêm cấm copy link hoặc mở trực tiếp trang này để gian lận Key.");
+                return;
+            }
+
+            /* ==============================================================
+             * 4. GỌI SERVER GOOGLE APPS SCRIPT ĐỂ XÁC THỰC VÀ CẤP 1 KEY DUY NHẤT
+             * ============================================================== */
+            try {
+                if (!apiUrl) {
+                    // Chế độ demo khi chưa có URL máy chủ
+                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                    const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
+                    const demoKey = `MG-KEY-${randP(4)}-${randP(4)}`;
+                    saveSessionKey(effectiveSid, demoKey);
+                    renderSuccessState(demoKey, false);
+                    return;
+                }
+
+                const resp = await fetch(`${apiUrl}?action=claim_bypass_key&session_id=${encodeURIComponent(effectiveSid)}&client_info=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`);
+                const data = await resp.json();
+
+                if (data && data.success && data.key) {
+                    saveSessionKey(effectiveSid, data.key);
+                    renderSuccessState(data.key, !!data.is_reused);
+                } else {
+                    // Phiên không tồn tại hoặc lỗi máy chủ
+                    renderDeniedAccessState(data.message || "Phiên vượt link không tồn tại hoặc đã hết hạn! Vui lòng quay lại Bio để vượt link mới.");
+                }
+            } catch (err) {
+                console.error("Lỗi xác thực Key:", err);
+                renderDeniedAccessState("Không thể kết nối đến máy chủ xác thực. Vui lòng quay lại trang Bio để thử lại!");
+            }
+
+            /* ==============================================================
+             * HÀM LƯU KEY VÀO SESSION/LOCAL
+             * ============================================================== */
+            function saveSessionKey(sid, key) {
+                if (sid) {
+                    localStorage.setItem("mg_key_for_" + sid, key);
+                }
+                localStorage.setItem("mg_current_active_key", key);
+            }
+
+            /* ==============================================================
+             * GIAO DIỆN: CẤP KEY THÀNH CÔNG (HOẶC HIỂN THỊ LẠI KEY HỢP LỆ)
+             * ============================================================== */
+            function renderSuccessState(key, isReused) {
+                sounds.playSuccess();
+                mainCard.className = "key-page-card";
+                iconWrap.className = "key-icon-wrapper";
+                iconEl.className = "fa-solid fa-gift";
+
+                titleEl.textContent = isReused ? "MÃ KEY HỢP LỆ CỦA BẠN" : "MÃ KEY KÍCH HOẠT CỦA BẠN";
+                subtitleEl.textContent = "Mỗi phiên vượt link chỉ nhận được 1 Key duy nhất để kích hoạt nhận 1 Acc.";
+
+                const pillHtml = isReused 
+                    ? `<span class="key-status-pill pill-locked"><i class="fa-solid fa-lock"></i> ĐÃ BẢO LƯU • F5 KHÔNG SINH THÊM KEY</span>`
+                    : `<span class="key-status-pill pill-fresh"><i class="fa-solid fa-bolt"></i> VỪA CẤP THÀNH CÔNG</span>`;
+
+                contentBox.innerHTML = `
+                    <div class="key-display-box">
+                        <div class="key-text-value" id="generatedKeyText">${escapeHtml(key)}</div>
+                        <div id="keyPillContainer">${pillHtml}</div>
+                    </div>
+                    <p class="key-sub-hint" style="margin-top: 8px;">
+                        Bấm <b>Về Bio Nhận Acc Ngay</b> để tự động nhận tài khoản, hoặc sao chép mã dán vào ô kích hoạt trên Bio.
+                    </p>
+                `;
+
+                actionsBox.innerHTML = `
+                    <a href="index.html?key=${encodeURIComponent(key)}" class="btn-return-bio" id="btnReturnToBio">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>VỀ BIO NHẬN ACC NGAY</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+
+                    <button type="button" class="btn-copy-key" id="btnCopyKey">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>SAO CHÉP MÃ KEY</span>
+                    </button>
+                `;
+
+                document.getElementById("btnCopyKey").addEventListener("click", function () {
+                    sounds.playCopy();
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(key);
+                    }
+                    this.innerHTML = `<i class="fa-solid fa-check text-success"></i> <span>ĐÃ SAO CHÉP MÃ KEY!</span>`;
+                    setTimeout(() => {
+                        this.innerHTML = `<i class="fa-regular fa-copy"></i> <span>SAO CHÉP MÃ KEY</span>`;
+                    }, 2500);
+                });
+            }
+
+            /* ==============================================================
+             * GIAO DIỆN: KEY ĐÃ ĐƯỢC DÙNG ĐỂ NHẬN ACC THÀNH CÔNG
+             * ============================================================== */
+            function renderAlreadyClaimedState(key) {
+                sounds.playSuccess();
+                mainCard.className = "key-page-card card-claimed";
+                iconWrap.className = "key-icon-wrapper icon-claimed";
+                iconEl.className = "fa-solid fa-circle-check";
+
+                titleEl.textContent = "BẠN ĐÃ NHẬN ACC THÀNH CÔNG!";
+                subtitleEl.textContent = "Mỗi phiên vượt link chỉ nhận được 1 tài khoản duy nhất.";
+
+                contentBox.innerHTML = `
+                    <div class="key-display-box box-used">
+                        <div class="key-text-value text-muted-used">${escapeHtml(key)}</div>
+                        <div>
+                            <span class="key-status-pill pill-claimed"><i class="fa-solid fa-circle-xmark"></i> MÃ KEY NÀY ĐÃ ĐƯỢC SỬ DỤNG</span>
+                        </div>
+                    </div>
+                    <div class="denied-alert-box" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; margin-top: 10px;">
+                        <i class="fa-solid fa-circle-info"></i> Mã Key này đã phát Acc vào kho của bạn trước đó. Bạn không thể F5 hoặc dùng lại mã này để lấy thêm Acc. Để nhận thêm Acc khác, vui lòng quay lại trang Bio để thực hiện lượt vượt link mới!
+                    </div>
+                `;
+
+                actionsBox.innerHTML = `
+                    <a href="index.html" class="btn-rebypass">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>VỀ TRANG BIO VƯỢT LINK MỚI</span>
+                    </a>
+                `;
+            }
+
+            /* ==============================================================
+             * GIAO DIỆN: TRUY CẬP BỊ TỪ CHỐI (COPY LINK, MỞ TRỰC TIẾP)
+             * ============================================================== */
+            function renderDeniedAccessState(message) {
+                sounds.playError();
+                mainCard.className = "key-page-card card-denied";
+                iconWrap.className = "key-icon-wrapper icon-denied";
+                iconEl.className = "fa-solid fa-shield-halved";
+
+                titleEl.textContent = "TRUY CẬP BỊ TỪ CHỐI";
+                subtitleEl.textContent = "Hệ thống bảo vệ mã Key một lần duy nhất.";
+
+                contentBox.innerHTML = `
+                    <div class="denied-alert-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <b>Cảnh Báo:</b> ${escapeHtml(message)}
+                    </div>
+                `;
+
+                actionsBox.innerHTML = `
+                    <a href="index.html" class="btn-return-bio" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>QUAY LẠI TRANG CHỦ BIO</span>
+                    </a>
+                `;
+            }
+
+            /* ==============================================================
+             * GIAO DIỆN: ADMIN TEST KEY
+             * ============================================================== */
+            async function renderAdminTestKey() {
                 try {
-                    // Luôn sinh 1 Key MỚI TOANH trên hệ thống Google Sheets tại thời điểm này
-                    const resp = await fetch(`${apiUrl}?action=get_key&_t=${Date.now()}&client_info=${encodeURIComponent(navigator.userAgent)}`);
+                    const resp = await fetch(`${apiUrl}?action=get_key&admin_pin=123456&_t=${Date.now()}`);
                     const data = await resp.json();
-                    if (data && data.success && data.key) {
-                        currentKey = data.key;
+                    if (data && data.key) {
+                        renderSuccessState(data.key, false);
+                        subtitleEl.textContent = "🛠️ Đang ở chế độ Admin Test (Mã PIN: 123456)";
                     }
                 } catch (e) {
-                    console.error("Lỗi lấy Key từ máy chủ:", e);
+                    renderDeniedAccessState("Lỗi tạo key Admin!");
                 }
             }
 
-            // Nếu mạng lỗi hoặc đang chạy offline độc lập
-            if (!currentKey) {
-                const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-                const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
-                currentKey = `MG-KEY-${randP(4)}-${randP(4)}`;
+            function escapeHtml(str) {
+                if (!str) return "";
+                return String(str)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
-
-            // Hiển thị Key
-            keyTextEl.textContent = currentKey;
-            sounds.playSuccess();
-
-            // Link về Bio tự động điền mã Key và kích hoạt nhận Acc
-            btnReturn.href = `index.html?key=${encodeURIComponent(currentKey)}`;
-
-            // Copy Key
-            btnCopy.addEventListener("click", () => {
-                sounds.playCopy();
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(currentKey);
-                }
-                btnCopy.innerHTML = `<i class="fa-solid fa-check text-success"></i> <span>ĐÃ SAO CHÉP MÃ KEY!</span>`;
-                setTimeout(() => {
-                    btnCopy.innerHTML = `<i class="fa-regular fa-copy"></i> <span>SAO CHÉP MÃ KEY</span>`;
-                }, 2500);
-            });
         })();
     </script>
 </body>

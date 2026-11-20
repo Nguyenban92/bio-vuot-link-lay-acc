@@ -150,7 +150,28 @@ class BypassClaimManager {
         if (bypassBtn) {
             bypassBtn.addEventListener("click", () => {
                 sounds.playLootboxOpen();
-                const targetUrl = this.shortenedUrl || "key.html";
+                
+                // 1. Tạo Session ID duy nhất cho phiên vượt link này (1-Time Session)
+                const sessionId = "BPS_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                // 2. Lưu vào localStorage để trang key.html nhận diện phiên hợp lệ
+                localStorage.setItem("mg_active_bypass_session", sessionId);
+                localStorage.setItem("mg_bypass_start_time", Date.now());
+                
+                // 3. Đăng ký session lên Google Apps Script Web App (Chống F5 và chống tạo key ảo)
+                if (this.apiUrl) {
+                    fetch(`${this.apiUrl}?action=start_bypass_session&session_id=${encodeURIComponent(sessionId)}&client_info=${encodeURIComponent(navigator.userAgent)}`)
+                        .catch(err => console.warn("Lỗi đăng ký session:", err));
+                }
+                
+                // 4. Mở link vượt link
+                let targetUrl = this.shortenedUrl;
+                if (!targetUrl) {
+                    targetUrl = `key.html?sid=${encodeURIComponent(sessionId)}`;
+                } else {
+                    if (targetUrl.includes("?")) targetUrl += `&sid=${encodeURIComponent(sessionId)}`;
+                    else targetUrl += `?sid=${encodeURIComponent(sessionId)}`;
+                }
                 window.open(targetUrl, "_blank");
             });
         }
@@ -291,6 +312,20 @@ class BypassClaimManager {
                     const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                     window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
                 }
+
+                // Đánh dấu Key này đã được nhận Acc thành công trong localStorage (Chống dùng lại / F5)
+                localStorage.setItem("mg_claimed_key_" + key, "true");
+                localStorage.setItem("mg_latest_claimed_key", key);
+
+                // Hủy session vượt link hiện tại để không thể tái sử dụng
+                localStorage.removeItem("mg_active_bypass_session");
+                localStorage.removeItem("mg_bypass_start_time");
+
+                // Reset lại nhiệm vụ để lượt sau bắt buộc phải hoàn thành nhiệm vụ mới để vượt link nhận acc tiếp theo
+                this.taskState = {};
+                localStorage.removeItem("mg_tasks_status");
+                this.renderTasks();
+                this.updateTaskProgressUI();
 
                 // Cập nhật lại số lượng kho
                 this.fetchStockStats();
