@@ -440,16 +440,9 @@ function handleRequest(e) {
     // 3. ACTION: CẤP 1 KEY CHO TRANG key.html (CHỈ CẤP DUY NHẤT 1 LẦN CHO MỖI PHIÊN VƯỢT LINK)
     if (action === "get_key" || action === "claim_bypass_key" || action === "generate_key") {
       const sessionId = (params.session_id || postData.session_id || "").trim();
-      const adminPin = (params.admin_pin || postData.admin_pin || "").trim();
       const clientInfo = params.client_info || postData.client_info || "Vừa vượt link";
       
-      // Cho phép Admin test nhanh nếu có PIN 123456
-      if (adminPin === "123456") {
-        const keyData = issueUniqueKey("Admin Test Key");
-        return jsonResponse(keyData);
-      }
-      
-      // Nếu không có session_id truyền lên -> Chặn truy cập trực tiếp
+      // Bắt buộc phải có session_id hợp lệ -> Khóa triệt để mọi truy cập trực tiếp
       if (!sessionId) {
         return jsonResponse({
           success: false,

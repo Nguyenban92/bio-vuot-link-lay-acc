@@ -301,7 +301,6 @@
             const actionsBox = document.getElementById("keyActionsContainer");
 
             const urlParams = new URLSearchParams(window.location.search);
-            const adminPin = urlParams.get("admin_pin") || urlParams.get("pin");
             const paramSid = urlParams.get("sid") || urlParams.get("session") || urlParams.get("session_id");
             const localSid = localStorage.getItem("mg_active_bypass_session");
             const effectiveSid = paramSid || localSid;
@@ -309,15 +308,7 @@
             const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
             /* ==============================================================
-             * 1. NẾU LÀ ADMIN TEST (CÓ PIN ADMIN 123456)
-             * ============================================================== */
-            if (adminPin === "123456") {
-                renderAdminTestKey();
-                return;
-            }
-
-            /* ==============================================================
-             * 2. KIỂM TRA XEM ĐÃ CÓ KEY LƯU CỤC BỘ CHO PHIÊN NÀY HAY CHƯA
+             * 1. KIỂM TRA XEM ĐÃ CÓ KEY LƯU CỤC BỘ CHO PHIÊN NÀY HAY CHƯA
              *    (CHỐNG F5 HOÀN TOÀN: NẾU ĐÃ CẤP KEY THÌ GIỮ NGUYÊN MÃ CŨ)
              * ============================================================== */
             let cachedKey = "";
@@ -495,22 +486,6 @@
                         <span>QUAY LẠI TRANG CHỦ BIO</span>
                     </a>
                 `;
-            }
-
-            /* ==============================================================
-             * GIAO DIỆN: ADMIN TEST KEY
-             * ============================================================== */
-            async function renderAdminTestKey() {
-                try {
-                    const resp = await fetch(`${apiUrl}?action=get_key&admin_pin=123456&_t=${Date.now()}`);
-                    const data = await resp.json();
-                    if (data && data.key) {
-                        renderSuccessState(data.key, false);
-                        subtitleEl.textContent = "🛠️ Đang ở chế độ Admin Test (Mã PIN: 123456)";
-                    }
-                } catch (e) {
-                    renderDeniedAccessState("Lỗi tạo key Admin!");
-                }
             }
 
             function escapeHtml(str) {
