@@ -16,6 +16,7 @@ function onOpen() {
   ui.createMenu("⚡ MA GIÁO AOV - KHO ACC & KEY")
     .addItem("🚀 Khởi Tạo Hệ Thống Bảng Tính (1-Click)", "setupFullSystem")
     .addSeparator()
+    .addItem("🧹 Xóa 11 Acc Mẫu Demo (Chỉ Giữ Acc Thật)", "clearSampleAccounts")
     .addItem("🛠️ Sửa Lỗi Xác Thực Cột H (Data Validation)", "fixDataValidation")
     .addItem("➕ Nạp Acc Hàng Loạt Vào Kho (Dán Text)", "showQuickAddAccModal")
     .addItem("🎲 Tạo Thêm 20 Key Dự Phòng", "generateBatchKeys")
@@ -23,6 +24,31 @@ function onOpen() {
     .addItem("📊 Xem Báo Cáo Thống Kê Kho Acc & Key", "showStockStats")
     .addItem("🔄 Reset Toàn Bộ Acc Về Chưa Phát (Test)", "resetAllAccToAvailable")
     .addToUi();
+}
+
+function clearSampleAccounts() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetAcc = ss.getSheetByName(TAB_KHO_ACC);
+  if (!sheetAcc || sheetAcc.getLastRow() < 2) return;
+  
+  const lastR = sheetAcc.getLastRow();
+  let deleteCount = 0;
+  for (let r = lastR; r >= 2; r--) {
+    const u = String(sheetAcc.getRange(r, 2).getValue() || "").toLowerCase();
+    if (u.includes("garena_vip") || u.includes("garena_trang") || u.includes("garena_rank") || u.includes("freefire_vip") || u.includes("random_nick") || u.includes("garena_sample")) {
+      sheetAcc.deleteRow(r);
+      deleteCount++;
+    }
+  }
+  
+  const newLastR = sheetAcc.getLastRow();
+  if (newLastR >= 2) {
+    for (let r = 2; r <= newLastR; r++) {
+      sheetAcc.getRange(r, 1).setValue(r - 1);
+    }
+  }
+  
+  SpreadsheetApp.getUi().alert(`✅ ĐÃ XÓA ${deleteCount} ACC MẪU DEMO!\nHiện kho chỉ còn toàn bộ Acc thật do bạn nạp, phát lần lượt từ trên xuống dưới.`);
 }
 
 function fixDataValidation() {
@@ -335,6 +361,38 @@ function handleRequest(e) {
       return jsonResponse({ success: true, message: "Đã gỡ bỏ toàn bộ quy tắc xác thực gây lỗi trên Cột H thành công!" });
     }
 
+    // 0.1 ACTION: XÓA ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA ADMIN)
+    if (action === "clear_samples") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetAcc = ss.getSheetByName(TAB_KHO_ACC);
+      if (!sheetAcc || sheetAcc.getLastRow() < 2) return jsonResponse({ success: false, message: "Kho trống!" });
+      
+      const lastR = sheetAcc.getLastRow();
+      let deleteCount = 0;
+      for (let r = lastR; r >= 2; r--) {
+        const u = String(sheetAcc.getRange(r, 2).getValue() || "").toLowerCase();
+        if (u.includes("garena_vip") || u.includes("garena_trang") || u.includes("garena_rank") || u.includes("freefire_vip") || u.includes("random_nick") || u.includes("garena_sample")) {
+          sheetAcc.deleteRow(r);
+          deleteCount++;
+        }
+      }
+      
+      const newLastR = sheetAcc.getLastRow();
+      if (newLastR >= 2) {
+        for (let r = 2; r <= newLastR; r++) {
+          sheetAcc.getRange(r, 1).setValue(r - 1);
+        }
+      }
+      
+      const curStats = calculateStockStats();
+      return jsonResponse({
+        success: true,
+        count: deleteCount,
+        available: curStats.available_acc,
+        message: `Đã xóa thành công ${deleteCount} Acc mẫu demo! Kho hiện chỉ còn ${curStats.available_acc} Acc thật sẵn sàng phát theo thứ tự.`
+      });
+    }
+
     // 1. ACTION: LẤY THỐNG KÊ KHO
     if (action === "get_stats") {
       const stats = calculateStockStats();
@@ -497,14 +555,16 @@ function processActivateKey(key, clientInfo) {
   } catch (errKey) {}
   
   
+  const targetSTT = targetAcc[0] || (foundAccIndex - 1);
   return {
     success: true,
     message: "🎉 CHÚC MỪNG BẠN! KÍCH HOẠT KEY THÀNH CÔNG!",
     data: {
+      stt: targetSTT,
       category: note || "Acc Game VIP",
       username: user,
       password: pass,
-      note: "Đổi mật khẩu ngay sau khi đăng nhập thành công để bảo mật tài khoản.",
+      note: note || "Đổi mật khẩu ngay sau khi đăng nhập thành công để bảo mật tài khoản.",
       key: key,
       claimed_at: nowFormatted
     }

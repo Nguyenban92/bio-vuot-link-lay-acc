@@ -182,14 +182,52 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
                 <span>NẠP TOÀN BỘ ACC VÀO KHO (1-CLICK)</span>
             </button>
 
-            <!-- Hộp công cụ sửa lỗi Sheet -->
-            <div style="display:flex; gap: 8px; margin-top: 4px;">
-                <button type="button" id="btnFixValidation" style="flex:1; padding: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <!-- Hộp công cụ quản lý kho -->
+            <div style="display:flex; flex-direction:column; gap: 8px; margin-top: 6px;">
+                <button type="button" id="btnClearSamples" style="width:100%; padding: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i class="fa-solid fa-trash-can"></i> <span>🧹 XÓA 11 ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA BẠN)</span>
+                </button>
+
+                <button type="button" id="btnFixValidation" style="width:100%; padding: 9px; background: rgba(56, 189, 248, 0.12); border: 1px solid var(--cyan); border-radius: 8px; color: var(--cyan); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                     <i class="fa-solid fa-wrench"></i> <span>TỰ ĐỘNG GỠ LỖI XÁC THỰC CỘT H TRÊN SHEET</span>
                 </button>
             </div>
 
             <div id="adminStatusMsg" style="display:none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;"></div>
+        </section>
+
+        <!-- Danh Sách Kho Acc Theo Thứ Tự Thực Tế -->
+        <section class="admin-box" style="margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-list-ol text-cyan"></i>
+                    <span>KHO ACC THỰC TẾ (PHÁT THEO THỨ TỰ)</span>
+                </div>
+                <button type="button" id="btnRefreshList" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; padding:4px 8px; font-size:11px; cursor:pointer;">
+                    <i class="fa-solid fa-rotate"></i> Làm mới
+                </button>
+            </div>
+            
+            <p style="font-size:11px; color:var(--text-secondary); margin:0;">
+                Hệ thống luôn phát lần lượt từ trên xuống dưới (STT 1 ➔ STT 2 ➔ STT 3...)
+            </p>
+
+            <div style="max-height: 280px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                <table style="width:100%; border-collapse: collapse; font-size:11px; text-align:left;">
+                    <thead style="background: rgba(0,0,0,0.6); color: var(--text-muted); position: sticky; top:0;">
+                        <tr>
+                            <th style="padding:6px;">STT</th>
+                            <th style="padding:6px;">Tài Khoản</th>
+                            <th style="padding:6px;">Trạng Thái</th>
+                            <th style="padding:6px;">Key Phát</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminAccTableBody">
+                        <tr><td colspan="4" style="text-align:center; padding:15px; color:var(--text-muted);">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
         </section>
 
         <!-- Footer -->
@@ -349,7 +387,99 @@ garena_acc3:Pass789:Rank Cao Thủ"></textarea>
                     }
                 });
             }
-        })();
+
+            // XÓA 11 ACC MẪU DEMO
+            const btnClearSamples = document.getElementById("btnClearSamples");
+            if (btnClearSamples) {
+                btnClearSamples.addEventListener("click", async () => {
+                    if (!confirm("Sếp có chắc chắn muốn xóa 11 Acc mẫu demo ban đầu không?\n(Chỉ giữ lại các Acc thật do sếp nạp)")) return;
+                    sounds.playClick();
+                    btnClearSamples.disabled = true;
+                    btnClearSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang dọn dẹp kho...`;
+                    try {
+                        const resp = await fetch(`${apiUrl}?action=clear_samples`);
+                        const res = await resp.json();
+                        if (res && res.success) {
+                            sounds.playSuccess();
+                            alert(res.message);
+                            loadStats();
+                            loadAccountList();
+                        } else {
+                            alert(res.message || "Chưa thể xóa tự động, sếp xóa hàng 2 đến 12 trên Google Sheet bằng tay nhé!");
+                        }
+                    } catch (e) {
+                        alert("Lỗi kết nối. Sếp mở Google Sheet và xóa hàng mẫu bằng tay nhé!");
+                    } finally {
+                        btnClearSamples.disabled = false;
+                        btnClearSamples.innerHTML = `<i class="fa-solid fa-trash-can"></i> <span>🧹 XÓA 11 ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA BẠN)</span>`;
+                    }
+                });
+            }
+
+            // TẢI BẢNG DANH SÁCH ACC TRONG KHO
+            const tableBody = document.getElementById("adminAccTableBody");
+            const btnRefresh = document.getElementById("btnRefreshList");
+
+            async function loadAccountList() {
+                if (!apiUrl || !tableBody) return;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--cyan);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách...</td></tr>`;
+                try {
+                    const resp = await fetch(`${apiUrl}?action=admin_get_list&_t=${Date.now()}`);
+                    const res = await resp.json();
+                    if (res && res.success && Array.isArray(res.list)) {
+                        if (res.list.length === 0) {
+                            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:var(--text-muted);">Kho đang trống, hãy dán text để nạp!</td></tr>`;
+                            return;
+                        }
+                        tableBody.innerHTML = res.list.map(item => {
+                            const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
+                            const statusBadge = isClaimed 
+                                ? `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle"></i> ĐÃ PHÁT</span>`
+                                : `<span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-circle"></i> CHƯA PHÁT</span>`;
+                            const rowBg = isClaimed ? "background:rgba(239,68,68,0.06);" : "";
+                            return `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05); ${rowBg}">
+                                    <td style="padding:6px 8px; font-weight:700; color:var(--gold);">#${item.stt}</td>
+                                    <td style="padding:6px 8px; font-family:monospace; color:#fff;">${item.user}</td>
+                                    <td style="padding:6px 8px;">${statusBadge}</td>
+                                    <td style="padding:6px 8px; font-size:10px; color:var(--text-muted); font-family:monospace;">${item.key || "---"}</td>
+                                </tr>
+                            `;
+                        }).join("");
+                    }
+                } catch (e) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:12px; color:#ef4444;">Lỗi tải dữ liệu kho!</td></tr>`;
+                }
+            }
+
+            if (btnRefresh) {
+                btnRefresh.addEventListener("click", () => {
+                    sounds.playClick();
+                    loadStats();
+                    loadAccountList();
+                });
+            }
+
+            // Gọi tải danh sách khi mở admin
+            const origVerifyPin = verifyPin;
+            // Ghi đè hàm mở sau pin
+            btnConfirmPin.removeEventListener("click", verifyPin);
+            function verifyPinWithList() {
+                if (inputPin.value.trim() === ADMIN_PIN) {
+                    sounds.playSuccess();
+                    pinModal.classList.remove("is-active");
+                    adminMain.style.display = "flex";
+                    loadStats();
+                    loadAccountList();
+                } else {
+                    sounds.playError();
+                    pinError.style.display = "block";
+                    inputPin.value = "";
+                    inputPin.focus();
+                }
+            }
+            btnConfirmPin.addEventListener("click", verifyPinWithList);
+            inputPin.addEventListener("keypress", (e) => { if (e.key === "Enter") verifyPinWithList(); });
     </script>
 </body>
 </html>

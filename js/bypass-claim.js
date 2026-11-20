@@ -284,7 +284,8 @@ class BypassClaimManager {
                 sounds.playSuccess();
                 if (rewardBox) {
                     rewardBox.style.display = "block";
-                    document.getElementById("accDisplayCat").textContent = result.data.category || "Acc Game VIP";
+                    const sttBadge = result.data.stt ? `[ACC #${result.data.stt}] ` : "";
+                    document.getElementById("accDisplayCat").textContent = `${sttBadge}${result.data.category || "Acc Game VIP"}`;
                     document.getElementById("accDisplayUser").value = result.data.username || "";
                     document.getElementById("accDisplayPass").value = result.data.password || "";
                     document.getElementById("accDisplayNote").textContent = result.data.note || "Đổi mật khẩu ngay sau khi đăng nhập.";
