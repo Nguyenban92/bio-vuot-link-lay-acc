@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="dnsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <filter id="dnsGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Shield -->
+  <rect width="100" height="100" rx="22" fill="#0d1124" />
+  <path d="M50 14 L82 28 C82 58 50 84 50 84 C50 84 18 58 18 28 Z" 
+        fill="url(#dnsGrad)" opacity="0.18" />
+  <path d="M50 16 L80 29 C80 56 50 81 50 81 C50 81 20 56 20 29 Z" 
+        fill="none" stroke="url(#dnsGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#dnsGlow)" />
+  
+  <!-- DNS / Antiban Center Symbol: Cyber Shield with Network Waves -->
+  <!-- Check / Keyhole in center -->
+  <circle cx="50" cy="42" r="10" fill="none" stroke="#ffffff" stroke-width="3.5" />
+  <path d="M50 49 L50 62" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
+  
+  <!-- Orbiting DNS Nodes -->
+  <circle cx="34" cy="56" r="3.5" fill="#38bdf8" />
+  <circle cx="66" cy="56" r="3.5" fill="#ec4899" />
+  <circle cx="50" cy="68" r="3.5" fill="#a855f7" />
+  
+  <!-- Connection lines -->
+  <path d="M36 54 L45 48" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="2 2" opacity="0.8" />
+  <path d="M64 54 L55 48" stroke="#ec4899" stroke-width="1.8" stroke-dasharray="2 2" opacity="0.8" />
+  <path d="M50 62 L50 65" stroke="#a855f7" stroke-width="1.8" opacity="0.8" />
+</svg>

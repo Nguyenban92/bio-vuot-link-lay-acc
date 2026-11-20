@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎉 VƯỢT LINK THÀNH CÔNG • LẤY KEY NHẬN ACC</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon-128x128.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    <!-- Google Fonts & Font Awesome 6.5.1 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .key-page-card {
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(251, 191, 36, 0.45);
+            border-radius: 20px;
+            padding: 24px 18px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(168, 85, 247, 0.2);
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .key-trophy-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(168, 85, 247, 0.3));
+            border: 1.5px solid var(--gold);
+            display: grid;
+            place-items: center;
+            font-size: 32px;
+            color: var(--gold);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
+            animation: pulseLootbox 2s ease-in-out infinite alternate;
+        }
+
+        .key-display-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1.5px dashed var(--cyan);
+            border-radius: 14px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-text-value {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 2px;
+            word-break: break-all;
+            user-select: all;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+        }
+
+        .key-sub-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .key-actions-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-copy-key {
+            width: 100%;
+            padding: 13px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            color: var(--cyan);
+            font-family: var(--font-heading);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy-key:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        .btn-return-bio {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: var(--font-heading);
+            font-size: 15px;
+            font-weight: 900;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-return-bio:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fxCanvas"></canvas>
+
+    <main class="app-container">
+
+        <!-- Header -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <div class="clock-pill">
+                    <i class="fa-solid fa-crown text-warning"></i>
+                    <span>MA GIÁO AOV</span>
+                </div>
+            </div>
+            <a href="index.html" class="greeting-tag" style="text-decoration:none; color:var(--cyan);">
+                <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
+            </a>
+        </header>
+
+        <!-- Khung Cấp Key Chính -->
+        <section class="key-page-card">
+            <div class="key-trophy-icon">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+
+            <div>
+                <h1 style="font-family: var(--font-heading); font-size: 22px; font-weight: 900; color: #ffffff;">
+                    🎉 BẠN ĐÃ VƯỢT LINK THÀNH CÔNG!
+                </h1>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    Dưới đây là mã Key kích hoạt nhận Acc của bạn:
+                </p>
+            </div>
+
+            <!-- Hộp Hiển Thị Mã Key -->
+            <div class="key-display-box">
+                <div class="key-text-value" id="generatedKeyText">
+                    <i class="fa-solid fa-spinner fa-spin"></i> ĐANG TẠO KEY...
+                </div>
+                <div class="key-sub-hint">Mỗi Key kích hoạt nhận được 1 Acc ngẫu nhiên trong kho</div>
+            </div>
+
+            <!-- Các Nút Hành Động -->
+            <div class="key-actions-col">
+                <button type="button" class="btn-copy-key" id="btnCopyKey">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>SAO CHÉP MÃ KEY</span>
+                </button>
+
+                <a href="#" class="btn-return-bio" id="btnReturnToBio">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>VỀ BIO KÍCH HOẠT NHẬN ACC NGAY</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px;">
+                💡 <b>HƯỚNG DẪN:</b> Bấm <b>"VỀ BIO KÍCH HOẠT NHẬN ACC NGAY"</b> để hệ thống tự động điền mã Key và mở rương cấp Acc cho bạn ngay lập tức!
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="text-align:center; padding: 15px 0; font-size: 11px; color: var(--text-muted);">
+            <p>© 2026 MA GIÁO AOV • Key Station Tự Động</p>
+        </footer>
+
+    </main>
+
+    <!-- Nạp cấu hình & Âm thanh -->
+    <script src="js/config.js"></script>
+    <script src="js/sound.js"></script>
+    <script>
+        (async function () {
+            const keyTextEl = document.getElementById("generatedKeyText");
+            const btnCopy = document.getElementById("btnCopyKey");
+            const btnReturn = document.getElementById("btnReturnToBio");
+
+            // Kiểm tra session để tránh reload làm mất key hoặc spam key mới
+            let currentKey = sessionStorage.getItem("mg_session_key");
+
+            if (!currentKey) {
+                const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
+                if (apiUrl) {
+                    try {
+                        const resp = await fetch(`${apiUrl}?action=get_key&client_info=${encodeURIComponent(navigator.userAgent)}`);
+                        const data = await resp.json();
+                        if (data && data.success && data.key) {
+                            currentKey = data.key;
+                            sessionStorage.setItem("mg_session_key", currentKey);
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+
+                // Nếu không lấy được hoặc đang demo
+                if (!currentKey) {
+                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                    const randP = (n) => Array.from({length:n}, () => chars.charAt(Math.floor(Math.random()*chars.length))).join("");
+                    currentKey = `MG-KEY-${randP(4)}-${randP(4)}`;
+                    sessionStorage.setItem("mg_session_key", currentKey);
+                }
+            }
+
+            // Hiển thị Key
+            keyTextEl.textContent = currentKey;
+            sounds.playSuccess();
+
+            // Link về Bio tự động kích hoạt
+            btnReturn.href = `index.html?key=${encodeURIComponent(currentKey)}`;
+
+            // Copy Key
+            btnCopy.addEventListener("click", () => {
+                sounds.playCopy();
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(currentKey);
+                }
+                btnCopy.innerHTML = `<i class="fa-solid fa-check text-success"></i> <span>ĐÃ SAO CHÉP MÃ KEY!</span>`;
+                setTimeout(() => {
+                    btnCopy.innerHTML = `<i class="fa-regular fa-copy"></i> <span>SAO CHÉP MÃ KEY</span>`;
+                }, 2500);
+            });
+        })();
+    </script>
+</body>
+</html>

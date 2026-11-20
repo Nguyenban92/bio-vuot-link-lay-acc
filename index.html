@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>👑 MA GIÁO AOV ⚡ Vượt Link Nhận Acc</title>
+    <meta name="description" content="Ma Giáo AOV - Làm 3 nhiệm vụ mở khóa link vượt lấy Key và kích hoạt nhận Acc Liên Quân Mobile VIP hoàn toàn miễn phí.">
+    
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon-128x128.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon.png">
+    
+    <!-- Google Fonts & Font Awesome 6.5.1 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Canvas hạt ánh sao chuyển động -->
+    <canvas id="fxCanvas"></canvas>
+
+    <main class="app-container">
+
+        <!-- THANH TRÊN CÙNG (TOP BAR) -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <div class="clock-pill">
+                    <i class="fa-solid fa-clock"></i>
+                    <span id="clockText">00:00:00</span>
+                </div>
+                <span class="greeting-tag" id="greetingText">Chào bạn ✨</span>
+            </div>
+
+            <div class="top-bar-actions">
+                <!-- Mini Audio Player -->
+                <div class="mini-music-player" id="musicToggleBtn" title="Bật/Tắt nhạc nền VIP">
+                    <div class="vinyl-disc" id="musicVinylDisc">
+                        <div class="disc-center-dot"></div>
+                    </div>
+                    <div class="sound-waves">
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                    </div>
+                </div>
+
+                <!-- SFX Sound Toggle -->
+                <button type="button" class="top-icon-btn" id="soundMuteBtn" title="Bật/Tắt âm thanh hiệu ứng" aria-label="Âm thanh">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- PROFILE & KHUNG AVATAR THÁCH ĐẤU -->
+        <section class="profile-section">
+            <div class="conqueror-avatar-wrapper">
+                <div class="avatar-ring-outer"></div>
+                <div class="avatar-ring-inner"></div>
+                <div class="avatar-container">
+                    <img id="profileAvatar" src="assets/avatar.jpg" alt="Ma Giáo AOV Avatar" onerror="this.src='assets/favicon.png'">
+                </div>
+            </div>
+
+            <div class="verified-pill">
+                <i class="fa-solid fa-circle-check"></i>
+                <span id="profileBadgeText">Creator Đã Xác Minh • Thách Đấu</span>
+            </div>
+
+            <div class="brand-name-wrap">
+                <h1 class="brand-name" id="profileName">MA GIÁO AOV</h1>
+                <div class="crown-badge" title="Vương Miện Thách Đấu">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+            </div>
+
+            <p class="profile-desc" id="profileDesc">
+                Hệ thống phát Acc Liên Quân Mobile VIP độc quyền. Hoàn thành 3 nhiệm vụ để mở link vượt, lấy mã Key và kích hoạt nhận Acc ngay!
+            </p>
+        </section>
+
+        <!-- BẢNG THỐNG KÊ (REAL-TIME STATS) -->
+        <section class="stats-box">
+            <div class="stat-item">
+                <div class="stat-value" id="statVisitors">0</div>
+                <div class="stat-label"><i class="fa-solid fa-users"></i> Người truy cập</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statViews">0</div>
+                <div class="stat-label"><i class="fa-solid fa-chart-line"></i> Lượt xem bio</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statOnline">0</div>
+                <div class="stat-label"><span class="stat-dot-live"></span> Đang online</div>
+            </div>
+        </section>
+
+        <!-- Ô THÔNG TIN LIÊN HỆ: 3 HÀNG NGANG -->
+        <nav class="contacts-hgrid" id="contactsGrid">
+            <!-- Render động 3 nút: TikTok | Telegram | YouTube -->
+        </nav>
+
+        <!-- ============================================================== -->
+        <!-- TRỌNG TÂM DUY NHẤT: VƯỢT LINK NHẬN ACC                         -->
+        <!-- ============================================================== -->
+        <section class="claim-container-box" id="claimSection">
+            <div class="claim-header-row">
+                <div class="claim-event-badge">
+                    <i class="fa-solid fa-bolt"></i> SỰ KIỆN DUY NHẤT
+                </div>
+                <div class="claim-stock-badge">
+                    <span class="stat-dot-live"></span>
+                    <span>KHO ACC CÒN: <b id="stockCountReady">...</b></span>
+                </div>
+            </div>
+
+            <div class="claim-title-center">
+                <h2>VƯỢT LINK NHẬN ACC</h2>
+                <p>Hoàn thành 3 nhiệm vụ để mở link vượt lấy Key • Nhập Key để nhận Acc</p>
+            </div>
+
+            <!-- Live Ticker Người Vừa Nhận -->
+            <div class="live-ticker-wrap" id="liveClaimTicker">
+                <!-- Render từ bypass-claim.js -->
+            </div>
+
+            <!-- BƯỚC 1: KHỐI 3 NHIỆM VỤ GỌN TINH TẾ -->
+            <div class="tasks-compact-box">
+                <div class="tasks-compact-head">
+                    <div class="tasks-compact-label">
+                        <i class="fa-solid fa-list-check text-cyan"></i>
+                        <span>Bước 1: Làm 3 Nhiệm Vụ</span>
+                    </div>
+                    <span class="tasks-prog-pill" id="taskProgressPill">0/3 Hoàn thành</span>
+                </div>
+
+                <div class="tasks-progress-track">
+                    <div class="tasks-progress-fill" id="taskProgressFill"></div>
+                </div>
+
+                <div class="tasks-compact-list" id="tasksListContainer">
+                    <!-- Render từ config.tasks via bypass-claim.js -->
+                </div>
+            </div>
+
+            <!-- BƯỚC 2: NÚT VƯỢT LINK LẤY KEY (KHÓA KHI CHƯA XONG 3 NHIỆM VỤ) -->
+            <button type="button" class="btn-main-bypass is-locked" id="btnMainBypass" disabled>
+                <i class="fa-solid fa-lock"></i>
+                <span>HOÀN THÀNH 3 NHIỆM VỤ ĐỂ MỞ LINK</span>
+            </button>
+
+            <div class="bypass-lock-hint" id="bypassLockHint">
+                <i class="fa-solid fa-triangle-exclamation"></i> Vui lòng hoàn thành đủ 3 nhiệm vụ phía trên để mở link!
+            </div>
+
+            <!-- BƯỚC 3: KHUNG NHẬP MÃ KEY ĐỂ KÍCH HOẠT NHẬN ACC -->
+            <div class="key-activate-card">
+                <div class="key-activate-head">
+                    <i class="fa-solid fa-key text-warning"></i>
+                    <span>BƯỚC 3: NHẬP KEY KÍCH HOẠT NHẬN ACC</span>
+                </div>
+
+                <div class="key-activate-input-wrap">
+                    <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Dán mã Key vừa vượt link vào đây (VD: MG-KEY-XXXX)..." autocomplete="off">
+                    <button type="button" id="btnActivateKey" class="btn-activate-submit">
+                        <i class="fa-solid fa-gift"></i>
+                        <span>KÍCH HOẠT</span>
+                    </button>
+                </div>
+
+                <div class="key-activate-hint">
+                    💡 Vượt link xong sẽ ra trang cấp Key. Nhập mã Key vào ô trên để hệ thống tự động bốc 1 Acc trong kho gửi về cho bạn!
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="text-align:center; padding: 12px 0 4px 0; font-size: 11px; color: var(--text-muted);">
+            <p>© 2026 MA GIÁO AOV • Hệ Thống Cấp Acc Tự Động Bằng Key • Google Sheets</p>
+        </footer>
+
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- POPUP MODAL 1: MỞ HÒM LOOTBOX NHẬN ACC (KÈM GIẢI MÃ KEY)     -->
+    <!-- ============================================================== -->
+    <div class="modal-overlay" id="lootboxRewardModal">
+        <div class="modal-card">
+            <button type="button" class="modal-close-trigger" aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- TRẠNG THÁI 1: ĐANG GIẢI MÃ KEY -->
+            <div class="lootbox-decrypting-box" id="lootboxDecrypting">
+                <div class="lootbox-icon-glow">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3 style="font-family: var(--font-heading); color: #ffffff; font-size: 18px;">ĐANG KÍCH HOẠT KEY...</h3>
+                <p style="font-size: 12px; color: var(--text-secondary);">Mã Key: <b id="decryptTokenText" style="color: var(--cyan);">...</b></p>
+                <div style="font-size: 11px; color: var(--gold);"><i class="fa-solid fa-spinner fa-spin"></i> Đang đối soát và xuất Acc từ Google Sheets...</div>
+            </div>
+
+            <!-- TRẠNG THÁI 2: THÀNH CÔNG -> HIỂN THỊ THÔNG TIN ACC -->
+            <div id="lootboxRewardContent" style="display:none;">
+                <div class="lootbox-header">
+                    <div class="lootbox-icon-glow">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 style="font-family: var(--font-heading); color: #10b981; font-size: 18px;">🎉 CHÚC MỪNG BẠN!</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);">Kích hoạt Key thành công • Đã nhận tài khoản game độc quyền</p>
+                </div>
+
+                <div class="acc-card-revealed">
+                    <div class="acc-card-head">
+                        <span class="ditem-cat-tag" id="accDisplayCat">LIÊN QUÂN VIP</span>
+                        <span class="badge-success-mini"><i class="fa-solid fa-shield-check"></i> Độc Nhất • 1 Người</span>
+                    </div>
+
+                    <!-- TÀI KHOẢN -->
+                    <div class="acc-field-row">
+                        <label class="acc-field-label">Tài Khoản (Username / Email):</label>
+                        <div class="acc-field-input-wrap">
+                            <input type="text" class="acc-field-input" id="accDisplayUser" readonly>
+                            <button type="button" class="btn-field-copy" onclick="copyToClipboard(document.getElementById('accDisplayUser').value, 'Đã copy tài khoản!')" title="Sao chép">
+                                <i class="fa-regular fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MẬT KHẨU -->
+                    <div class="acc-field-row">
+                        <label class="acc-field-label">Mật Khẩu (Password):</label>
+                        <div class="acc-field-input-wrap">
+                            <input type="text" class="acc-field-input" id="accDisplayPass" readonly>
+                            <button type="button" class="btn-field-copy" onclick="copyToClipboard(document.getElementById('accDisplayPass').value, 'Đã copy mật khẩu!')" title="Sao chép">
+                                <i class="fa-regular fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- GHI CHÚ / 2FA -->
+                    <div class="acc-field-row">
+                        <label class="acc-field-label">Thông Tin / 2FA / Lưu Ý:</label>
+                        <div id="accDisplayNote" style="font-size: 12px; color: #fbbf24; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; border: 1px dashed rgba(251,191,36,0.3);">
+                            ...
+                        </div>
+                    </div>
+
+                    <div style="font-size: 10px; color: var(--text-muted); display:flex; justify-content:space-between; margin-top:2px;">
+                        <span>Thời gian: <b id="accDisplayTime">...</b></span>
+                        <span>Mã Key: <b id="accDisplayToken">...</b></span>
+                    </div>
+
+                    <!-- NÚT SAO CHÉP TẤT CẢ -->
+                    <button type="button" class="btn-copy-full-acc" onclick="copyFullAccCredentials()">
+                        <i class="fa-solid fa-copy"></i> SAO CHÉP TOÀN BỘ THÔNG TIN
+                    </button>
+                </div>
+            </div>
+
+            <!-- TRẠNG THÁI 3: LỖI / KEY ĐÃ DÙNG -->
+            <div id="lootboxErrorContent" style="display:none; text-align:center; padding: 20px 0;">
+                <div style="font-size: 40px; color: #ef4444; margin-bottom: 10px;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h3 style="font-family: var(--font-heading); color: #ef4444; font-size: 18px;">KHÔNG THỂ KÍCH HOẠT KEY</h3>
+                <p id="lootboxErrorMsg" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5;">
+                    Mã Key này đã được sử dụng hoặc không tồn tại!
+                </p>
+                <button type="button" class="btn-sub-action" style="margin: 16px auto 0 auto; display: inline-flex; background:rgba(255,255,255,0.08); padding:8px 16px; border-radius:8px; border:none; color:#fff; cursor:pointer;" onclick="document.querySelector('#lootboxRewardModal .modal-close-trigger').click()">
+                    Đóng cửa sổ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- POPUP MODAL 2: HƯỚNG DẪN MỞ LINK VƯỢT LẤY KEY                 -->
+    <!-- ============================================================== -->
+    <div class="modal-overlay" id="bypassConfirmModal">
+        <div class="modal-card">
+            <button type="button" class="modal-close-trigger" aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div style="text-align:center; margin-bottom: 16px;">
+                <div style="font-size: 32px; color: var(--cyan); margin-bottom: 6px;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 style="font-family: var(--font-heading); color: #ffffff; font-size: 18px;">CHUẨN BỊ MỞ LINK VƯỢT</h3>
+                <p style="font-size: 12px; color: var(--text-secondary);">Vượt link rút gọn để lấy mã Key kích hoạt nhận Acc</p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                <div style="display:flex; gap:10px;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:var(--primary); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:800; flex-shrink:0;">1</div>
+                    <div style="font-size:13px; color:var(--text-primary);">Bấm nút <b>"BẮT ĐẦU VƯỢT LINK"</b> bên dưới để mở liên kết rút gọn.</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:var(--primary); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:800; flex-shrink:0;">2</div>
+                    <div style="font-size:13px; color:var(--text-primary);">Vượt qua liên kết rút gọn (mất khoảng 15-30 giây).</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="width:24px; height:24px; border-radius:50%; background:var(--primary); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:800; flex-shrink:0;">3</div>
+                    <div style="font-size:13px; color:var(--text-primary);">Sau khi vượt xong sẽ ra <b>trang hiển thị mã Key</b>. Copy Key đó về Bio kích hoạt nhận Acc!</div>
+                </div>
+            </div>
+
+            <a href="#" id="btnGoToBypassLink" class="btn-main-bypass is-unlocked" target="_blank" rel="noopener noreferrer">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>BẮT ĐẦU VƯỢT LINK NGAY</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts: Tải theo đúng thứ tự module -->
+    <script src="js/config.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/bypass-claim.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
