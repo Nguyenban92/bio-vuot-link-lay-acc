@@ -12,7 +12,9 @@ class BypassClaimManager {
         this.shortenedUrl = (CONFIG.SHORTENED_BYPASS_URL || "").trim();
         this.isProcessing = false;
 
-        this.taskState = JSON.parse(localStorage.getItem("mg_tasks_status") || "{}");
+        // Luôn làm mới trạng thái nhiệm vụ khi F5 hoặc mở lại trang để có thể làm lại tiếp
+        this.taskState = {};
+        try { localStorage.removeItem("mg_tasks_status"); } catch (e) {}
         
         this.mockStock = {
             total_ready: 25,
@@ -103,7 +105,6 @@ class BypassClaimManager {
             } else {
                 clearInterval(timer);
                 this.taskState[task.id] = true;
-                localStorage.setItem("mg_tasks_status", JSON.stringify(this.taskState));
                 
                 sounds.playSuccess();
                 btn.disabled = false;
