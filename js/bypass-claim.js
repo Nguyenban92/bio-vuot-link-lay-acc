@@ -388,10 +388,16 @@ class BypassClaimManager {
                 const modalKey = document.getElementById("hotModalKey");
                 const modalTime = document.getElementById("hotModalTime");
 
-                if (modalPkg) modalPkg.textContent = result.data.buff_type || buffType;
-                if (modalUid) modalUid.value = result.data.uid || uid;
+                if (modalPkg) modalPkg.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${result.data.buff_type || buffType}`;
+                if (modalUid) {
+                    if ("value" in modalUid && modalUid.tagName === "INPUT") modalUid.value = result.data.uid || uid;
+                    else modalUid.textContent = result.data.uid || uid;
+                }
                 if (modalKey) modalKey.textContent = result.data.key || key;
-                if (modalTime) modalTime.textContent = result.data.time || (new Date().toLocaleTimeString("vi-VN") + " - " + new Date().toLocaleDateString("vi-VN"));
+                if (modalTime) {
+                    const t = result.data.time || new Date().toLocaleTimeString("vi-VN");
+                    modalTime.textContent = t;
+                }
 
                 this.openModal("hotRequestSuccessModal");
 

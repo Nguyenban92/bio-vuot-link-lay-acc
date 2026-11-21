@@ -352,63 +352,63 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- POPUP MODAL 3: XÁC NHẬN GỬI YÊU CẦU ĐỘ HOT THÀNH CÔNG          -->
+    <!-- POPUP MODAL 3: XÁC NHẬN GỬI YÊU CẦU TĂNG LIKE THÀNH CÔNG       -->
     <!-- ============================================================== -->
     <div class="modal-overlay" id="hotRequestSuccessModal">
-        <div class="modal-card">
+        <div class="modal-card hot-modal-card">
             <button type="button" class="modal-close-trigger" onclick="closeAllModals()" aria-label="Đóng">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             
-            <div style="text-align:center; padding: 10px 0 16px 0;">
-                <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1.5px solid rgba(245, 158, 11, 0.45); color: #f59e0b; display: grid; place-items: center; font-size: 26px; margin: 0 auto 12px auto; box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);">
-                    <i class="fa-solid fa-fire"></i>
+            <div class="hot-success-head">
+                <div class="hot-success-badge">
+                    <i class="fa-solid fa-check"></i>
                 </div>
-                <h3 style="font-family: var(--font-heading); color: #fde047; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">GỬI YÊU CẦU THÀNH CÔNG!</h3>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Thông tin đã gửi trực tiếp lên hệ thống quản trị Like & Độ Hot LQ</p>
+                <h3 class="hot-success-title">ĐÃ GỬI YÊU CẦU THÀNH CÔNG</h3>
+                <p class="hot-success-sub">Hệ thống đã chuyển thông tin tới Admin game</p>
             </div>
 
-            <div class="acc-card-revealed" style="background: rgba(15, 23, 42, 0.85); border-color: rgba(245, 158, 11, 0.35);">
-                <div class="acc-card-head" style="margin-bottom: 8px;">
-                    <span class="ditem-cat-tag" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fde047;"><i class="fa-solid fa-fire"></i> BUFF ĐỘ HOT LIÊN QUÂN</span>
-                    <span class="badge-success-mini" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.35); color: #fbbf24;"><i class="fa-solid fa-clock"></i> Đang Chờ Buff</span>
+            <div class="hot-receipt-card">
+                <!-- Gói dịch vụ -->
+                <div class="hot-receipt-row">
+                    <span class="hot-receipt-label">Dịch Vụ</span>
+                    <span class="hot-receipt-badge" id="hotModalPackage"><i class="fa-solid fa-thumbs-up"></i> Tăng 200 Like Profile</span>
                 </div>
 
-                <div class="acc-field-row">
-                    <label class="acc-field-label">Gói Độ Hot Yêu Cầu:</label>
-                    <div style="font-weight: 700; color: #fde047; font-size: 13px;" id="hotModalPackage">...</div>
-                </div>
-
-                <div class="acc-field-row">
-                    <label class="acc-field-label">UID / Tên Nhân Vật Game:</label>
-                    <div class="acc-field-input-wrap">
-                        <input type="text" class="acc-field-input" id="hotModalUid" readonly style="color: #38bdf8; font-weight: 800; font-family: var(--font-mono);">
-                        <button type="button" class="btn-field-copy" onclick="copyToClipboard(document.getElementById('hotModalUid').value, 'Đã copy UID!')" title="Sao chép UID">
-                            <i class="fa-regular fa-copy"></i> Copy
+                <!-- UID game kèm nút chép nhanh -->
+                <div class="hot-receipt-row">
+                    <span class="hot-receipt-label">Mục Tiêu (UID)</span>
+                    <div class="hot-uid-pill">
+                        <span class="hot-uid-val" id="hotModalUid">...</span>
+                        <button type="button" class="hot-btn-copy" onclick="copySnippet(document.getElementById('hotModalUid').textContent || document.getElementById('hotModalUid').value, 'Đã chép UID!')" title="Sao chép UID">
+                            <i class="fa-regular fa-copy"></i> Chép
                         </button>
                     </div>
                 </div>
 
-                <div class="acc-field-row">
-                    <label class="acc-field-label">Mã Key Đã Xác Thực:</label>
-                    <div style="font-family: var(--font-mono); font-size: 12px; color: #10b981; font-weight: 700;" id="hotModalKey">...</div>
-                </div>
-
-                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #cbd5e1; line-height: 1.5;">
-                    <i class="fa-solid fa-circle-check text-warning"></i> Admin đã nhận yêu cầu và sẽ vào game buff Like Profile & Độ Hot theo đúng thông tin trên trong ít phút.
-                </div>
-
-                <div style="font-size: 10px; color: var(--text-muted); display:flex; justify-content:space-between; margin-top:10px;">
-                    <span>Thời gian gửi: <b id="hotModalTime">...</b></span>
-                    <span>Trạng thái: <b style="color: #fbbf24;">🟡 Chờ Admin Buff</b></span>
-                </div>
-
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button type="button" class="btn-sub-action" style="flex:1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; font-weight:800; border:none; padding:11px; border-radius:10px; cursor:pointer;" onclick="closeAllModals()">
-                        <i class="fa-solid fa-check"></i> ĐÃ HIỂU & HOÀN TẤT
-                    </button>
+                <!-- Mã Key & Giờ gửi -->
+                <div class="hot-receipt-grid">
+                    <div class="hot-receipt-col">
+                        <span class="hot-receipt-sublabel">MÃ KEY XÁC THỰC</span>
+                        <span class="hot-key-code" id="hotModalKey">...</span>
+                    </div>
+                    <div class="hot-receipt-col" style="text-align: right;">
+                        <span class="hot-receipt-sublabel">THỜI GIAN GỬI</span>
+                        <span class="hot-time-text" id="hotModalTime">...</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Dòng thông báo trạng thái gọn gàng -->
+            <div class="hot-status-notice">
+                <span class="hot-status-dot"></span>
+                <span><b>Trạng thái:</b> Đang chờ Admin vào game buff Like</span>
+            </div>
+
+            <!-- Nút xác nhận gọn gàng -->
+            <button type="button" class="btn-hot-modal-close" onclick="closeAllModals()">
+                HOÀN TẤT & ĐÓNG
+            </button>
         </div>
     </div>
 
