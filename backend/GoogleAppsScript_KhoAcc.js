@@ -496,7 +496,8 @@ function handleRequest(e) {
     if (action === "activate_key" || action === "claim_with_key") {
       const key = (params.key || postData.key || "").trim().toUpperCase();
       const clientInfo = params.client_info || postData.client_info || "Web Browser";
-      const result = processActivateKey(key, clientInfo);
+      const accType = (params.acc_type || postData.acc_type || "skin").trim();
+      const result = processActivateKey(key, clientInfo, accType);
       return jsonResponse(result);
     }
     
@@ -648,7 +649,7 @@ function issueUniqueKey(clientInfo) {
   return { success: true, key: newKey, issued_at: nowStr };
 }
 
-function processActivateKey(key, clientInfo) {
+function processActivateKey(key, clientInfo, accType) {
   if (!key) return { success: false, error: "EMPTY_KEY", message: "Vui lòng nhập mã Key!" };
   
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -691,11 +692,27 @@ function processActivateKey(key, clientInfo) {
   const accData = sheetAcc.getRange(2, 1, accLastRow - 1, 8).getValues();
   let foundAccIndex = -1, targetAcc = null;
   
-  for (let i = 0; i < accData.length; i++) {
-    if (String(accData[i][4] || "").includes("CHƯA PHÁT")) {
-      foundAccIndex = i + 2;
-      targetAcc = accData[i];
-      break;
+  // Nếu chọn nhận Acc Chung Sức: Ưu tiên lọc tìm Acc có ghi chú Chung Sức
+  if (accType === "chung_suc") {
+    for (let i = 0; i < accData.length; i++) {
+      const status = String(accData[i][4] || "").trim();
+      const noteText = String(accData[i][3] || "").toLowerCase();
+      if (status.includes("CHƯA PHÁT") && (noteText.includes("chung sức") || noteText.includes("chungsuc"))) {
+        foundAccIndex = i + 2;
+        targetAcc = accData[i];
+        break;
+      }
+    }
+  }
+
+  // Nếu không tìm thấy hoặc người dùng chọn Acc 100-300 Skin: Lấy Acc chưa phát đầu tiên
+  if (!targetAcc) {
+    for (let i = 0; i < accData.length; i++) {
+      if (String(accData[i][4] || "").includes("CHƯA PHÁT")) {
+        foundAccIndex = i + 2;
+        targetAcc = accData[i];
+        break;
+      }
     }
   }
   
@@ -708,6 +725,7 @@ function processActivateKey(key, clientInfo) {
   const user = String(targetAcc[1] || "").trim();
   const pass = String(targetAcc[2] || "").trim();
   const note = String(targetAcc[3] || "").trim();
+  const displayCategory = note || (accType === "chung_suc" ? "Acc Chung Sức VIP" : "Acc Liên Quân 100-300 Skin");
   
   // Cập nhật trạng thái an toàn tuyệt đối
   try {
@@ -734,7 +752,7 @@ function processActivateKey(key, clientInfo) {
     message: "🎉 CHÚC MỪNG BẠN! KÍCH HOẠT KEY THÀNH CÔNG!",
     data: {
       stt: targetSTT,
-      category: note || "Acc Game VIP",
+      category: displayCategory,
       username: user,
       password: pass,
       note: note || "Đổi mật khẩu ngay sau khi đăng nhập thành công để bảo mật tài khoản.",

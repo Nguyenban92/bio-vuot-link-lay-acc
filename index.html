@@ -15,7 +15,7 @@
     <!-- Google Fonts & Font Awesome 6.5.1 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Stylesheet -->
@@ -84,15 +84,25 @@
             <!-- Render động 3 nút: TikTok | Telegram | YouTube -->
         </nav>
 
-        <!-- THANH CHUYỂN ĐỔI 2 DỊCH VỤ CHÍNH -->
+        <!-- THANH CHUYỂN ĐỔI 2 DỊCH VỤ CHÍNH (NỔI BẬT & ĐẲNG CẤP) -->
         <nav class="main-service-tabs" id="serviceTabsNav">
-            <button type="button" class="service-tab-btn is-active" data-service-tab="tab-acc" id="tabBtnAcc">
-                <i class="fa-solid fa-gift"></i>
-                <span>Nhận Acc Liên Quân Free</span>
+            <button type="button" class="service-tab-btn is-active tab-acc-btn" data-service-tab="tab-acc" id="tabBtnAcc">
+                <div class="tab-btn-icon-wrap">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <div class="tab-btn-content">
+                    <span class="tab-btn-title">Nhận Acc Miễn Phí</span>
+                    <span class="tab-btn-sub">100-300 Skin • Chung Sức</span>
+                </div>
             </button>
             <button type="button" class="service-tab-btn tab-hot-btn" data-service-tab="tab-hot" id="tabBtnHot">
-                <i class="fa-solid fa-fire text-warning"></i>
-                <span>Tặng Độ HOT Liên Quân Free</span>
+                <div class="tab-btn-icon-wrap">
+                    <i class="fa-solid fa-fire text-warning"></i>
+                </div>
+                <div class="tab-btn-content">
+                    <span class="tab-btn-title">Tặng Độ HOT Profile</span>
+                    <span class="tab-btn-sub">Free 200 Like • Siêu Tốc</span>
+                </div>
             </button>
         </nav>
 
@@ -156,22 +166,47 @@
                 <span>VƯỢT LINK NHẬN KEY</span>
             </button>
 
-            <!-- FORM PANEL 1: NHẬP KEY KÍCH HOẠT NHẬN ACC -->
+            <!-- FORM PANEL 1: 2 KHUNG NHẬP KEY NHẬN ACC (100-300 SKIN vs CHUNG SỨC) -->
             <div class="service-form-panel is-active" id="formPanelAcc">
-                <div class="key-activate-card">
+                
+                <!-- KHUNG 1: NHẬP KEY NHẬN ACC 100-300 SKIN -->
+                <div class="key-activate-card card-acc-skin">
                     <div class="key-activate-head">
-                        <i class="fa-solid fa-key text-warning"></i>
-                        <span>NHẬP KEY KÍCH HOẠT ACC</span>
+                        <div class="key-activate-head-left">
+                            <i class="fa-solid fa-gem text-cyan"></i>
+                            <span>NHẬP KEY NHẬN ACC 100-300 SKIN</span>
+                        </div>
+                        <span class="key-badge-hot">VIP SKIN</span>
                     </div>
 
                     <div class="key-activate-input-wrap">
-                        <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Nhập mã Key vào đây..." autocomplete="off">
-                        <button type="button" id="btnActivateKey" class="btn-activate-submit">
+                        <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Dán mã Key nhận Acc 100-300 Skin..." autocomplete="off">
+                        <button type="button" id="btnActivateKey" class="btn-activate-submit btn-submit-skin">
                             <i class="fa-solid fa-bolt"></i>
                             <span>NHẬN ACC</span>
                         </button>
                     </div>
                 </div>
+
+                <!-- KHUNG 2: NHẬP KEY NHẬN ACC CHUNG SỨC -->
+                <div class="key-activate-card card-acc-chungsuc">
+                    <div class="key-activate-head">
+                        <div class="key-activate-head-left">
+                            <i class="fa-solid fa-users text-gold"></i>
+                            <span>NHẬP KEY NHẬN ACC CHUNG SỨC</span>
+                        </div>
+                        <span class="key-badge-gold">CHUNG SỨC</span>
+                    </div>
+
+                    <div class="key-activate-input-wrap">
+                        <input type="text" id="inputChungSucKey" class="key-activate-input" placeholder="Dán mã Key nhận Acc Chung Sức..." autocomplete="off">
+                        <button type="button" id="btnActivateChungSuc" class="btn-activate-submit btn-submit-chungsuc">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>NHẬN ACC</span>
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- FORM PANEL 2: NHẬP KEY VÀ UID ĐỂ BUFF ĐỘ HOT LIÊN QUÂN -->

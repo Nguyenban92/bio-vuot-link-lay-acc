@@ -205,7 +205,7 @@ class BypassClaimManager {
             });
         }
 
-        // Nút Kích hoạt mã Key (Tab 1: Nhận Acc)
+        // Nút Kích hoạt mã Key: Khung 1 (Acc 100-300 Skin)
         const btnActivate = document.getElementById("btnActivateKey");
         const inputKey = document.getElementById("inputActivationKey");
 
@@ -214,16 +214,39 @@ class BypassClaimManager {
                 const keyVal = inputKey.value.trim();
                 if (!keyVal) {
                     sounds.playError();
-                    this.showToast("Vui lòng dán mã Key vào ô để kích hoạt!", "warning");
+                    this.showToast("Vui lòng dán mã Key vào ô để nhận Acc 100-300 Skin!", "warning");
                     inputKey.focus();
                     return;
                 }
-                this.executeActivateKey(keyVal);
+                this.executeActivateKey(keyVal, false, "skin");
             });
 
             inputKey.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") {
                     btnActivate.click();
+                }
+            });
+        }
+
+        // Nút Kích hoạt mã Key: Khung 2 (Acc Chung Sức)
+        const btnActivateChungSuc = document.getElementById("btnActivateChungSuc");
+        const inputChungSucKey = document.getElementById("inputChungSucKey");
+
+        if (btnActivateChungSuc && inputChungSucKey) {
+            btnActivateChungSuc.addEventListener("click", () => {
+                const keyVal = inputChungSucKey.value.trim();
+                if (!keyVal) {
+                    sounds.playError();
+                    this.showToast("Vui lòng dán mã Key vào ô để nhận Acc Chung Sức!", "warning");
+                    inputChungSucKey.focus();
+                    return;
+                }
+                this.executeActivateKey(keyVal, false, "chung_suc");
+            });
+
+            inputChungSucKey.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    btnActivateChungSuc.click();
                 }
             });
         }
@@ -321,9 +344,11 @@ class BypassClaimManager {
         if (key && key.trim()) {
             const trimmedKey = key.trim();
             const inputAcc = document.getElementById("inputActivationKey");
+            const inputChungSuc = document.getElementById("inputChungSucKey");
             const inputHot = document.getElementById("inputHotKey");
 
             if (inputAcc) inputAcc.value = trimmedKey;
+            if (inputChungSuc) inputChungSuc.value = trimmedKey;
             if (inputHot) inputHot.value = trimmedKey;
 
             if (tabParam === "hot") {
@@ -440,7 +465,7 @@ class BypassClaimManager {
     }
 
     // THỰC THI KÍCH HOẠT KEY & NHẬN ACC TỪ GOOGLE SHEETS
-    async executeActivateKey(key, isFromUrl = false) {
+    async executeActivateKey(key, isFromUrl = false, accType = "skin") {
         if (!key || this.isProcessing) return;
         this.isProcessing = true;
 
@@ -462,8 +487,8 @@ class BypassClaimManager {
             let result = null;
 
             if (this.apiUrl) {
-                // Gọi Google Apps Script Web App
-                const resp = await fetch(`${this.apiUrl}?action=activate_key&key=${encodeURIComponent(key)}&client_info=${encodeURIComponent(navigator.userAgent)}`);
+                // Gọi Google Apps Script Web App kèm acc_type
+                const resp = await fetch(`${this.apiUrl}?action=activate_key&key=${encodeURIComponent(key)}&acc_type=${encodeURIComponent(accType)}&client_info=${encodeURIComponent(navigator.userAgent)}`);
                 const textResp = await resp.text();
                 try {
                     result = JSON.parse(textResp);
@@ -484,11 +509,12 @@ class BypassClaimManager {
             } else {
                 // Mô phỏng Demo khi chưa kết nối
                 await new Promise(r => setTimeout(r, 1600));
+                const catLabel = accType === "chung_suc" ? "Liên Quân Chung Sức VIP" : "Liên Quân VIP 100-300 Skin";
                 result = {
                     success: true,
                     message: "Chúc mừng bạn! Kích hoạt Key thành công!",
                     data: {
-                        category: "Liên Quân VIP Thách Đấu",
+                        category: catLabel,
                         username: "magiao_vip_" + Math.floor(1000 + Math.random() * 9000),
                         password: "Pass" + Math.floor(100000 + Math.random() * 900000) + "@AOV",
                         note: "Acc Trắng Thông Tin 100%, có Florentino Tinh Hệ. Đổi mật khẩu ngay!",
@@ -506,13 +532,22 @@ class BypassClaimManager {
                 if (rewardBox) {
                     rewardBox.style.display = "block";
                     const sttBadge = result.data.stt ? `[ACC #${result.data.stt}] ` : "";
-                    document.getElementById("accDisplayCat").textContent = `${sttBadge}${result.data.category || "Acc Game VIP"}`;
+                    const fallbackCat = accType === "chung_suc" ? "Acc Chung Sức" : "Acc 100-300 Skin";
+                    document.getElementById("accDisplayCat").textContent = `${sttBadge}${result.data.category || fallbackCat}`;
                     document.getElementById("accDisplayUser").value = result.data.username || "";
                     document.getElementById("accDisplayPass").value = result.data.password || "";
                     document.getElementById("accDisplayNote").textContent = result.data.note || "Đổi mật khẩu ngay sau khi đăng nhập.";
                     document.getElementById("accDisplayTime").textContent = result.data.claimed_at || "Vừa xong";
                     document.getElementById("accDisplayToken").textContent = result.data.key || key;
                 }
+
+                // Xóa nội dung các ô input
+                const inputAcc = document.getElementById("inputActivationKey");
+                const inputChungSuc = document.getElementById("inputChungSucKey");
+                const inputHot = document.getElementById("inputHotKey");
+                if (inputAcc) inputAcc.value = "";
+                if (inputChungSuc) inputChungSuc.value = "";
+                if (inputHot) inputHot.value = "";
 
                 // Xóa query param ?key=... khỏi URL
                 if (isFromUrl && window.history && window.history.replaceState) {

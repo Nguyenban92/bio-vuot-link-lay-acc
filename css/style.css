@@ -26,8 +26,9 @@
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
 
-    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
     --max-w: 490px;
 }
 
@@ -907,53 +908,135 @@ body::after {
     margin-top: -6px;
 }
 
-/* ================= 10.1 THANH CHUYỂN ĐỔI 2 TAB DỊCH VỤ CHÍNH ================= */
+/* ================= 10.1 THANH CHUYỂN ĐỔI 2 TAB DỊCH VỤ CHÍNH (NỔI BẬT & ĐẲNG CẤP) ================= */
 .main-service-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    margin-bottom: 12px;
-    background: rgba(10, 14, 28, 0.7);
-    padding: 5px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 14px;
+    background: transparent;
+    padding: 0;
+    border: none;
 }
 
 .service-tab-btn {
-    padding: 10px 6px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-muted);
+    padding: 12px 10px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-secondary);
     font-family: var(--font-heading);
-    font-size: 12px;
-    font-weight: 800;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
+    gap: 10px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    text-align: left;
+}
+
+/* Icon Box trong nút tab */
+.tab-btn-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    flex-shrink: 0;
     transition: all 0.25s ease;
+}
+
+.tab-acc-btn .tab-btn-icon-wrap {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
+}
+
+.tab-hot-btn .tab-btn-icon-wrap {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    color: #f59e0b;
+}
+
+.tab-btn-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.tab-btn-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffffff;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.2px;
 }
 
+.tab-btn-sub {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+}
+
+/* Khi Hover */
 .service-tab-btn:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
 }
 
-.service-tab-btn.is-active {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(168, 85, 247, 0.16) 100%);
-    border-color: rgba(56, 189, 248, 0.45);
-    color: #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+/* TRẠNG THÁI ACTIVE TAB 1: NHẬN ACC */
+.service-tab-btn.tab-acc-btn.is-active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(99, 102, 241, 0.18) 100%);
+    border: 2px solid #38bdf8;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.1);
 }
 
+.service-tab-btn.tab-acc-btn.is-active .tab-btn-icon-wrap {
+    background: #38bdf8;
+    color: #040814;
+    border-color: #38bdf8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+}
+
+.service-tab-btn.tab-acc-btn.is-active .tab-btn-title {
+    color: #ffffff;
+}
+
+.service-tab-btn.tab-acc-btn.is-active .tab-btn-sub {
+    color: #38bdf8;
+}
+
+/* TRẠNG THÁI ACTIVE TAB 2: TẶNG ĐỘ HOT */
 .service-tab-btn.tab-hot-btn.is-active {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(239, 68, 68, 0.16) 100%);
-    border-color: rgba(245, 158, 11, 0.5);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(239, 68, 68, 0.18) 100%);
+    border: 2px solid #f59e0b;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), inset 0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+.service-tab-btn.tab-hot-btn.is-active .tab-btn-icon-wrap {
+    background: #f59e0b;
+    color: #1a0800;
+    border-color: #f59e0b;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+}
+
+.service-tab-btn.tab-hot-btn.is-active .tab-btn-title {
     color: #fde047;
+}
+
+.service-tab-btn.tab-hot-btn.is-active .tab-btn-sub {
+    color: #fbbf24;
 }
 
 .service-panel {
@@ -1083,11 +1166,83 @@ body::after {
 .key-activate-head {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     font-family: var(--font-heading);
     font-size: 13px;
     font-weight: 800;
     color: #ffffff;
+}
+
+.key-activate-head-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Khung nhập Key Nhận Acc Skin */
+.card-acc-skin {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(20, 30, 60, 0.75) 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.08);
+}
+
+.card-acc-skin:focus-within {
+    border-color: #38bdf8;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+}
+
+.btn-submit-skin {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+}
+
+.btn-submit-skin:hover {
+    background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+}
+
+/* Khung nhập Key Nhận Acc Chung Sức */
+.card-acc-chungsuc {
+    border-color: rgba(251, 191, 36, 0.45);
+    background: linear-gradient(145deg, rgba(20, 20, 35, 0.9) 0%, rgba(35, 25, 20, 0.75) 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(251, 191, 36, 0.08);
+}
+
+.card-acc-chungsuc:focus-within {
+    border-color: #fbbf24;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.25);
+}
+
+.btn-submit-chungsuc {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+}
+
+.btn-submit-chungsuc:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.key-badge-hot {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.key-badge-gold {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
 }
 
 .key-activate-input-wrap {
