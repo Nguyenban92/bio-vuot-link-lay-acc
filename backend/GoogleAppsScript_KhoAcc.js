@@ -1,24 +1,24 @@
 /**
  * ==============================================================================
- * MA GIÁO AOV - HỆ THỐNG QUẢN LÝ KHO ACC & KEY (HỖ TRỢ NẠP BẰNG FILE .TXT)
- * - Quản lý riêng biệt 2 kho: Kho Acc 100-300 Skin & Kho Acc Chung Sức
+ * MA GIÁO AOV - HỆ THỐNG QUẢN LÝ 2 KHO ACC RIÊNG BIỆT & QUẢN TRỊ DUYỆT ĐỘ HOT
+ * - Quản lý độc lập: 💎 Kho Acc 100-300 Skin & 👑 Kho Acc Chung Sức
+ * - Tự động loại bỏ hoàn toàn trang kho acc chung (KHO_ACC) không cần thiết
  * - Nạp trực tiếp từ file .txt hoặc dán text (User|Pass hoặc User:Pass)
  * - Vượt link rút gọn xong sẽ ra trang cấp Key
- * - Khách nhập Key vào Bio kích hoạt nhận đúng loại Acc (100-300 Skin hoặc Chung Sức)
+ * - Khách nhập Key vào Bio kích hoạt nhận đúng loại Acc theo yêu cầu
  * - Quản lý duyệt buff Like & Độ Hot Liên Quân tự động
  * ==============================================================================
  */
 
-const TAB_KHO_SKIN = "KHO_ACC_SKIN";          // Kho riêng: Acc 100-300 Skin
-const TAB_KHO_CHUNG_SUC = "KHO_ACC_CHUNG_SUC";// Kho riêng: Acc Chung Sức
-const TAB_KHO_ACC = "KHO_ACC";                // Giữ tương thích dữ liệu cũ nếu người dùng đã có
-const TAB_KHO_KEY = "KHO_KEY";
-const TAB_CAU_HINH = "CẤU HÌNH HỆ THỐNG";
-const TAB_LIKE_HOT = "LIKE_HOT_LQ";
+const TAB_KHO_SKIN = "KHO_ACC_SKIN";          // Kho riêng 1: Acc 100-300 Skin
+const TAB_KHO_CHUNG_SUC = "KHO_ACC_CHUNG_SUC";// Kho riêng 2: Acc Chung Sức
+const TAB_KHO_KEY = "KHO_KEY";                // Kho Mã Key kích hoạt
+const TAB_CAU_HINH = "CẤU HÌNH HỆ THỐNG";     // Cấu hình tên, PIN, link rút gọn
+const TAB_LIKE_HOT = "LIKE_HOT_LQ";           // Quản lý yêu cầu Like & Độ Hot LQ
 
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu("⚡ MA GIÁO AOV - KHO ACC & KEY")
+  ui.createMenu("⚡ MA GIÁO AOV - HỆ THỐNG 2 KHO ACC & KEY")
     .addItem("🚀 Khởi Tạo Hệ Thống Bảng Tính (1-Click)", "setupFullSystem")
     .addSeparator()
     .addItem("💎 Nạp Acc 100-300 Skin (Dán Text)", "showQuickAddSkinModal")
@@ -29,13 +29,13 @@ function onOpen() {
     .addItem("🛠️ Sửa Lỗi Xác Thực Cột H (Data Validation)", "fixDataValidation")
     .addItem("🎲 Tạo Thêm 20 Key Dự Phòng", "generateBatchKeys")
     .addSeparator()
-    .addItem("📊 Xem Báo Cáo Thống Kê Kho Acc & Key", "showStockStats")
+    .addItem("📊 Xem Báo Cáo Thống Kê 2 Kho Acc & Key", "showStockStats")
     .addItem("🔄 Reset Toàn Bộ Acc Về Chưa Phát (Test)", "resetAllAccToAvailable")
     .addToUi();
 }
 
 /**
- * Khởi tạo toàn diện hệ thống bảng tính gồm 2 kho Acc riêng biệt
+ * Khởi tạo toàn diện 2 kho Acc riêng biệt và xóa bỏ hoàn toàn Tab KHO_ACC cũ
  */
 function setupFullSystem() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -51,6 +51,27 @@ function setupFullSystem() {
     [1, "chungsuc_01", "ChungSuc@2026A", "Acc Chung Sức Sự Kiện VIP", "🟢 CHƯA PHÁT", "", "", ""],
     [2, "chungsuc_02", "ChungSuc@2026B", "Acc Chung Sức Đổi Pass Ngay", "🟢 CHƯA PHÁT", "", "", ""]
   ]);
+
+  // Tự động dọn dẹp và xóa bỏ hoàn toàn Tab KHO_ACC cũ để không gây dư thừa
+  try {
+    const oldAccSheet = ss.getSheetByName("KHO_ACC");
+    if (oldAccSheet) {
+      if (oldAccSheet.getLastRow() >= 2) {
+        const oldData = oldAccSheet.getRange(2, 1, oldAccSheet.getLastRow() - 1, 8).getValues();
+        const realAccs = oldData.filter(r => {
+          const u = String(r[1] || "").toLowerCase();
+          return u && !u.includes("garena_vip") && !u.includes("garena_trang") && !u.includes("garena_rank") && !u.includes("freefire_vip") && !u.includes("random_nick") && !u.includes("garena_sample");
+        });
+        if (realAccs.length > 0) {
+          const skinSheet = ss.getSheetByName(TAB_KHO_SKIN);
+          if (skinSheet) {
+            skinSheet.getRange(skinSheet.getLastRow() + 1, 1, realAccs.length, 8).setValues(realAccs);
+          }
+        }
+      }
+      ss.deleteSheet(oldAccSheet);
+    }
+  } catch (eDel) {}
 
   // 3. TAB KHO_KEY
   let sheetKey = ss.getSheetByName(TAB_KHO_KEY);
@@ -106,7 +127,7 @@ function setupFullSystem() {
   sheetConfig.setColumnWidth(2, 360);
   sheetConfig.setColumnWidth(3, 360);
 
-  SpreadsheetApp.getUi().alert("🎉 KHỞI TẠO THÀNH CÔNG HỆ THỐNG KHO ACC (100-300 SKIN & CHUNG SỨC) VÀ KHO KEY!");
+  SpreadsheetApp.getUi().alert("🎉 KHỞI TẠO THÀNH CÔNG: Đã phân chia riêng biệt 2 Kho Acc (100-300 Skin & Chung Sức), tự động loại bỏ trang KHO_ACC cũ!");
 }
 
 function initAccSheet(ss, tabName, label, bgColor, fontColor, sampleRows) {
@@ -117,7 +138,6 @@ function initAccSheet(ss, tabName, label, bgColor, fontColor, sampleRows) {
     sheet.clear();
   }
   
-  // Xóa Data Validation cột F, G, H
   sheet.getRange("F1:H3000").clearDataValidations();
   
   const headersAcc = [
@@ -169,25 +189,29 @@ function fixDataValidation() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheets = [
     ss.getSheetByName(TAB_KHO_SKIN),
-    ss.getSheetByName(TAB_KHO_CHUNG_SUC),
-    ss.getSheetByName(TAB_KHO_ACC)
+    ss.getSheetByName(TAB_KHO_CHUNG_SUC)
   ].filter(Boolean);
 
   sheets.forEach(sh => {
     sh.getRange("F2:H3000").clearDataValidations();
   });
 
-  SpreadsheetApp.getUi().alert("✅ ĐÃ SỬA LỖI THÀNH CÔNG!\nĐã gỡ bỏ toàn bộ quy tắc xác thực cũ trên cột H ở tất cả các kho Acc.");
+  SpreadsheetApp.getUi().alert("✅ ĐÃ SỬA LỖI THÀNH CÔNG!\nĐã gỡ bỏ toàn bộ quy tắc xác thực cũ trên cột H ở cả 2 kho Acc.");
 }
 
 function clearSampleAccounts() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let deleteTotal = 0;
 
+  // Xóa sheet KHO_ACC cũ nếu còn sót lại
+  try {
+    const oldSheet = ss.getSheetByName("KHO_ACC");
+    if (oldSheet) ss.deleteSheet(oldSheet);
+  } catch (e) {}
+
   const sheetsToClean = [
     ss.getSheetByName(TAB_KHO_SKIN),
-    ss.getSheetByName(TAB_KHO_CHUNG_SUC),
-    ss.getSheetByName(TAB_KHO_ACC)
+    ss.getSheetByName(TAB_KHO_CHUNG_SUC)
   ].filter(Boolean);
 
   sheetsToClean.forEach(sheet => {
@@ -210,7 +234,7 @@ function clearSampleAccounts() {
     }
   });
 
-  SpreadsheetApp.getUi().alert(`✅ ĐÃ XÓA ${deleteTotal} ACC MẪU DEMO TRÊN CÁC KHO!\nHiện kho chỉ còn toàn bộ Acc thật do bạn nạp.`);
+  SpreadsheetApp.getUi().alert(`✅ ĐÃ XÓA ${deleteTotal} ACC MẪU DEMO!\nHiện hệ thống chỉ còn toàn bộ Acc thật do bạn nạp.`);
 }
 
 /**
@@ -255,11 +279,17 @@ function showQuickAddChungSucModal() {
 function parseAndAppendAccounts(rawText, accType) {
   accType = String(accType || "skin").toLowerCase().trim();
   const isChungSuc = (accType === "chung_suc" || accType === "chungsuc");
-  const targetType = isChungSuc ? "chung_suc" : "skin";
+  const targetSheetName = isChungSuc ? TAB_KHO_CHUNG_SUC : TAB_KHO_SKIN;
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = getSheetForCategory(ss, targetType);
-  if (!sheet) return { success: false, count: 0, message: "Không tìm thấy bảng tính cho loại Acc này" };
+  let sheet = ss.getSheetByName(targetSheetName);
+  if (!sheet) {
+    if (isChungSuc) {
+      sheet = initAccSheet(ss, TAB_KHO_CHUNG_SUC, "👑 KHO ACC CHUNG SỨC", "#1e1b4b", "#c084fc", []);
+    } else {
+      sheet = initAccSheet(ss, TAB_KHO_SKIN, "💎 KHO ACC 100-300 SKIN", "#0f172a", "#38bdf8", []);
+    }
+  }
 
   try { sheet.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
 
@@ -306,31 +336,10 @@ function parseAndAppendAccounts(rawText, accType) {
   return {
     success: true,
     count: addedRows.length,
-    acc_type: targetType,
+    acc_type: isChungSuc ? "chung_suc" : "skin",
     sheet_name: sheet.getName(),
     type_name: isChungSuc ? "Acc Chung Sức" : "Acc 100-300 Skin"
   };
-}
-
-function getSheetForCategory(ss, accType) {
-  accType = String(accType || "skin").toLowerCase().trim();
-  if (accType === "chung_suc" || accType === "chungsuc") {
-    let sheet = ss.getSheetByName(TAB_KHO_CHUNG_SUC);
-    if (!sheet) {
-      sheet = initAccSheet(ss, TAB_KHO_CHUNG_SUC, "👑 KHO ACC CHUNG SỨC", "#1e1b4b", "#c084fc", []);
-    }
-    return sheet;
-  } else {
-    // Ưu tiên TAB_KHO_SKIN; nếu có TAB_KHO_ACC cũ thì dùng, nếu không có cái nào thì tạo TAB_KHO_SKIN
-    let sheet = ss.getSheetByName(TAB_KHO_SKIN);
-    if (!sheet) {
-      sheet = ss.getSheetByName(TAB_KHO_ACC);
-      if (!sheet) {
-        sheet = initAccSheet(ss, TAB_KHO_SKIN, "💎 KHO ACC 100-300 SKIN", "#0f172a", "#38bdf8", []);
-      }
-    }
-    return sheet;
-  }
 }
 
 function generateBatchKeys() {
@@ -353,8 +362,7 @@ function resetAllAccToAvailable() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetsToReset = [
     ss.getSheetByName(TAB_KHO_SKIN),
-    ss.getSheetByName(TAB_KHO_CHUNG_SUC),
-    ss.getSheetByName(TAB_KHO_ACC)
+    ss.getSheetByName(TAB_KHO_CHUNG_SUC)
   ].filter(Boolean);
   
   sheetsToReset.forEach(sheetAcc => {
@@ -396,24 +404,15 @@ function calculateStockStats() {
   let skinStats = { total: 0, available: 0, claimed: 0 };
   let chungSucStats = { total: 0, available: 0, claimed: 0 };
 
-  // 1. Quét Tab KHO_ACC_SKIN hoặc KHO_ACC cũ
-  let sheetSkin = ss.getSheetByName(TAB_KHO_SKIN) || ss.getSheetByName(TAB_KHO_ACC);
+  // 1. Quét Tab KHO_ACC_SKIN
+  let sheetSkin = ss.getSheetByName(TAB_KHO_SKIN);
   if (sheetSkin && sheetSkin.getLastRow() >= 2) {
-    const data = sheetSkin.getRange(2, 4, sheetSkin.getLastRow() - 1, 2).getValues();
+    const data = sheetSkin.getRange(2, 5, sheetSkin.getLastRow() - 1, 1).getValues();
+    skinStats.total = data.length;
     data.forEach(r => {
-      const note = String(r[0] || "").toLowerCase();
-      const status = String(r[1] || "").trim();
-      const isChungSucInOld = (sheetSkin.getName() === TAB_KHO_ACC) && (note.includes("chung sức") || note.includes("chungsuc"));
-      
-      if (isChungSucInOld) {
-        chungSucStats.total++;
-        if (status.includes("CHƯA PHÁT")) chungSucStats.available++;
-        else if (status.includes("ĐÃ PHÁT")) chungSucStats.claimed++;
-      } else {
-        skinStats.total++;
-        if (status.includes("CHƯA PHÁT")) skinStats.available++;
-        else if (status.includes("ĐÃ PHÁT")) skinStats.claimed++;
-      }
+      const status = String(r[0] || "").trim();
+      if (status.includes("CHƯA PHÁT")) skinStats.available++;
+      else if (status.includes("ĐÃ PHÁT")) skinStats.claimed++;
     });
   }
 
@@ -421,9 +420,9 @@ function calculateStockStats() {
   let sheetChungSuc = ss.getSheetByName(TAB_KHO_CHUNG_SUC);
   if (sheetChungSuc && sheetChungSuc.getLastRow() >= 2) {
     const data = sheetChungSuc.getRange(2, 5, sheetChungSuc.getLastRow() - 1, 1).getValues();
+    chungSucStats.total = data.length;
     data.forEach(r => {
       const status = String(r[0] || "").trim();
-      chungSucStats.total++;
       if (status.includes("CHƯA PHÁT")) chungSucStats.available++;
       else if (status.includes("ĐÃ PHÁT")) chungSucStats.claimed++;
     });
@@ -441,7 +440,7 @@ function calculateStockStats() {
 function showStockStats() {
   const s = calculateStockStats();
   SpreadsheetApp.getUi().alert(
-    `📊 THỐNG KÊ CHI TIẾT KHO ACC MA GIÁO AOV:\n\n` +
+    `📊 THỐNG KÊ CHI TIẾT 2 KHO ACC MA GIÁO AOV:\n\n` +
     `💎 KHO ACC 100-300 SKIN:\n` +
     ` • Tổng: ${s.skin.total} Acc\n` +
     ` • 🟢 Chưa phát: ${s.skin.available} Acc\n` +
@@ -450,8 +449,7 @@ function showStockStats() {
     ` • Tổng: ${s.chung_suc.total} Acc\n` +
     ` • 🟢 Chưa phát: ${s.chung_suc.available} Acc\n` +
     ` • 🔴 Đã phát: ${s.chung_suc.claimed} Acc\n\n` +
-    `📦 TOÀN HỆ THỐNG:\n` +
-    ` • Tổng cộng: ${s.total_acc} Acc (Sẵn sàng: ${s.available_acc} | Đã phát: ${s.claimed_acc})`
+    `📦 TOÀN HỆ THỐNG: ${s.total_acc} Acc (Sẵn sàng: ${s.available_acc} | Đã phát: ${s.claimed_acc})`
   );
 }
 
@@ -476,7 +474,7 @@ function handleRequest(e) {
     // Tự động gỡ bỏ Data Validation cũ
     try {
       const ssAuto = SpreadsheetApp.getActiveSpreadsheet();
-      [ssAuto.getSheetByName(TAB_KHO_SKIN), ssAuto.getSheetByName(TAB_KHO_CHUNG_SUC), ssAuto.getSheetByName(TAB_KHO_ACC)].forEach(sh => {
+      [ssAuto.getSheetByName(TAB_KHO_SKIN), ssAuto.getSheetByName(TAB_KHO_CHUNG_SUC)].forEach(sh => {
         if (sh) sh.getRange("F2:H3000").clearDataValidations();
       });
     } catch (eClean) {}
@@ -498,12 +496,17 @@ function handleRequest(e) {
     // 0.1 ACTION: XÓA ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA ADMIN)
     if (action === "clear_samples") {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const targetCategory = (params.acc_type || postData.acc_type || "").trim().toLowerCase();
       let deleteCount = 0;
-      const sheetsToClean = [
-        ss.getSheetByName(TAB_KHO_SKIN),
-        ss.getSheetByName(TAB_KHO_CHUNG_SUC),
-        ss.getSheetByName(TAB_KHO_ACC)
-      ].filter(Boolean);
+
+      let sheetsToClean = [];
+      if (targetCategory === "skin") {
+        sheetsToClean = [ss.getSheetByName(TAB_KHO_SKIN)].filter(Boolean);
+      } else if (targetCategory === "chung_suc" || targetCategory === "chungsuc") {
+        sheetsToClean = [ss.getSheetByName(TAB_KHO_CHUNG_SUC)].filter(Boolean);
+      } else {
+        sheetsToClean = [ss.getSheetByName(TAB_KHO_SKIN), ss.getSheetByName(TAB_KHO_CHUNG_SUC)].filter(Boolean);
+      }
 
       sheetsToClean.forEach(sheet => {
         if (sheet.getLastRow() < 2) return;
@@ -546,7 +549,7 @@ function handleRequest(e) {
       });
     }
     
-    // 2. ACTION: NẠP ACC HÀNG LOẠT TỪ VĂN BẢN .TXT HOẶC WEB ADMIN (HỖ TRỢ PHÂN LOẠI SKIN HOẶC CHUNG SỨC)
+    // 2. ACTION: NẠP ACC HÀNG LOẠT VÀO KHO TƯƠNG ỨNG (SKIN HOẶC CHUNG SỨC)
     if (action === "import_txt" || action === "add_bulk_acc") {
       const rawText = params.text || postData.text || "";
       const accType = (params.acc_type || postData.acc_type || "skin").trim();
@@ -613,7 +616,6 @@ function handleRequest(e) {
       
       const sessionObj = JSON.parse(cachedSession);
       
-      // Nếu phiên này đã được cấp Key trước đó: Chỉ trả về mã Key cũ!
       if (sessionObj.status === "CLAIMED" && sessionObj.issued_key) {
         return jsonResponse({
           success: true,
@@ -624,7 +626,6 @@ function handleRequest(e) {
         });
       }
       
-      // Sinh 1 Key DUY NHẤT và khóa phiên sang CLAIMED
       const keyData = issueUniqueKey(clientInfo);
       if (keyData && keyData.success && keyData.key) {
         sessionObj.status = "CLAIMED";
@@ -636,7 +637,7 @@ function handleRequest(e) {
       return jsonResponse(keyData);
     }
     
-    // 4. ACTION: KÍCH HOẠT KEY & TRẢ ACC VỀ CHO KHÁCH (PHÂN LOẠI RÕ ACC_TYPE: SKIN HOẶC CHUNG_SUC)
+    // 4. ACTION: KÍCH HOẠT KEY & TRẢ ACC VỀ CHO KHÁCH (CHÍNH XÁC THEO ACC_TYPE)
     if (action === "activate_key" || action === "claim_with_key") {
       const key = (params.key || postData.key || "").trim().toUpperCase();
       const clientInfo = params.client_info || postData.client_info || "Web Browser";
@@ -645,12 +646,61 @@ function handleRequest(e) {
       return jsonResponse(result);
     }
     
-    // 5. ACTION: DANH SÁCH ACC CHO TRANG ADMIN XEM (LẤY TỪ CẢ 2 KHO RIÊNG BIỆT)
+    // 5. ACTION: LẤY DANH SÁCH ACC CHO TRANG ADMIN XEM (TRẢ VỀ TÁCH BIỆT SKIN VÀ CHUNG SỨC)
     if (action === "admin_get_list") {
-      const filterType = params.acc_type || postData.acc_type || "all";
-      const list = getAdminAccountList(filterType);
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let skinList = [];
+      let chungSucList = [];
+
+      // 1. Quét Tab KHO_ACC_SKIN
+      let sheetSkin = ss.getSheetByName(TAB_KHO_SKIN);
+      if (sheetSkin && sheetSkin.getLastRow() >= 2) {
+        const dataSkin = sheetSkin.getRange(2, 1, sheetSkin.getLastRow() - 1, 8).getValues();
+        dataSkin.forEach(r => {
+          skinList.push({
+            stt: r[0],
+            user: r[1],
+            pass: r[2],
+            note: r[3],
+            status: r[4],
+            key: r[5],
+            time: r[6],
+            acc_type: "skin",
+            type_label: "100-300 Skin",
+            sheet: TAB_KHO_SKIN
+          });
+        });
+      }
+
+      // 2. Quét Tab KHO_ACC_CHUNG_SUC
+      let sheetChungSuc = ss.getSheetByName(TAB_KHO_CHUNG_SUC);
+      if (sheetChungSuc && sheetChungSuc.getLastRow() >= 2) {
+        const dataCS = sheetChungSuc.getRange(2, 1, sheetChungSuc.getLastRow() - 1, 8).getValues();
+        dataCS.forEach(r => {
+          chungSucList.push({
+            stt: r[0],
+            user: r[1],
+            pass: r[2],
+            note: r[3],
+            status: r[4],
+            key: r[5],
+            time: r[6],
+            acc_type: "chung_suc",
+            type_label: "Chung Sức",
+            sheet: TAB_KHO_CHUNG_SUC
+          });
+        });
+      }
+
+      const allList = skinList.concat(chungSucList);
       const stats = calculateStockStats();
-      return jsonResponse({ success: true, list: list, stats: stats });
+      return jsonResponse({
+        success: true,
+        skin_list: skinList,
+        chungsuc_list: chungSucList,
+        list: allList,
+        stats: stats
+      });
     }
 
     // 6. ACTION: GỬI YÊU CẦU TẶNG LIKE & ĐỘ HOT LIÊN QUÂN (DÙNG MÃ KEY)
@@ -784,65 +834,6 @@ function issueUniqueKey(clientInfo) {
 }
 
 /**
- * Lấy danh sách tài khoản từ các Tab riêng biệt cho Web Admin hiển thị
- */
-function getAdminAccountList(targetType) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let list = [];
-
-  // 1. Quét Tab KHO_ACC_SKIN hoặc KHO_ACC cũ
-  let sheetSkin = ss.getSheetByName(TAB_KHO_SKIN) || ss.getSheetByName(TAB_KHO_ACC);
-  if (sheetSkin && sheetSkin.getLastRow() >= 2) {
-    const data = sheetSkin.getRange(2, 1, sheetSkin.getLastRow() - 1, 8).getValues();
-    data.forEach(r => {
-      const note = String(r[3] || "").toLowerCase();
-      const isChungSucInOld = (sheetSkin.getName() === TAB_KHO_ACC) && (note.includes("chung sức") || note.includes("chungsuc"));
-      const itemType = isChungSucInOld ? "chung_suc" : "skin";
-      const itemLabel = isChungSucInOld ? "Chung Sức" : "100-300 Skin";
-
-      if (!targetType || targetType === "all" || targetType === itemType) {
-        list.push({
-          stt: r[0],
-          user: r[1],
-          pass: r[2],
-          note: r[3],
-          status: r[4],
-          key: r[5],
-          time: r[6],
-          acc_type: itemType,
-          type_label: itemLabel,
-          sheet: sheetSkin.getName()
-        });
-      }
-    });
-  }
-
-  // 2. Quét Tab KHO_ACC_CHUNG_SUC
-  let sheetChungSuc = ss.getSheetByName(TAB_KHO_CHUNG_SUC);
-  if (sheetChungSuc && sheetChungSuc.getLastRow() >= 2) {
-    const data = sheetChungSuc.getRange(2, 1, sheetChungSuc.getLastRow() - 1, 8).getValues();
-    data.forEach(r => {
-      if (!targetType || targetType === "all" || targetType === "chung_suc") {
-        list.push({
-          stt: r[0],
-          user: r[1],
-          pass: r[2],
-          note: r[3],
-          status: r[4],
-          key: r[5],
-          time: r[6],
-          acc_type: "chung_suc",
-          type_label: "Chung Sức",
-          sheet: sheetChungSuc.getName()
-        });
-      }
-    });
-  }
-
-  return list;
-}
-
-/**
  * Xử lý kích hoạt mã Key nhận Acc theo đúng loại yêu cầu (100-300 Skin hoặc Chung Sức)
  */
 function processActivateKey(key, clientInfo, accType) {
@@ -880,7 +871,7 @@ function processActivateKey(key, clientInfo, accType) {
   let targetAcc = null;
 
   if (isChungSucReq) {
-    // 1. TÌM TRONG TAB KHO_ACC_CHUNG_SUC
+    // TÌM TRONG TAB KHO_ACC_CHUNG_SUC
     let sheetCS = ss.getSheetByName(TAB_KHO_CHUNG_SUC);
     if (sheetCS && sheetCS.getLastRow() >= 2) {
       try { sheetCS.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
@@ -895,25 +886,6 @@ function processActivateKey(key, clientInfo, accType) {
       }
     }
 
-    // 2. Tương thích ngược: Nếu chưa có trong sheet Chung Sức, tìm trong KHO_ACC có note chung sức
-    if (!targetAcc) {
-      let sheetOld = ss.getSheetByName(TAB_KHO_ACC);
-      if (sheetOld && sheetOld.getLastRow() >= 2) {
-        try { sheetOld.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
-        const dataOld = sheetOld.getRange(2, 1, sheetOld.getLastRow() - 1, 8).getValues();
-        for (let i = 0; i < dataOld.length; i++) {
-          const status = String(dataOld[i][4] || "").trim();
-          const noteText = String(dataOld[i][3] || "").toLowerCase();
-          if (status.includes("CHƯA PHÁT") && (noteText.includes("chung sức") || noteText.includes("chungsuc"))) {
-            targetSheet = sheetOld;
-            foundAccIndex = i + 2;
-            targetAcc = dataOld[i];
-            break;
-          }
-        }
-      }
-    }
-
     if (!targetAcc) {
       return {
         success: false,
@@ -923,8 +895,7 @@ function processActivateKey(key, clientInfo, accType) {
     }
 
   } else {
-    // YÊU CẦU ACC 100-300 SKIN
-    // 1. TÌM TRONG TAB KHO_ACC_SKIN
+    // YÊU CẦU ACC 100-300 SKIN: TÌM TRONG TAB KHO_ACC_SKIN
     let sheetSkin = ss.getSheetByName(TAB_KHO_SKIN);
     if (sheetSkin && sheetSkin.getLastRow() >= 2) {
       try { sheetSkin.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
@@ -935,26 +906,6 @@ function processActivateKey(key, clientInfo, accType) {
           foundAccIndex = i + 2;
           targetAcc = dataSkin[i];
           break;
-        }
-      }
-    }
-
-    // 2. Tương thích ngược: Nếu chưa có, tìm trong KHO_ACC cũ (không phải chung sức)
-    if (!targetAcc) {
-      let sheetOld = ss.getSheetByName(TAB_KHO_ACC);
-      if (sheetOld && sheetOld.getLastRow() >= 2) {
-        try { sheetOld.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
-        const dataOld = sheetOld.getRange(2, 1, sheetOld.getLastRow() - 1, 8).getValues();
-        for (let i = 0; i < dataOld.length; i++) {
-          const status = String(dataOld[i][4] || "").trim();
-          const noteText = String(dataOld[i][3] || "").toLowerCase();
-          const isChungSuc = noteText.includes("chung sức") || noteText.includes("chungsuc");
-          if (status.includes("CHƯA PHÁT") && !isChungSuc) {
-            targetSheet = sheetOld;
-            foundAccIndex = i + 2;
-            targetAcc = dataOld[i];
-            break;
-          }
         }
       }
     }
@@ -1011,7 +962,7 @@ function processActivateKey(key, clientInfo, accType) {
 function getRecentClaimsLog(limit) {
   limit = limit || 10;
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheetSkin = ss.getSheetByName(TAB_KHO_SKIN) || ss.getSheetByName(TAB_KHO_ACC);
+  const sheetSkin = ss.getSheetByName(TAB_KHO_SKIN);
   if (!sheetSkin || sheetSkin.getLastRow() < 2) return [];
   
   const data = sheetSkin.getRange(2, 1, sheetSkin.getLastRow() - 1, 8).getValues();
