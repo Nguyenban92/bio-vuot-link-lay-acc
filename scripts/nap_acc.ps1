@@ -44,11 +44,24 @@ if (-not $cleanLines) {
 }
 
 Write-Host "[*] Đã đọc được $($cleanLines.Count) Acc từ file acc.txt." -ForegroundColor Cyan
-Write-Host "[*] Đang gửi dữ liệu lên Google Sheets..." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Vui lòng chọn Kho bạn muốn nạp vào:" -ForegroundColor Yellow
+Write-Host " [1] 💎 Kho Acc 100-300 Skin (Mặc định)" -ForegroundColor Cyan
+Write-Host " [2] 👑 Kho Acc Chung Sức" -ForegroundColor Magenta
+$choice = Read-Host "Nhập lựa chọn (1 hoặc 2, ấn Enter để chọn 1)"
+
+$accType = "skin"
+if ($choice -eq "2") {
+    $accType = "chung_suc"
+    Write-Host "[*] Đang gửi dữ liệu vào KHO ACC CHUNG SỨC..." -ForegroundColor Magenta
+} else {
+    Write-Host "[*] Đang gửi dữ liệu vào KHO ACC 100-300 SKIN..." -ForegroundColor Cyan
+}
 Write-Host ""
 
 $body = @{
     action = "import_txt"
+    acc_type = $accType
     text = ($cleanLines -join "`n")
 } | ConvertTo-Json
 

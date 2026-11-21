@@ -1,80 +1,53 @@
-# ⚡ HƯỚNG DẪN QUẢN LÝ KHO ACC & VƯỢT LINK LẤY KEY (HỆ THỐNG MỚI)
+# ⚡ HƯỚNG DẪN QUẢN LÝ 2 KHO ACC RIÊNG BIỆT & QUẢN TRỊ LIKE ĐỘ HOT (GOOGLE SHEETS)
 
-> **Mô hình Vượt Link Lấy Key Kích Hoạt Nhận Acc Tự Động**  
-> Admin nạp 1 danh sách Acc vào kho ➔ Khách vượt 1 link rút gọn ➔ Ra trang nhận Key ➔ Nhập Key vào Bio nhận Acc!
-
----
-
-## 📌 QUY TRÌNH HOẠT ĐỘNG TOÀN DIỆN
-
-```
-[ADMIN NẠP KHO ACC VÀO SHEET]
- (Ví dụ nạp 100 Acc: User|Pass|Ghi chú)
-       │
-       ▼
-[ADMIN ĐEM DUY NHẤT 1 LINK ĐI RÚT GỌN KIẾM TIỀN]
- (Link cần rút gọn: https://bio-cua-ban/key.html)
- ➔ Rút gọn xong được 1 link kiếm tiền (ví dụ: https://link4m.co/xxx)
- ➔ Dán link rút gọn vào file js/config.js (SHORTENED_BYPASS_URL)
-       │
-       ▼
-[KHÁCH VÀO BIO LÀM 3 NHIỆM VỤ ➔ BẤM "VƯỢT LINK LẤY KEY"]
-       │
-       ▼ (Khách vượt qua link4m / linkvertise...)
-[VƯỢT XONG: RA TRANG key.html HIỂN THỊ MÃ KEY]
- (Ví dụ: "Mã Key của bạn là: MG-KEY-8942-X102")
-       │
-       ▼
-[KHÁCH COPY KEY VỀ BIO ➔ NHẬP VÀO Ô KÍCH HOẠT]
- (Hoặc bấm nút "Về Bio kích hoạt nhận Acc" trên trang key.html để tự động điền)
-       │
-       ▼
-[GOOGLE SHEETS TỰ ĐỘNG BỐC 1 ACC TRONG KHO GỬI VỀ]
- • Đánh dấu Acc đó thành "🔴 ĐÃ PHÁT"
- • Đánh dấu Key đó thành "🔴 ĐÃ DÙNG" (Không thể dùng lại)
- • Trả về Tài khoản + Mật khẩu + Ghi chú cho khách!
-```
+> **Hệ thống Quản Trị Tự Động Phân Loại Riêng Biệt:**  
+> - 💎 **Kho Acc 100-300 Skin**: Tab riêng `KHO_ACC_SKIN` (quản lý và phát riêng khi khách nhập nhận Acc Skin).  
+> - 👑 **Kho Acc Chung Sức**: Tab riêng `KHO_ACC_CHUNG_SUC` (quản lý và phát riêng khi khách nhập nhận Acc Chung Sức).  
+> - 🔑 **Kho Key**: Tab `KHO_KEY` (1 Key = 1 Lần kích hoạt duy nhất).  
+> - 🔥 **Quản Lý Like & Độ Hot**: Tab `LIKE_HOT_LQ` (quản lý UID và trạng thái buff 200 Like).  
 
 ---
 
 ## 🚀 CÁC BƯỚC CẬP NHẬT TRÊN GOOGLE SHEETS (CHỈ 1 PHÚT)
 
-Vì bạn đã có sẵn Google Sheets, chỉ cần cập nhật lại mã script mới:
-
 1. Mở trang tính Google Sheets của bạn.
 2. Vào **Tiện ích mở rộng (Extensions)** ➔ **Apps Script**.
-3. Xóa toàn bộ mã cũ trong `Mã.gs`.
-4. Mở file [backend/GoogleAppsScript_KhoAcc.js](./GoogleAppsScript_KhoAcc.js), copy toàn bộ và dán vào. Nhấn nút **Lưu 💾** (`Ctrl + S`).
-5. Tại thanh công cụ Apps Script:
-   - Chọn hàm: **`setupFullSystem`**.
-   - Nhấn nút **Chạy ▶️**.
-6. Quay lại Google Sheets, bạn sẽ thấy xuất hiện menu: **`⚡ MA GIÁO AOV - KHO ACC & KEY`** và 3 Tab:
-   - 📦 **`KHO_ACC`**: Danh sách User, Pass, Ghi chú, Trạng thái phát.
-   - 🔑 **`KHO_KEY`**: Danh sách mã Key cấp cho khách khi vượt link.
-   - ⚙️ **`CẤU HÌNH HỆ THỐNG`**: Cài đặt chung.
+3. Mở tệp `Mã.gs` (hoặc `Code.gs`), xóa toàn bộ mã cũ.
+4. Copy toàn bộ nội dung trong tệp [backend/GoogleAppsScript_KhoAcc.js](./GoogleAppsScript_KhoAcc.js) và dán đè vào.
+5. Nhấn nút **Lưu 💾** (`Ctrl + S`).
+6. **BẮT BUỘC - Triển khai phiên bản mới để Web App nhận mã:**
+   - Bấm nút xanh **Triển khai (Deploy)** ở góc trên bên phải ➔ Chọn **Quản lý bản triển khai (Manage deployments)**.
+   - Bấm vào biểu tượng cây bút ✏️ (Chỉnh sửa).
+   - Tại mục **Phiên bản (Version)**: Chọn **Phiên bản mới (New version)**.
+   - Nhấn **Triển khai (Deploy)** ➔ Bấm **Xong (Done)**.
+7. Quay lại Google Sheets, bấm menu: **`⚡ MA GIÁO AOV - KHO ACC & KEY`** ➔ Chọn **`🚀 Khởi Tạo Hệ Thống Bảng Tính (1-Click)`** để tự động tạo và định dạng 2 Tab kho Acc riêng biệt:
+   - 💎 **`KHO_ACC_SKIN`**: Quản lý kho Acc 100-300 Skin.
+   - 👑 **`KHO_ACC_CHUNG_SUC`**: Quản lý kho Acc Chung Sức.
+   - 🔑 **`KHO_KEY`**: Quản lý mã Key phát hành.
+   - 🔥 **`LIKE_HOT_LQ`**: Quản lý đơn yêu cầu buff Like & Độ Hot.
 
 ---
 
-## 🎯 CÁCH ADMIN SỬ DỤNG HÀNG NGÀY
+## 🎯 CÁCH NẠP ACC HÀNG NGÀY
 
-### 1. Nạp Acc vào kho:
-- **Cách 1**: Mở tab `KHO_ACC` gõ trực tiếp vào các dòng:
-  - Cột B: Tài khoản
-  - Cột C: Mật khẩu
-  - Cột D: Loại / Ghi chú (Ví dụ: `Liên Quân VIP 100 Tướng`)
-- **Cách 2 (Nhanh nhất)**: Bấm vào menu **`⚡ MA GIÁO AOV - KHO ACC & KEY`** ➔ Chọn **`➕ Nạp Acc Hàng Loạt Vào Kho`** ➔ Dán 1 phát 20-50 Acc dạng:
-  ```
-  garena_vip10|Pass@123|Liên Quân 90 skin
-  garena_vip11|Pass@456|Trắng TT đổi pass ngay
-  ff_vip12|FFPass@789|Free Fire Quỷ Dạ Xoa
-  ```
-  Bấm OK là hệ thống tự thêm vào bảng!
+### Cách 1: Nạp trực tiếp trên Trang Web Admin (`/admin`)
+1. Vào `https://vuot-link-nhan-acc.vercel.app/admin` (Mã PIN: `123456`).
+2. Bấm vào nút tương ứng:
+   - Bấm nút **`💎 Nạp Acc 100-300 Skin`** để nạp vào kho Skin.
+   - Bấm nút **`👑 Nạp Acc Chung Sức`** để nạp vào kho Chung Sức.
+3. Dán danh sách tài khoản theo định dạng (mỗi dòng 1 nick):
+   ```
+   garena_nick1|Pass123|Ghi chú tuỳ ý...
+   garena_nick2:Pass456
+   ```
+4. Bấm **Lưu Vào Kho**. Hệ thống tự động ghi vào đúng Tab tương ứng trên Google Sheets.
 
-### 2. Lấy link đi rút gọn kiếm tiền:
-- Bạn chỉ cần rút gọn **DUY NHẤT 1 LINK NÀY**:  
-  `https://bio-cua-ban/key.html` (Trang trả mã Key cho khách sau khi vượt).
-- Sau khi rút gọn xong (ví dụ được link `https://link4m.co/abc`), bạn mở file [js/config.js](../js/config.js), dán vào:
-  ```javascript
-  SHORTENED_BYPASS_URL: "https://link4m.co/abc",
-  ```
-- Từ giờ, bất kỳ khách nào làm xong 3 nhiệm vụ bấm nút vượt link sẽ được đưa tới link rút gọn đó. Vượt xong họ nhận được 1 Key độc nhất, mang về Bio dán vào là nhận được 1 Acc trong kho của bạn!
+### Cách 2: Nạp trên Menu Google Sheets
+- Bấm menu **`⚡ MA GIÁO AOV - KHO ACC & KEY`**:
+  - Chọn **`💎 Nạp Acc 100-300 Skin (Dán Text)`**
+  - Chọn **`👑 Nạp Acc Chung Sức (Dán Text)`**
+- Dán danh sách và bấm OK.
+
+### Cách 3: Nạp nhanh bằng file `NAP_ACC.bat` trên máy tính
+- Chạy file `NAP_ACC.bat` trong thư mục dự án.
+- Chọn `1` để nạp vào kho 100-300 Skin, hoặc chọn `2` để nạp vào kho Chung Sức.

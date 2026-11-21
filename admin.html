@@ -273,9 +273,28 @@
             transition: all 0.2s ease;
         }
 
-        .btn-toggle-deposit {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        .btn-deposit-skin {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.25);
+        }
+
+        .btn-deposit-skin:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-deposit-chungsuc {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: #ffffff;
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.25);
+        }
+
+        .btn-deposit-chungsuc:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
         }
 
         .btn-refresh {
@@ -322,15 +341,137 @@
         .deposit-drawer {
             display: none;
             flex-direction: column;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px dashed rgba(56, 189, 248, 0.35);
-            border-radius: 10px;
-            padding: 14px;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 16px;
         }
 
         .deposit-drawer.is-open {
             display: flex;
+        }
+
+        .deposit-cat-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .deposit-cat-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .deposit-cat-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .deposit-pill-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-deposit-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-deposit-pill:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .btn-deposit-pill.is-active[data-dep-type="skin"] {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+
+        .btn-deposit-pill.is-active[data-dep-type="chung_suc"] {
+            background: rgba(192, 132, 252, 0.18);
+            border-color: #c084fc;
+            color: #c084fc;
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.25);
+        }
+
+        .btn-close-deposit {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .btn-close-deposit:hover {
+            color: #f43f5e;
+        }
+
+        .deposit-guide-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .badge-type-skin {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .badge-type-chungsuc {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(192, 132, 252, 0.14);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            color: #e9d5ff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
         }
 
         .deposit-txt-area {
@@ -769,36 +910,46 @@
         <!-- VIEW 1: QUẢN TRỊ KHO ACC LIÊN QUÂN                             -->
         <!-- ============================================================== -->
         <div id="viewAccContainer" class="admin-view-panel">
-            <!-- 2. Thống Kê 3 Chỉ Số Quan Trọng Nhất (Tổng, Đã phát, Chưa phát) -->
+            <!-- 2. Thống Kê 4 Chỉ Số Quan Trọng (Tổng, Kho Skin, Kho Chung Sức, Đã phát) -->
             <section class="kpi-grid">
                 <!-- Tổng số Acc -->
                 <div class="kpi-card kpi-total">
                     <div class="kpi-top-row">
-                        <span class="kpi-label">Tổng Số Acc</span>
+                        <span class="kpi-label">Tổng Toàn Bộ Acc</span>
                         <i class="fa-solid fa-database kpi-icon" style="color:var(--cyan);"></i>
                     </div>
                     <div class="kpi-value" id="kpiTotal">0</div>
-                    <div class="kpi-hint">Toàn bộ tài khoản có trong kho</div>
+                    <div class="kpi-hint">Toàn bộ tài khoản có trong 2 kho</div>
                 </div>
 
-                <!-- Đã phát -->
+                <!-- 💎 Kho 100-300 Skin -->
+                <div class="kpi-card" style="border-left: 4px solid #38bdf8;">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">💎 Kho 100-300 Skin</span>
+                        <i class="fa-solid fa-gem kpi-icon" style="color:#38bdf8;"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#38bdf8;" id="kpiSkinAvailable">0</div>
+                    <div class="kpi-hint">Sẵn sàng: <b id="kpiSkinReadyText" style="color:#38bdf8;">0</b> • Đã phát: <span id="kpiSkinClaimedText">0</span></div>
+                </div>
+
+                <!-- 👑 Kho Chung Sức -->
+                <div class="kpi-card" style="border-left: 4px solid #c084fc;">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">👑 Kho Chung Sức</span>
+                        <i class="fa-solid fa-users kpi-icon" style="color:#c084fc;"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#c084fc;" id="kpiChungSucAvailable">0</div>
+                    <div class="kpi-hint">Sẵn sàng: <b id="kpiChungSucReadyText" style="color:#c084fc;">0</b> • Đã phát: <span id="kpiChungSucClaimedText">0</span></div>
+                </div>
+
+                <!-- Đã phát tổng -->
                 <div class="kpi-card kpi-claimed">
                     <div class="kpi-top-row">
-                        <span class="kpi-label">Đã Phát (Xong)</span>
+                        <span class="kpi-label">Đã Phát (Tổng)</span>
                         <i class="fa-solid fa-circle-check kpi-icon" style="color:var(--rose);"></i>
                     </div>
                     <div class="kpi-value" style="color:#fb7185;" id="kpiClaimed">0</div>
                     <div class="kpi-hint">Đã kích hoạt gửi cho khách</div>
-                </div>
-
-                <!-- Chưa phát -->
-                <div class="kpi-card kpi-available">
-                    <div class="kpi-top-row">
-                        <span class="kpi-label">Chưa Phát (Còn)</span>
-                        <i class="fa-solid fa-bolt kpi-icon" style="color:var(--success);"></i>
-                    </div>
-                    <div class="kpi-value" style="color:#34d399;" id="kpiAvailable">0</div>
-                    <div class="kpi-hint">Sẵn sàng cấp cho lượt tiếp theo</div>
                 </div>
             </section>
 
@@ -807,17 +958,22 @@
 
                 <!-- Toolbar trên đầu bảng -->
                 <div class="toolbar-row">
-                    <!-- Bộ lọc trạng thái -->
+                    <!-- Bộ lọc trạng thái & Loại kho -->
                     <div class="filter-tabs">
                         <button type="button" class="filter-btn is-active" data-filter="all" id="btnFilterAll">Tất Cả (<span id="countAll">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="skin" id="btnFilterSkin">💎 100-300 Skin (<span id="countSkin">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="chung_suc" id="btnFilterChungSuc">👑 Chung Sức (<span id="countChungSuc">0</span>)</button>
                         <button type="button" class="filter-btn" data-filter="ready" id="btnFilterReady">🟢 Chưa Phát (<span id="countReady">0</span>)</button>
                         <button type="button" class="filter-btn" data-filter="claimed" id="btnFilterClaimed">🔴 Đã Phát (<span id="countClaimed">0</span>)</button>
                     </div>
 
-                    <!-- Các nút hành động nhanh -->
+                    <!-- Các nút hành động nhanh: Nạp Skin và Nạp Chung Sức riêng biệt -->
                     <div class="toolbar-actions">
-                        <button type="button" class="btn-action-sm btn-toggle-deposit" id="btnToggleDeposit">
-                            <i class="fa-solid fa-plus"></i> Nạp Acc (TXT)
+                        <button type="button" class="btn-action-sm btn-deposit-skin" id="btnDepositSkin" title="Nạp Acc vào Kho 100-300 Skin">
+                            <i class="fa-solid fa-gem"></i> Nạp Acc 100-300 Skin
+                        </button>
+                        <button type="button" class="btn-action-sm btn-deposit-chungsuc" id="btnDepositChungSuc" title="Nạp Acc vào Kho Chung Sức">
+                            <i class="fa-solid fa-users"></i> Nạp Acc Chung Sức
                         </button>
                         <button type="button" class="btn-action-sm btn-refresh" id="btnRefresh" title="Làm mới dữ liệu">
                             <i class="fa-solid fa-rotate"></i>
@@ -827,20 +983,36 @@
 
                 <!-- Khung Nạp Acc Bằng File TXT (Mở ra khi bấm nút) -->
                 <div class="deposit-drawer" id="depositDrawer">
-                    <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-                        <span>📋 <b>Dán danh sách nick từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
-                        <button type="button" id="btnCloseDeposit" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
+                    <div class="deposit-cat-bar">
+                        <div class="deposit-cat-left">
+                            <span class="deposit-cat-label">Kho Tiếp Nhận:</span>
+                            <div class="deposit-pill-group">
+                                <button type="button" class="btn-deposit-pill is-active" id="pillDepSkin" data-dep-type="skin">
+                                    <i class="fa-solid fa-gem"></i> 💎 Kho Acc 100-300 Skin
+                                </button>
+                                <button type="button" class="btn-deposit-pill" id="pillDepChungSuc" data-dep-type="chung_suc">
+                                    <i class="fa-solid fa-users"></i> 👑 Kho Acc Chung Sức
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="btnCloseDeposit" class="btn-close-deposit">
                             <i class="fa-solid fa-xmark"></i> Đóng
                         </button>
                     </div>
-                    <textarea id="depositInput" class="deposit-txt-area" placeholder="garena_acc1|Pass123|Ghi chú...&#10;garena_acc2:Pass456&#10;garena_acc3|Pass789"></textarea>
+
+                    <div class="deposit-guide-banner" id="depositGuideBanner">
+                        <i class="fa-solid fa-circle-info" style="color:var(--cyan);"></i>
+                        <span id="depositGuideText">Đang nạp vào: <b>💎 Kho Acc 100-300 Skin</b>. Mỗi dòng 1 Acc theo định dạng User|Pass hoặc User:Pass.</span>
+                    </div>
+
+                    <textarea id="depositInput" class="deposit-txt-area" placeholder="garena_skin1|Pass123|Liên Quân 150 skin SSS...&#10;garena_skin2:Pass456&#10;garena_skin3|Pass789"></textarea>
                     
                     <div class="deposit-btn-row">
                         <button type="button" class="btn-clean-samples" id="btnCleanSamples">
                             <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Cũ
                         </button>
                         <button type="button" class="btn-submit-deposit" id="btnSubmitDeposit">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btnSubmitDepositText">Lưu Vào Kho 100-300 Skin</span>
                         </button>
                     </div>
                     <div id="depositFeedback" style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:700;"></div>
@@ -849,26 +1021,27 @@
                 <!-- Ô Tìm Kiếm Thực Tế -->
                 <div class="search-box-wrap">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm theo Tài khoản, Mật khẩu, Mã Key, Ghi chú...">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm theo Tài khoản, Mật khẩu, Mã Key, Ghi chú, Phân loại...">
                 </div>
 
-                <!-- Bảng Dữ Liệu Acc (Có Ngày Giờ Phát Rõ Ràng) -->
+                <!-- Bảng Dữ Liệu Acc (Có Cột Phân Loại Kho & Ngày Giờ Phát Rõ Ràng) -->
                 <div class="table-responsive-card">
                     <table class="stock-table">
                         <thead>
                             <tr>
-                                <th style="width:55px;">STT</th>
+                                <th style="width:50px;">STT</th>
+                                <th style="width:130px;">Phân Loại</th>
                                 <th>Tài Khoản (User)</th>
                                 <th>Mật Khẩu (Pass)</th>
                                 <th>Ghi Chú</th>
-                                <th style="width:125px;">Trạng Thái</th>
+                                <th style="width:120px;">Trạng Thái</th>
                                 <th style="width:140px;">Mã Key</th>
-                                <th style="width:160px;">Ngày Giờ Phát</th>
+                                <th style="width:150px;">Ngày Giờ Phát</th>
                             </tr>
                         </thead>
                         <tbody id="stockTableBody">
                             <tr>
-                                <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                <td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">
                                     <i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu kho Acc...
                                 </td>
                             </tr>
@@ -1015,11 +1188,18 @@
             // KPI elements - Kho Acc
             const kpiTotal = document.getElementById("kpiTotal");
             const kpiClaimed = document.getElementById("kpiClaimed");
-            const kpiAvailable = document.getElementById("kpiAvailable");
+            const kpiSkinAvailable = document.getElementById("kpiSkinAvailable");
+            const kpiSkinReadyText = document.getElementById("kpiSkinReadyText");
+            const kpiSkinClaimedText = document.getElementById("kpiSkinClaimedText");
+            const kpiChungSucAvailable = document.getElementById("kpiChungSucAvailable");
+            const kpiChungSucReadyText = document.getElementById("kpiChungSucReadyText");
+            const kpiChungSucClaimedText = document.getElementById("kpiChungSucClaimedText");
             const badgeAccAvailable = document.getElementById("badgeAccAvailable");
 
             // Filter counts - Kho Acc
             const countAll = document.getElementById("countAll");
+            const countSkin = document.getElementById("countSkin");
+            const countChungSuc = document.getElementById("countChungSuc");
             const countReady = document.getElementById("countReady");
             const countClaimed = document.getElementById("countClaimed");
 
@@ -1028,14 +1208,21 @@
             const searchInput = document.getElementById("searchInput");
             const btnRefresh = document.getElementById("btnRefresh");
 
-            // Drawer - Kho Acc
-            const btnToggleDeposit = document.getElementById("btnToggleDeposit");
+            // Deposit Drawer & Buttons
+            const btnDepositSkin = document.getElementById("btnDepositSkin");
+            const btnDepositChungSuc = document.getElementById("btnDepositChungSuc");
             const btnCloseDeposit = document.getElementById("btnCloseDeposit");
             const depositDrawer = document.getElementById("depositDrawer");
+            const pillDepSkin = document.getElementById("pillDepSkin");
+            const pillDepChungSuc = document.getElementById("pillDepChungSuc");
+            const depositGuideText = document.getElementById("depositGuideText");
             const depositInput = document.getElementById("depositInput");
             const btnSubmitDeposit = document.getElementById("btnSubmitDeposit");
+            const btnSubmitDepositText = document.getElementById("btnSubmitDepositText");
             const btnCleanSamples = document.getElementById("btnCleanSamples");
             const depositFeedback = document.getElementById("depositFeedback");
+
+            let currentDepositType = "skin"; // 'skin' hoặc 'chung_suc'
 
             // Tabs Admin Navigation
             const tabNavAcc = document.getElementById("tabNavAcc");
@@ -1062,6 +1249,38 @@
 
             let fullHotList = [];
             let currentHotFilter = "all";
+
+            /* ================= CHỌN LOẠI KHO NẠP ACC ================= */
+            function setDepositCategory(type) {
+                currentDepositType = (type === "chung_suc") ? "chung_suc" : "skin";
+                if (currentDepositType === "chung_suc") {
+                    if (pillDepChungSuc) pillDepChungSuc.classList.add("is-active");
+                    if (pillDepSkin) pillDepSkin.classList.remove("is-active");
+                    if (depositGuideText) {
+                        depositGuideText.innerHTML = `Đang nạp vào: <b style="color:#c084fc;">👑 Kho Acc Chung Sức</b>. Mỗi dòng 1 Acc theo định dạng User|Pass hoặc User:Pass.`;
+                    }
+                    if (depositInput) {
+                        depositInput.placeholder = "chungsuc_01|Pass123|Acc Chung Sức VIP full tướng...&#10;chungsuc_02:Pass456";
+                    }
+                    if (btnSubmitDepositText) btnSubmitDepositText.textContent = "Lưu Vào Kho Chung Sức";
+                    if (btnSubmitDeposit) {
+                        btnSubmitDeposit.style.background = "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)";
+                    }
+                } else {
+                    if (pillDepSkin) pillDepSkin.classList.add("is-active");
+                    if (pillDepChungSuc) pillDepChungSuc.classList.remove("is-active");
+                    if (depositGuideText) {
+                        depositGuideText.innerHTML = `Đang nạp vào: <b style="color:#38bdf8;">💎 Kho Acc 100-300 Skin</b>. Mỗi dòng 1 Acc theo định dạng User|Pass hoặc User:Pass.`;
+                    }
+                    if (depositInput) {
+                        depositInput.placeholder = "garena_skin1|Pass123|Liên Quân 180 skin SSS...&#10;garena_skin2:Pass456&#10;garena_skin3|Pass789";
+                    }
+                    if (btnSubmitDepositText) btnSubmitDepositText.textContent = "Lưu Vào Kho 100-300 Skin";
+                    if (btnSubmitDeposit) {
+                        btnSubmitDeposit.style.background = "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)";
+                    }
+                }
+            }
 
             /* ================= 1. ĐĂNG NHẬP AN TOÀN ================= */
             function grantAccess() {
@@ -1132,70 +1351,117 @@
                         updateStatsAndCounts();
                         renderTable();
                     } else {
-                        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải dữ liệu từ máy chủ Google Sheets.</td></tr>`;
+                        tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải dữ liệu từ máy chủ Google Sheets.</td></tr>`;
                     }
                 } catch (err) {
                     console.error("Lỗi kết nối:", err);
-                    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Lỗi kết nối máy chủ!</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:#ef4444;">Lỗi kết nối máy chủ!</td></tr>`;
                 } finally {
                     btnRefresh.querySelector("i").classList.remove("fa-spin");
                 }
             }
 
-            /* ================= 3. THỐNG KÊ KHO ACC ================= */
+            /* ================= 3. THỐNG KÊ KHO ACC CHI TIẾT 2 LOẠI ================= */
             function updateStatsAndCounts() {
                 const total = fullAccountList.length;
                 let claimed = 0;
-                let available = 0;
+                let readyTotal = 0;
+
+                let skinTotal = 0;
+                let skinReady = 0;
+                let skinClaimed = 0;
+
+                let chungSucTotal = 0;
+                let chungSucReady = 0;
+                let chungSucClaimed = 0;
 
                 fullAccountList.forEach(item => {
-                    if (String(item.status || "").includes("ĐÃ PHÁT")) claimed++;
-                    else available++;
+                    const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
+                    const isChungSuc = (item.acc_type === "chung_suc") || 
+                        String(item.note || "").toLowerCase().includes("chung sức") || 
+                        String(item.note || "").toLowerCase().includes("chungsuc");
+
+                    if (isClaimed) claimed++;
+                    else readyTotal++;
+
+                    if (isChungSuc) {
+                        chungSucTotal++;
+                        if (isClaimed) chungSucClaimed++;
+                        else chungSucReady++;
+                    } else {
+                        skinTotal++;
+                        if (isClaimed) skinClaimed++;
+                        else skinReady++;
+                    }
                 });
 
-                kpiTotal.textContent = total;
-                kpiClaimed.textContent = claimed;
-                kpiAvailable.textContent = available;
+                if (kpiTotal) kpiTotal.textContent = total;
+                if (kpiClaimed) kpiClaimed.textContent = claimed;
 
-                countAll.textContent = total;
-                countReady.textContent = available;
-                countClaimed.textContent = claimed;
-                if (badgeAccAvailable) badgeAccAvailable.textContent = `${available} còn`;
+                if (kpiSkinAvailable) kpiSkinAvailable.textContent = skinReady;
+                if (kpiSkinReadyText) kpiSkinReadyText.textContent = skinReady;
+                if (kpiSkinClaimedText) kpiSkinClaimedText.textContent = skinClaimed;
+
+                if (kpiChungSucAvailable) kpiChungSucAvailable.textContent = chungSucReady;
+                if (kpiChungSucReadyText) kpiChungSucReadyText.textContent = chungSucReady;
+                if (kpiChungSucClaimedText) kpiChungSucClaimedText.textContent = chungSucClaimed;
+
+                if (countAll) countAll.textContent = total;
+                if (countSkin) countSkin.textContent = skinTotal;
+                if (countChungSuc) countChungSuc.textContent = chungSucTotal;
+                if (countReady) countReady.textContent = readyTotal;
+                if (countClaimed) countClaimed.textContent = claimed;
+
+                if (badgeAccAvailable) badgeAccAvailable.textContent = `${readyTotal} còn`;
             }
 
-            /* ================= 4. HIỂN THỊ BẢNG KHO ACC ================= */
+            /* ================= 4. HIỂN THỊ BẢNG KHO ACC (CÓ CỘT PHÂN LOẠI) ================= */
             function renderTable() {
                 const searchKeyword = searchInput.value.trim().toLowerCase();
 
                 let filtered = fullAccountList.filter(item => {
                     const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
+                    const isChungSuc = (item.acc_type === "chung_suc") || 
+                        String(item.note || "").toLowerCase().includes("chung sức") || 
+                        String(item.note || "").toLowerCase().includes("chungsuc");
+
                     if (currentFilter === "ready" && isClaimed) return false;
                     if (currentFilter === "claimed" && !isClaimed) return false;
+                    if (currentFilter === "skin" && isChungSuc) return false;
+                    if (currentFilter === "chung_suc" && !isChungSuc) return false;
 
                     if (searchKeyword) {
                         const u = String(item.user || "").toLowerCase();
                         const p = String(item.pass || "").toLowerCase();
                         const k = String(item.key || "").toLowerCase();
                         const n = String(item.note || "").toLowerCase();
-                        return u.includes(searchKeyword) || p.includes(searchKeyword) || k.includes(searchKeyword) || n.includes(searchKeyword);
+                        const t = String(item.type_label || "").toLowerCase();
+                        return u.includes(searchKeyword) || p.includes(searchKeyword) || k.includes(searchKeyword) || n.includes(searchKeyword) || t.includes(searchKeyword);
                     }
                     return true;
                 });
 
                 if (filtered.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Không tìm thấy tài khoản nào phù hợp.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">Không tìm thấy tài khoản nào phù hợp.</td></tr>`;
                     return;
                 }
 
                 tableBody.innerHTML = filtered.map(item => {
                     const isClaimed = String(item.status || "").includes("ĐÃ PHÁT");
-                    
+                    const isChungSuc = (item.acc_type === "chung_suc") || 
+                        String(item.note || "").toLowerCase().includes("chung sức") || 
+                        String(item.note || "").toLowerCase().includes("chungsuc");
+
+                    const typeBadge = isChungSuc
+                        ? `<span class="badge-type-chungsuc"><i class="fa-solid fa-users"></i> Chung Sức</span>`
+                        : `<span class="badge-type-skin"><i class="fa-solid fa-gem"></i> 100-300 Skin</span>`;
+
                     const statusBadge = isClaimed
                         ? `<span class="badge-status-claimed"><i class="fa-solid fa-circle"></i> Đã phát</span>`
                         : `<span class="badge-status-ready"><i class="fa-solid fa-circle"></i> Chưa phát</span>`;
 
                     const keyTag = (item.key && String(item.key).trim())
-                        ? `<span class="tag-key">${item.key}</span>`
+                        ? `<span class="tag-key">${escapeHtml(item.key)}</span>`
                         : `<span style="color:var(--text-muted);">---</span>`;
 
                     const timeFormatted = formatClaimTime(item.time);
@@ -1203,6 +1469,7 @@
                     return `
                         <tr>
                             <td class="val-stt">#${item.stt}</td>
+                            <td>${typeBadge}</td>
                             <td>
                                 <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép">
                                     ${escapeHtml(item.user)}
@@ -1443,17 +1710,44 @@
                 });
             }
 
-            /* ================= 6. NẠP ACC TỪ FILE TXT ================= */
-            btnToggleDeposit.addEventListener("click", () => {
-                depositDrawer.classList.toggle("is-open");
-                if (depositDrawer.classList.contains("is-open")) {
+            /* ================= 6. NẠP ACC TỪ FILE TXT (SKIN & CHUNG SỨC) ================= */
+            if (btnDepositSkin) {
+                btnDepositSkin.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    setDepositCategory("skin");
+                    depositDrawer.classList.add("is-open");
                     depositInput.focus();
-                }
-            });
+                });
+            }
 
-            btnCloseDeposit.addEventListener("click", () => {
-                depositDrawer.classList.remove("is-open");
-            });
+            if (btnDepositChungSuc) {
+                btnDepositChungSuc.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    setDepositCategory("chung_suc");
+                    depositDrawer.classList.add("is-open");
+                    depositInput.focus();
+                });
+            }
+
+            if (pillDepSkin) {
+                pillDepSkin.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    setDepositCategory("skin");
+                });
+            }
+
+            if (pillDepChungSuc) {
+                pillDepChungSuc.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    setDepositCategory("chung_suc");
+                });
+            }
+
+            if (btnCloseDeposit) {
+                btnCloseDeposit.addEventListener("click", () => {
+                    depositDrawer.classList.remove("is-open");
+                });
+            }
 
             btnSubmitDeposit.addEventListener("click", async () => {
                 const text = depositInput.value.trim();
@@ -1473,12 +1767,14 @@
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify({
                             action: "import_txt",
+                            acc_type: currentDepositType,
                             text: text
                         })
                     });
                     const res = await resp.json();
 
                     if (res && res.success) {
+                        if (typeof sounds !== 'undefined' && sounds.playSuccess) sounds.playSuccess();
                         depositFeedback.style.display = "block";
                         depositFeedback.style.background = "rgba(16, 185, 129, 0.15)";
                         depositFeedback.style.border = "1px solid #10b981";
@@ -1488,6 +1784,7 @@
                         depositInput.value = "";
                         loadDashboardData();
                     } else {
+                        if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
                         depositFeedback.style.display = "block";
                         depositFeedback.style.background = "rgba(244, 63, 94, 0.15)";
                         depositFeedback.style.border = "1px solid #f43f5e";
@@ -1502,7 +1799,7 @@
                     depositFeedback.textContent = "Lỗi kết nối máy chủ!";
                 } finally {
                     btnSubmitDeposit.disabled = false;
-                    btnSubmitDeposit.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc`;
+                    setDepositCategory(currentDepositType);
                 }
             });
 
