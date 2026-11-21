@@ -238,13 +238,126 @@ function clearSampleAccounts() {
 }
 
 /**
+ * Hàm nhận diện thông minh 1 dòng tài khoản:
+ * Tự động bóc tách chuẩn xác:
+ * - Thông tin 1: ID (Tài khoản)
+ * - Thông tin 2: PASS (Mật khẩu)
+ * - Mọi thông tin còn lại từ vị trí thứ 3 trở đi: Đưa vào Ghi chú (Note), KHÔNG BAO GIỜ làm hỏng ID hay PASS!
+ *
+ * Hỗ trợ mọi định dạng:
+ * 1. user:pass (ví dụ: trucnhieutruyen:66773508subi)
+ * 2. user|pass|extra_data (ví dụ: phhienmai05|hm@1Hab6apXz|phhienmai05@otpgmail.com|2axL7RYT@kRd)
+ * 3. user|pass| UID : ... | NAME : ... | SKIN : 148 | ... (ví dụ file tool check acc siêu dài)
+ * 4. user\tpass (Tab)
+ * 5. user - pass
+ * 6. TK: user | MK: pass (hoặc ID: user | Pass: pass)
+ * 7. user pass (khoảng trắng)
+ */
+function parseSmartAccountLine(rawLine, defaultNote) {
+  if (!rawLine) return null;
+  let line = String(rawLine).trim();
+  if (!line || line.startsWith("#") || line.startsWith("//")) return null;
+
+  let user = "";
+  let pass = "";
+  let noteParts = [];
+
+  // Ưu tiên 1: Phân tách bằng dấu gạch đứng | (chuẩn tool check acc & list acc garena)
+  if (line.includes("|")) {
+    const rawParts = line.split("|").map(p => p.trim());
+    if (rawParts.length >= 2) {
+      user = rawParts[0];
+      pass = rawParts[1];
+      noteParts = rawParts.slice(2).filter(p => p.length > 0);
+    }
+  }
+  // Ưu tiên 2: Phân tách bằng Tab
+  else if (line.includes("\t")) {
+    const rawParts = line.split("\t").map(p => p.trim());
+    if (rawParts.length >= 2) {
+      user = rawParts[0];
+      pass = rawParts[1];
+      noteParts = rawParts.slice(2).filter(p => p.length > 0);
+    }
+  }
+  // Ưu tiên 3: Phân tách bằng dấu gạch ngang có khoảng cách " - " hoặc " --- "
+  else if (/\s+[-–—]+\s+/.test(line)) {
+    const rawParts = line.split(/\s+[-–—]+\s+/).map(p => p.trim());
+    if (rawParts.length >= 2) {
+      user = rawParts[0];
+      pass = rawParts[1];
+      noteParts = rawParts.slice(2).filter(p => p.length > 0);
+    }
+  }
+  // Ưu tiên 4: Phân tách bằng dấu hai chấm : (ví dụ: trucnhieutruyen:66773508subi)
+  else if (line.includes(":")) {
+    const firstColon = line.indexOf(":");
+    if (firstColon > 0) {
+      user = line.substring(0, firstColon).trim();
+      const remain = line.substring(firstColon + 1).trim();
+      if (remain.includes(":")) {
+        const nextColon = remain.indexOf(":");
+        pass = remain.substring(0, nextColon).trim();
+        noteParts = [remain.substring(nextColon + 1).trim()];
+      } else {
+        const spaceIdx = remain.search(/\s+/);
+        if (spaceIdx > 0) {
+          pass = remain.substring(0, spaceIdx).trim();
+          noteParts = [remain.substring(spaceIdx).trim()];
+        } else {
+          pass = remain;
+        }
+      }
+    }
+  }
+  // Ưu tiên 5: Dấu chấm phẩy ;
+  else if (line.includes(";")) {
+    const rawParts = line.split(";").map(p => p.trim());
+    if (rawParts.length >= 2) {
+      user = rawParts[0];
+      pass = rawParts[1];
+      noteParts = rawParts.slice(2).filter(p => p.length > 0);
+    }
+  }
+  // Ưu tiên 6: Phân tách bằng khoảng trắng nếu có 2 cụm từ
+  else {
+    const rawParts = line.split(/\s+/).map(p => p.trim());
+    if (rawParts.length >= 2) {
+      user = rawParts[0];
+      pass = rawParts[1];
+      noteParts = rawParts.slice(2).filter(p => p.length > 0);
+    }
+  }
+
+  // Làm sạch ID & PASS: Tự động loại bỏ nhãn thừa (ID:, User:, TK:, Acc:, Pass:, MK:,...)
+  user = user.replace(/^(id|user|username|tài\s*khoản|tai\s*khoan|tk|acc)\s*[:=-]\s*/i, "").trim();
+  pass = pass.replace(/^(pass|password|mật\s*khẩu|mat\s*khau|mk|pw)\s*[:=-]\s*/i, "").trim();
+
+  // Bỏ dấu nháy bao quanh nếu có
+  user = user.replace(/^["'`]|["'`]$/g, "").trim();
+  pass = pass.replace(/^["'`]|["'`]$/g, "").trim();
+
+  if (!user || !pass) return null;
+
+  // Tạo Note thông minh: lưu phần thông tin phụ để tra cứu
+  let note = noteParts.join(" | ").trim();
+  if (!note) {
+    note = defaultNote || "Acc Liên Quân";
+  }
+
+  return { user: user, pass: pass, note: note };
+}
+
+/**
  * Modal nạp nhanh từ menu Trang Tính: Kho Acc 100-300 Skin
  */
 function showQuickAddSkinModal() {
   const ui = SpreadsheetApp.getUi();
   const prompt = ui.prompt(
-    "💎 NẠP ACC 100-300 SKIN (DÁN TEXT)",
-    "Dán danh sách Acc 100-300 Skin (User|Pass hoặc User:Pass, mỗi dòng 1 Acc):\nVí dụ:\ngarena_skin01|Pass@123|180 Skin SSS\ngarena_skin02:Pass@456",
+    "💎 NẠP ACC 100-300 SKIN (NHẬN DIỆN THÔNG MINH)",
+    "Hệ thống tự động lọc ID & Pass, bỏ qua mọi thông tin phụ.\n" +
+    "Hỗ trợ mọi định dạng: User:Pass, User|Pass, hoặc User|Pass|UID|Skin...\n\n" +
+    "Dán danh sách nick vào đây (mỗi dòng 1 nick):",
     ui.ButtonSet.OK_CANCEL
   );
   if (prompt.getSelectedButton() !== ui.Button.OK) return;
@@ -252,7 +365,7 @@ function showQuickAddSkinModal() {
   if (!input || !input.trim()) return;
   
   const result = parseAndAppendAccounts(input, "skin");
-  ui.alert(`✅ ĐÃ NẠP THÀNH CÔNG ${result.count} ACC VÀO KHO 100-300 SKIN!`);
+  ui.alert(`✅ ĐÃ TỰ ĐỘNG LỌC & NẠP THÀNH CÔNG ${result.count} ACC VÀO KHO 100-300 SKIN!`);
 }
 
 /**
@@ -261,8 +374,10 @@ function showQuickAddSkinModal() {
 function showQuickAddChungSucModal() {
   const ui = SpreadsheetApp.getUi();
   const prompt = ui.prompt(
-    "👑 NẠP ACC CHUNG SỨC (DÁN TEXT)",
-    "Dán danh sách Acc Chung Sức (User|Pass hoặc User:Pass, mỗi dòng 1 Acc):\nVí dụ:\ngarena_chungsuc01|Pass@123|Acc Chung Sức VIP\ngarena_chungsuc02:Pass@456",
+    "👑 NẠP ACC CHUNG SỨC (NHẬN DIỆN THÔNG MINH)",
+    "Hệ thống tự động lọc ID & Pass, bỏ qua mọi thông tin phụ.\n" +
+    "Hỗ trợ mọi định dạng: User:Pass, User|Pass, hoặc User|Pass|UID|Skin...\n\n" +
+    "Dán danh sách nick vào đây (mỗi dòng 1 nick):",
     ui.ButtonSet.OK_CANCEL
   );
   if (prompt.getSelectedButton() !== ui.Button.OK) return;
@@ -270,11 +385,68 @@ function showQuickAddChungSucModal() {
   if (!input || !input.trim()) return;
   
   const result = parseAndAppendAccounts(input, "chung_suc");
-  ui.alert(`✅ ĐÃ NẠP THÀNH CÔNG ${result.count} ACC VÀO KHO CHUNG SỨC!`);
+  ui.alert(`✅ ĐÃ TỰ ĐỘNG LỌC & NẠP THÀNH CÔNG ${result.count} ACC VÀO KHO CHUNG SỨC!`);
 }
 
 /**
- * Hàm phân tích văn bản .txt và tự động nạp vào Tab tương ứng (Skin hoặc Chung Sức)
+ * Nạp danh sách đã được parse sẵn vào trang tính
+ */
+function appendParsedAccounts(parsedList, accType) {
+  accType = String(accType || "skin").toLowerCase().trim();
+  const isChungSuc = (accType === "chung_suc" || accType === "chungsuc");
+  const targetSheetName = isChungSuc ? TAB_KHO_CHUNG_SUC : TAB_KHO_SKIN;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(targetSheetName);
+  if (!sheet) {
+    if (isChungSuc) {
+      sheet = initAccSheet(ss, TAB_KHO_CHUNG_SUC, "👑 KHO ACC CHUNG SỨC", "#1e1b4b", "#c084fc", []);
+    } else {
+      sheet = initAccSheet(ss, TAB_KHO_SKIN, "💎 KHO ACC 100-300 SKIN", "#0f172a", "#38bdf8", []);
+    }
+  }
+
+  try { sheet.getRange("F2:H3000").clearDataValidations(); } catch (e) {}
+
+  const lastRow = sheet.getLastRow();
+  let nextSTT = lastRow > 1 ? lastRow : 1;
+  const defaultNote = isChungSuc ? "Acc Chung Sức VIP" : "Acc Liên Quân 100-300 Skin";
+  let addedRows = [];
+
+  (parsedList || []).forEach(item => {
+    if (!item) return;
+    const u = String(item.user || "").trim();
+    const p = String(item.pass || "").trim();
+    const n = String(item.note || defaultNote).trim();
+    if (u && p) {
+      addedRows.push([
+        nextSTT++,
+        u,
+        p,
+        n,
+        "🟢 CHƯA PHÁT",
+        "",
+        "",
+        ""
+      ]);
+    }
+  });
+
+  if (addedRows.length > 0) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, addedRows.length, 8).setValues(addedRows);
+  }
+
+  return {
+    success: true,
+    count: addedRows.length,
+    acc_type: isChungSuc ? "chung_suc" : "skin",
+    sheet_name: sheet.getName(),
+    type_name: isChungSuc ? "Acc Chung Sức" : "Acc 100-300 Skin"
+  };
+}
+
+/**
+ * Hàm phân tích văn bản .txt với bộ nhận diện thông minh và tự động nạp vào Tab tương ứng
  */
 function parseAndAppendAccounts(rawText, accType) {
   accType = String(accType || "skin").toLowerCase().trim();
@@ -301,26 +473,13 @@ function parseAndAppendAccounts(rawText, accType) {
   let addedRows = [];
 
   lines.forEach(line => {
-    line = line.trim();
-    if (!line) return;
-    
-    let parts = [];
-    if (line.includes("|")) parts = line.split("|");
-    else if (line.includes(":")) parts = line.split(":");
-    else if (line.includes("\t")) parts = line.split("\t");
-    else if (line.includes(" - ")) parts = line.split(" - ");
-    else parts = line.split(/\s+/);
-    
-    const user = parts[0] ? parts[0].trim() : "";
-    const pass = parts[1] ? parts[1].trim() : "";
-    const note = parts.slice(2).join(" | ").trim() || defaultNote;
-    
-    if (user && pass) {
+    const item = parseSmartAccountLine(line, defaultNote);
+    if (item && item.user && item.pass) {
       addedRows.push([
         nextSTT++,
-        user,
-        pass,
-        note,
+        item.user,
+        item.pass,
+        item.note,
         "🟢 CHƯA PHÁT",
         "",
         "",
@@ -549,14 +708,22 @@ function handleRequest(e) {
       });
     }
     
-    // 2. ACTION: NẠP ACC HÀNG LOẠT VÀO KHO TƯƠNG ỨNG (SKIN HOẶC CHUNG SỨC)
+    // 2. ACTION: NẠP ACC HÀNG LOẠT VÀO KHO TƯƠNG ỨNG (SKIN HOẶC CHUNG SỨC) - NHẬN DIỆN THÔNG MINH
     if (action === "import_txt" || action === "add_bulk_acc") {
       const rawText = params.text || postData.text || "";
+      const parsedList = params.accounts || postData.accounts || null;
       const accType = (params.acc_type || postData.acc_type || "skin").trim();
-      if (!rawText || !rawText.trim()) {
-        return jsonResponse({ success: false, message: "Nội dung văn bản trống!" });
+      
+      let res;
+      if (Array.isArray(parsedList) && parsedList.length > 0) {
+        res = appendParsedAccounts(parsedList, accType);
+      } else {
+        if (!rawText || !rawText.trim()) {
+          return jsonResponse({ success: false, message: "Nội dung văn bản trống!" });
+        }
+        res = parseAndAppendAccounts(rawText, accType);
       }
-      const res = parseAndAppendAccounts(rawText, accType);
+
       const currentStats = calculateStockStats();
       const typeAvail = (res.acc_type === "chung_suc") ? currentStats.chung_suc.available : currentStats.skin.available;
       
@@ -569,7 +736,7 @@ function handleRequest(e) {
         total_available: currentStats.available_acc,
         type_available: typeAvail,
         stats: currentStats,
-        message: `Đã nạp thành công ${res.count} Acc vào ${res.type_name} (${res.sheet_name})! Hiện loại này có ${typeAvail} Acc sẵn sàng phát.`
+        message: `Đã tự động lọc & nạp thành công ${res.count} Acc vào ${res.type_name} (${res.sheet_name})! Hiện loại này có ${typeAvail} Acc sẵn sàng phát.`
       });
     }
     

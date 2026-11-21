@@ -527,6 +527,116 @@
             gap: 5px;
         }
 
+        /* AI Smart Parser Live Preview Box */
+        .smart-preview-box {
+            display: none;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-top: -2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .smart-preview-box.is-active {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .smart-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .smart-preview-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #38bdf8;
+            font-weight: 800;
+        }
+
+        .smart-preview-badge b {
+            background: rgba(56, 189, 248, 0.2);
+            color: #7dd3fc;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .smart-preview-tip {
+            color: #34d399;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .smart-preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 130px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .smart-preview-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            gap: 10px;
+        }
+
+        .smart-preview-acc {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .smart-preview-id {
+            color: #38bdf8;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .smart-preview-pass {
+            color: #34d399;
+            font-weight: 700;
+            background: rgba(52, 211, 153, 0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .smart-preview-note {
+            color: var(--text-muted);
+            font-size: 10.5px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         /* Bảng Danh Sách Acc */
         .table-responsive-card {
             width: 100%;
@@ -992,16 +1102,25 @@
                     </div>
                 </div>
 
-                <!-- Khung Nạp Acc Skin (TXT) -->
+                <!-- Khung Nạp Acc Skin (TXT) - Nhận Diện Thông Minh -->
                 <div class="deposit-drawer" id="depositSkinDrawer">
                     <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-                        <span>💎 <b>Dán danh sách nick 100-300 Skin từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
+                        <span>💎 <b>Nạp Acc 100-300 Skin từ file .txt</b> (Tự động lọc ID & Mật Khẩu, bỏ qua mọi thông tin phụ):</span>
                         <button type="button" id="btnCloseDepositSkin" class="btn-close-deposit">
                             <i class="fa-solid fa-xmark"></i> Đóng
                         </button>
                     </div>
-                    <textarea id="depositSkinInput" class="deposit-txt-area" placeholder="garena_skin1|Pass123|Liên Quân 180 skin SSS...&#10;garena_skin2:Pass456&#10;garena_skin3|Pass789"></textarea>
+                    <textarea id="depositSkinInput" class="deposit-txt-area" placeholder="Hỗ trợ mọi định dạng file .txt:&#10;trucnhieutruyen:66773508subi&#10;phhienmai05|hm@1Hab6apXz|phhienmai05@otpgmail.com|2axL7RYT@kRd&#10;lesaohoang27908@gmail.com|Hoang1234@| UID : 1544749681280113 | SKIN : 148 | RANK : Kim Cương..."></textarea>
                     
+                    <!-- Hộp Live Preview Bóc Tách Thông Minh -->
+                    <div id="smartPreviewSkinBox" class="smart-preview-box">
+                        <div class="smart-preview-header">
+                            <span class="smart-preview-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Nhận diện thông minh: <b id="smartSkinCount">0</b> tài khoản</span>
+                            <span class="smart-preview-tip" id="smartSkinTip"><i class="fa-solid fa-circle-check"></i> Đã tự động lọc sạch ID & Mật khẩu</span>
+                        </div>
+                        <div id="smartSkinList" class="smart-preview-list"></div>
+                    </div>
+
                     <div class="deposit-btn-row">
                         <button type="button" class="btn-clean-samples" id="btnCleanSkinSamples">
                             <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Demo
@@ -1100,16 +1219,25 @@
                     </div>
                 </div>
 
-                <!-- Khung Nạp Acc Chung Sức (TXT) -->
+                <!-- Khung Nạp Acc Chung Sức (TXT) - Nhận Diện Thông Minh -->
                 <div class="deposit-drawer" id="depositChungSucDrawer">
                     <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-                        <span>👑 <b>Dán danh sách nick Chung Sức từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
+                        <span>👑 <b>Nạp Acc Chung Sức từ file .txt</b> (Tự động lọc ID & Mật Khẩu, bỏ qua mọi thông tin phụ):</span>
                         <button type="button" id="btnCloseDepositChungSuc" class="btn-close-deposit">
                             <i class="fa-solid fa-xmark"></i> Đóng
                         </button>
                     </div>
-                    <textarea id="depositChungSucInput" class="deposit-txt-area" placeholder="chungsuc_01|Pass123|Acc Chung Sức VIP full tướng...&#10;chungsuc_02:Pass456"></textarea>
+                    <textarea id="depositChungSucInput" class="deposit-txt-area" placeholder="Hỗ trợ mọi định dạng file .txt:&#10;trucnhieutruyen:66773508subi&#10;phhienmai05|hm@1Hab6apXz|phhienmai05@otpgmail.com|2axL7RYT@kRd&#10;chungsuc_01|Pass123| UID : 88472910 | TƯỚNG : 110 | FULL TƯỚNG..."></textarea>
                     
+                    <!-- Hộp Live Preview Bóc Tách Thông Minh -->
+                    <div id="smartPreviewChungSucBox" class="smart-preview-box">
+                        <div class="smart-preview-header">
+                            <span class="smart-preview-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Nhận diện thông minh: <b id="smartChungSucCount">0</b> tài khoản</span>
+                            <span class="smart-preview-tip" id="smartChungSucTip"><i class="fa-solid fa-circle-check"></i> Đã tự động lọc sạch ID & Mật khẩu</span>
+                        </div>
+                        <div id="smartChungSucList" class="smart-preview-list"></div>
+                    </div>
+
                     <div class="deposit-btn-row">
                         <button type="button" class="btn-clean-samples" id="btnCleanChungSucSamples">
                             <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Demo
@@ -1577,6 +1705,168 @@
                 });
             }
 
+            /* ================= BỘ NÃO NHẬN DIỆN THÔNG MINH (AI SMART PARSER) ================= */
+            function parseSmartAccountLine(rawLine, defaultNote) {
+                if (!rawLine) return null;
+                let line = String(rawLine).trim();
+                if (!line || line.startsWith("#") || line.startsWith("//")) return null;
+
+                let user = "";
+                let pass = "";
+                let noteParts = [];
+
+                // 1. Phân tách bằng dấu gạch đứng | (chuẩn tool check acc & list acc garena)
+                if (line.includes("|")) {
+                    const rawParts = line.split("|").map(p => p.trim());
+                    if (rawParts.length >= 2) {
+                        user = rawParts[0];
+                        pass = rawParts[1];
+                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    }
+                }
+                // 2. Phân tách bằng Tab
+                else if (line.includes("\t")) {
+                    const rawParts = line.split("\t").map(p => p.trim());
+                    if (rawParts.length >= 2) {
+                        user = rawParts[0];
+                        pass = rawParts[1];
+                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    }
+                }
+                // 3. Phân tách bằng dấu gạch ngang cách " - " hoặc " --- "
+                else if (/\s+[-–—]+\s+/.test(line)) {
+                    const rawParts = line.split(/\s+[-–—]+\s+/).map(p => p.trim());
+                    if (rawParts.length >= 2) {
+                        user = rawParts[0];
+                        pass = rawParts[1];
+                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    }
+                }
+                // 4. Phân tách bằng dấu hai chấm : (ví dụ: trucnhieutruyen:66773508subi)
+                else if (line.includes(":")) {
+                    const firstColon = line.indexOf(":");
+                    if (firstColon > 0) {
+                        user = line.substring(0, firstColon).trim();
+                        const remain = line.substring(firstColon + 1).trim();
+                        if (remain.includes(":")) {
+                            const nextColon = remain.indexOf(":");
+                            pass = remain.substring(0, nextColon).trim();
+                            noteParts = [remain.substring(nextColon + 1).trim()];
+                        } else {
+                            const spaceIdx = remain.search(/\s+/);
+                            if (spaceIdx > 0) {
+                                pass = remain.substring(0, spaceIdx).trim();
+                                noteParts = [remain.substring(spaceIdx).trim()];
+                            } else {
+                                pass = remain;
+                            }
+                        }
+                    }
+                }
+                // 5. Phân tách bằng dấu chấm phẩy ;
+                else if (line.includes(";")) {
+                    const rawParts = line.split(";").map(p => p.trim());
+                    if (rawParts.length >= 2) {
+                        user = rawParts[0];
+                        pass = rawParts[1];
+                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    }
+                }
+                // 6. Phân tách bằng khoảng trắng nếu có 2 từ
+                else {
+                    const rawParts = line.split(/\s+/).map(p => p.trim());
+                    if (rawParts.length >= 2) {
+                        user = rawParts[0];
+                        pass = rawParts[1];
+                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    }
+                }
+
+                // Làm sạch nhãn nếu copy cả tiền tố (ID:, User:, TK:, Acc:, Pass:, MK:,...)
+                user = user.replace(/^(id|user|username|tài\s*khoản|tai\s*khoan|tk|acc)\s*[:=-]\s*/i, "").trim();
+                pass = pass.replace(/^(pass|password|mật\s*khẩu|mat\s*khau|mk|pw)\s*[:=-]\s*/i, "").trim();
+
+                // Bỏ dấu nháy kép / nháy đơn
+                user = user.replace(/^["'`]|["'`]$/g, "").trim();
+                pass = pass.replace(/^["'`]|["'`]$/g, "").trim();
+
+                if (!user || !pass) return null;
+
+                let note = noteParts.join(" | ").trim();
+                if (!note) {
+                    note = defaultNote || "Acc Liên Quân";
+                }
+
+                return { user, pass, note };
+            }
+
+            function setupSmartDepositPreview(inputEl, previewBox, countEl, tipEl, listEl, submitBtn, typeTitle, defaultNote) {
+                if (!inputEl || !previewBox) return;
+
+                function refreshPreview() {
+                    const text = inputEl.value;
+                    if (!text || !text.trim()) {
+                        previewBox.classList.remove("is-active");
+                        if (submitBtn) {
+                            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào ${typeTitle}`;
+                        }
+                        return;
+                    }
+
+                    const lines = text.split("\n");
+                    const validAccs = [];
+                    lines.forEach(line => {
+                        const parsed = parseSmartAccountLine(line, defaultNote);
+                        if (parsed && parsed.user && parsed.pass) {
+                            validAccs.push(parsed);
+                        }
+                    });
+
+                    if (validAccs.length > 0) {
+                        previewBox.classList.add("is-active");
+                        if (countEl) countEl.textContent = validAccs.length;
+                        if (tipEl) tipEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Đã tự động lọc sạch ID & Mật khẩu (${validAccs.length} nick)`;
+
+                        // Render preview tối đa 5 nick đầu tiên
+                        const previewSlice = validAccs.slice(0, 5);
+                        let html = previewSlice.map((item, idx) => `
+                            <div class="smart-preview-item">
+                                <div class="smart-preview-acc">
+                                    <span style="color:var(--text-muted); font-size:10px;">#${idx + 1}</span>
+                                    <span class="smart-preview-id"><i class="fa-solid fa-user"></i> ${escapeHtml(item.user)}</span>
+                                    <span class="smart-preview-pass"><i class="fa-solid fa-key"></i> ${escapeHtml(item.pass)}</span>
+                                </div>
+                                <span class="smart-preview-note" title="${escapeHtml(item.note)}">${escapeHtml(item.note)}</span>
+                            </div>
+                        `).join("");
+
+                        if (validAccs.length > 5) {
+                            html += `<div style="text-align:center; font-size:11px; color:var(--text-muted); padding:3px;">... và còn ${validAccs.length - 5} tài khoản khác</div>`;
+                        }
+
+                        if (listEl) listEl.innerHTML = html;
+                        if (submitBtn) {
+                            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Lưu ${validAccs.length} Acc Vào ${typeTitle}`;
+                        }
+                    } else {
+                        previewBox.classList.remove("is-active");
+                        if (submitBtn) {
+                            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào ${typeTitle}`;
+                        }
+                    }
+                }
+
+                inputEl.addEventListener("input", refreshPreview);
+                inputEl.addEventListener("paste", () => setTimeout(refreshPreview, 50));
+            }
+
+            // Kích hoạt Live Smart Preview cho Kho Skin
+            const smartPreviewSkinBox = document.getElementById("smartPreviewSkinBox");
+            const smartSkinCount = document.getElementById("smartSkinCount");
+            const smartSkinTip = document.getElementById("smartSkinTip");
+            const smartSkinList = document.getElementById("smartSkinList");
+            setupSmartDepositPreview(depositSkinInput, smartPreviewSkinBox, smartSkinCount, smartSkinTip, smartSkinList, btnSubmitDepositSkin, "Kho Skin", "Acc Liên Quân 100-300 Skin");
+
             if (btnSubmitDepositSkin) {
                 btnSubmitDepositSkin.addEventListener("click", async () => {
                     const text = depositSkinInput.value.trim();
@@ -1586,8 +1876,24 @@
                         return;
                     }
 
+                    // Tự động parse và lọc sạch
+                    const lines = text.split("\n");
+                    const validAccs = [];
+                    lines.forEach(line => {
+                        const parsed = parseSmartAccountLine(line, "Acc Liên Quân 100-300 Skin");
+                        if (parsed && parsed.user && parsed.pass) {
+                            validAccs.push(parsed);
+                        }
+                    });
+
+                    if (validAccs.length === 0) {
+                        alert("Không nhận diện được tài khoản hợp lệ nào! Vui lòng kiểm tra lại dữ liệu nạp.");
+                        depositSkinInput.focus();
+                        return;
+                    }
+
                     btnSubmitDepositSkin.disabled = true;
-                    btnSubmitDepositSkin.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp...`;
+                    btnSubmitDepositSkin.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp ${validAccs.length} nick...`;
                     depositSkinFeedback.style.display = "none";
 
                     try {
@@ -1597,7 +1903,8 @@
                             body: JSON.stringify({
                                 action: "import_txt",
                                 acc_type: "skin",
-                                text: text
+                                text: text,
+                                accounts: validAccs
                             })
                         });
                         const res = await resp.json();
@@ -1608,9 +1915,10 @@
                             depositSkinFeedback.style.background = "rgba(16, 185, 129, 0.15)";
                             depositSkinFeedback.style.border = "1px solid #10b981";
                             depositSkinFeedback.style.color = "#34d399";
-                            depositSkinFeedback.textContent = res.message || `Đã nạp thành công ${res.added_count} nick vào Kho Skin!`;
+                            depositSkinFeedback.textContent = res.message || `Đã tự động lọc và nạp thành công ${res.added_count} nick vào Kho Skin!`;
 
                             depositSkinInput.value = "";
+                            if (smartPreviewSkinBox) smartPreviewSkinBox.classList.remove("is-active");
                             loadDashboardData();
                         } else {
                             if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
@@ -1777,6 +2085,13 @@
                 });
             }
 
+            // Kích hoạt Live Smart Preview cho Kho Chung Sức
+            const smartPreviewChungSucBox = document.getElementById("smartPreviewChungSucBox");
+            const smartChungSucCount = document.getElementById("smartChungSucCount");
+            const smartChungSucTip = document.getElementById("smartChungSucTip");
+            const smartChungSucList = document.getElementById("smartChungSucList");
+            setupSmartDepositPreview(depositChungSucInput, smartPreviewChungSucBox, smartChungSucCount, smartChungSucTip, smartChungSucList, btnSubmitDepositChungSuc, "Kho Chung Sức", "Acc Chung Sức VIP");
+
             if (btnSubmitDepositChungSuc) {
                 btnSubmitDepositChungSuc.addEventListener("click", async () => {
                     const text = depositChungSucInput.value.trim();
@@ -1786,8 +2101,24 @@
                         return;
                     }
 
+                    // Tự động parse và lọc sạch
+                    const lines = text.split("\n");
+                    const validAccs = [];
+                    lines.forEach(line => {
+                        const parsed = parseSmartAccountLine(line, "Acc Chung Sức VIP");
+                        if (parsed && parsed.user && parsed.pass) {
+                            validAccs.push(parsed);
+                        }
+                    });
+
+                    if (validAccs.length === 0) {
+                        alert("Không nhận diện được tài khoản hợp lệ nào! Vui lòng kiểm tra lại dữ liệu nạp.");
+                        depositChungSucInput.focus();
+                        return;
+                    }
+
                     btnSubmitDepositChungSuc.disabled = true;
-                    btnSubmitDepositChungSuc.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp...`;
+                    btnSubmitDepositChungSuc.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang nạp ${validAccs.length} nick...`;
                     depositChungSucFeedback.style.display = "none";
 
                     try {
@@ -1797,7 +2128,8 @@
                             body: JSON.stringify({
                                 action: "import_txt",
                                 acc_type: "chung_suc",
-                                text: text
+                                text: text,
+                                accounts: validAccs
                             })
                         });
                         const res = await resp.json();
@@ -1808,9 +2140,10 @@
                             depositChungSucFeedback.style.background = "rgba(16, 185, 129, 0.15)";
                             depositChungSucFeedback.style.border = "1px solid #10b981";
                             depositChungSucFeedback.style.color = "#34d399";
-                            depositChungSucFeedback.textContent = res.message || `Đã nạp thành công ${res.added_count} nick vào Kho Chung Sức!`;
+                            depositChungSucFeedback.textContent = res.message || `Đã tự động lọc và nạp thành công ${res.added_count} nick vào Kho Chung Sức!`;
 
                             depositChungSucInput.value = "";
+                            if (smartPreviewChungSucBox) smartPreviewChungSucBox.classList.remove("is-active");
                             loadDashboardData();
                         } else {
                             if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
