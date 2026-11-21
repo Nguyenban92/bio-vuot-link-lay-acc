@@ -571,6 +571,163 @@
             display: none;
             z-index: 1000;
         }
+
+        /* ================= TABS CHUYỂN ĐỔI GIAO DIỆN ADMIN ================= */
+        .admin-main-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .admin-tab-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: var(--font-heading);
+            font-size: 13.5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(12px);
+        }
+
+        .admin-tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-tab-btn.is-active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+            border-color: rgba(56, 189, 248, 0.5);
+            color: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .admin-tab-btn.tab-hot-admin-btn.is-active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(239, 68, 68, 0.18) 100%);
+            border-color: rgba(245, 158, 11, 0.55);
+            color: #fde047;
+        }
+
+        .admin-tab-pill {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .pill-hot-alert {
+            background: rgba(245, 158, 11, 0.25);
+            color: #fde047;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .admin-view-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* Nút Chép UID Nhanh */
+        .btn-copy-uid {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .btn-copy-uid:hover {
+            background: #38bdf8;
+            color: #000;
+        }
+
+        /* Nút Cập Nhật Trạng Thái Buff */
+        .btn-mark-buff-done {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: #ffffff;
+            padding: 6px 11px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-mark-buff-done:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-mark-buff-revert {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-mark-buff-revert:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .badge-status-pending {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .badge-status-done {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body>
@@ -585,8 +742,8 @@
                     <i class="fa-solid fa-server"></i>
                 </div>
                 <div>
-                    <h1 class="admin-title">MA GIÁO AOV • QUẢN TRỊ KHO ACC</h1>
-                    <p class="admin-sub">Hệ thống cấp tài khoản tự động theo thứ tự (1 Key = 1 Acc)</p>
+                    <h1 class="admin-title">MA GIÁO AOV • QUẢN TRỊ HỆ THỐNG</h1>
+                    <p class="admin-sub">Quản trị kho Acc tự động & Quản lý duyệt buff Like Độ Hot LQ</p>
                 </div>
             </div>
             <a href="index.html" class="btn-nav-bio">
@@ -594,114 +751,221 @@
             </a>
         </header>
 
-        <!-- 2. Thống Kê 3 Chỉ Số Quan Trọng Nhất (Tổng, Đã phát, Chưa phát) -->
-        <section class="kpi-grid">
-            <!-- Tổng số Acc -->
-            <div class="kpi-card kpi-total">
-                <div class="kpi-top-row">
-                    <span class="kpi-label">Tổng Số Acc</span>
-                    <i class="fa-solid fa-database kpi-icon" style="color:var(--cyan);"></i>
-                </div>
-                <div class="kpi-value" id="kpiTotal">0</div>
-                <div class="kpi-hint">Toàn bộ tài khoản có trong kho</div>
-            </div>
+        <!-- THANH CHUYỂN TAB ADMIN: KHO ACC vs LIKE & ĐỘ HOT -->
+        <nav class="admin-main-tabs" id="adminMainTabs">
+            <button type="button" class="admin-tab-btn is-active" id="tabNavAcc" data-admin-tab="acc">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>📦 Kho Acc Liên Quân</span>
+                <span class="admin-tab-pill" id="badgeAccAvailable">0</span>
+            </button>
+            <button type="button" class="admin-tab-btn tab-hot-admin-btn" id="tabNavHot" data-admin-tab="hot">
+                <i class="fa-solid fa-fire text-warning"></i>
+                <span>🔥 Quản Lý Like & Độ Hot LQ</span>
+                <span class="admin-tab-pill pill-hot-alert" id="badgeHotPending">0</span>
+            </button>
+        </nav>
 
-            <!-- Đã phát -->
-            <div class="kpi-card kpi-claimed">
-                <div class="kpi-top-row">
-                    <span class="kpi-label">Đã Phát (Xong)</span>
-                    <i class="fa-solid fa-circle-check kpi-icon" style="color:var(--rose);"></i>
-                </div>
-                <div class="kpi-value" style="color:#fb7185;" id="kpiClaimed">0</div>
-                <div class="kpi-hint">Đã kích hoạt gửi cho khách</div>
-            </div>
-
-            <!-- Chưa phát -->
-            <div class="kpi-card kpi-available">
-                <div class="kpi-top-row">
-                    <span class="kpi-label">Chưa Phát (Còn)</span>
-                    <i class="fa-solid fa-bolt kpi-icon" style="color:var(--success);"></i>
-                </div>
-                <div class="kpi-value" style="color:#34d399;" id="kpiAvailable">0</div>
-                <div class="kpi-hint">Sẵn sàng cấp cho lượt tiếp theo</div>
-            </div>
-        </section>
-
-        <!-- 3. Khu vực Quản Trị & Danh Sách Acc -->
-        <section class="dashboard-card">
-
-            <!-- Toolbar trên đầu bảng -->
-            <div class="toolbar-row">
-                <!-- Bộ lọc trạng thái -->
-                <div class="filter-tabs">
-                    <button type="button" class="filter-btn is-active" data-filter="all" id="btnFilterAll">Tất Cả (<span id="countAll">0</span>)</button>
-                    <button type="button" class="filter-btn" data-filter="ready" id="btnFilterReady">🟢 Chưa Phát (<span id="countReady">0</span>)</button>
-                    <button type="button" class="filter-btn" data-filter="claimed" id="btnFilterClaimed">🔴 Đã Phát (<span id="countClaimed">0</span>)</button>
+        <!-- ============================================================== -->
+        <!-- VIEW 1: QUẢN TRỊ KHO ACC LIÊN QUÂN                             -->
+        <!-- ============================================================== -->
+        <div id="viewAccContainer" class="admin-view-panel">
+            <!-- 2. Thống Kê 3 Chỉ Số Quan Trọng Nhất (Tổng, Đã phát, Chưa phát) -->
+            <section class="kpi-grid">
+                <!-- Tổng số Acc -->
+                <div class="kpi-card kpi-total">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">Tổng Số Acc</span>
+                        <i class="fa-solid fa-database kpi-icon" style="color:var(--cyan);"></i>
+                    </div>
+                    <div class="kpi-value" id="kpiTotal">0</div>
+                    <div class="kpi-hint">Toàn bộ tài khoản có trong kho</div>
                 </div>
 
-                <!-- Các nút hành động nhanh -->
-                <div class="toolbar-actions">
-                    <button type="button" class="btn-action-sm btn-toggle-deposit" id="btnToggleDeposit">
-                        <i class="fa-solid fa-plus"></i> Nạp Acc (TXT)
-                    </button>
-                    <button type="button" class="btn-action-sm btn-refresh" id="btnRefresh" title="Làm mới dữ liệu">
-                        <i class="fa-solid fa-rotate"></i>
-                    </button>
+                <!-- Đã phát -->
+                <div class="kpi-card kpi-claimed">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">Đã Phát (Xong)</span>
+                        <i class="fa-solid fa-circle-check kpi-icon" style="color:var(--rose);"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#fb7185;" id="kpiClaimed">0</div>
+                    <div class="kpi-hint">Đã kích hoạt gửi cho khách</div>
                 </div>
-            </div>
 
-            <!-- Khung Nạp Acc Bằng File TXT (Mở ra khi bấm nút) -->
-            <div class="deposit-drawer" id="depositDrawer">
-                <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-                    <span>📋 <b>Dán danh sách nick từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
-                    <button type="button" id="btnCloseDeposit" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
-                        <i class="fa-solid fa-xmark"></i> Đóng
-                    </button>
+                <!-- Chưa phát -->
+                <div class="kpi-card kpi-available">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">Chưa Phát (Còn)</span>
+                        <i class="fa-solid fa-bolt kpi-icon" style="color:var(--success);"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#34d399;" id="kpiAvailable">0</div>
+                    <div class="kpi-hint">Sẵn sàng cấp cho lượt tiếp theo</div>
                 </div>
-                <textarea id="depositInput" class="deposit-txt-area" placeholder="garena_acc1|Pass123|Ghi chú...&#10;garena_acc2:Pass456&#10;garena_acc3|Pass789"></textarea>
-                
-                <div class="deposit-btn-row">
-                    <button type="button" class="btn-clean-samples" id="btnCleanSamples">
-                        <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Cũ
-                    </button>
-                    <button type="button" class="btn-submit-deposit" id="btnSubmitDeposit">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc
-                    </button>
+            </section>
+
+            <!-- 3. Khu vực Quản Trị & Danh Sách Acc -->
+            <section class="dashboard-card">
+
+                <!-- Toolbar trên đầu bảng -->
+                <div class="toolbar-row">
+                    <!-- Bộ lọc trạng thái -->
+                    <div class="filter-tabs">
+                        <button type="button" class="filter-btn is-active" data-filter="all" id="btnFilterAll">Tất Cả (<span id="countAll">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="ready" id="btnFilterReady">🟢 Chưa Phát (<span id="countReady">0</span>)</button>
+                        <button type="button" class="filter-btn" data-filter="claimed" id="btnFilterClaimed">🔴 Đã Phát (<span id="countClaimed">0</span>)</button>
+                    </div>
+
+                    <!-- Các nút hành động nhanh -->
+                    <div class="toolbar-actions">
+                        <button type="button" class="btn-action-sm btn-toggle-deposit" id="btnToggleDeposit">
+                            <i class="fa-solid fa-plus"></i> Nạp Acc (TXT)
+                        </button>
+                        <button type="button" class="btn-action-sm btn-refresh" id="btnRefresh" title="Làm mới dữ liệu">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
                 </div>
-                <div id="depositFeedback" style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:700;"></div>
-            </div>
 
-            <!-- Ô Tìm Kiếm Thực Tế -->
-            <div class="search-box-wrap">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm theo Tài khoản, Mật khẩu, Mã Key, Ghi chú...">
-            </div>
+                <!-- Khung Nạp Acc Bằng File TXT (Mở ra khi bấm nút) -->
+                <div class="deposit-drawer" id="depositDrawer">
+                    <div style="font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
+                        <span>📋 <b>Dán danh sách nick từ file .txt</b> (User|Pass hoặc User:Pass, mỗi dòng 1 nick):</span>
+                        <button type="button" id="btnCloseDeposit" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
+                            <i class="fa-solid fa-xmark"></i> Đóng
+                        </button>
+                    </div>
+                    <textarea id="depositInput" class="deposit-txt-area" placeholder="garena_acc1|Pass123|Ghi chú...&#10;garena_acc2:Pass456&#10;garena_acc3|Pass789"></textarea>
+                    
+                    <div class="deposit-btn-row">
+                        <button type="button" class="btn-clean-samples" id="btnCleanSamples">
+                            <i class="fa-solid fa-trash-can"></i> Xóa Acc Mẫu Cũ
+                        </button>
+                        <button type="button" class="btn-submit-deposit" id="btnSubmitDeposit">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Vào Kho Acc
+                        </button>
+                    </div>
+                    <div id="depositFeedback" style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:700;"></div>
+                </div>
 
-            <!-- Bảng Dữ Liệu Acc (Có Ngày Giờ Phát Rõ Ràng) -->
-            <div class="table-responsive-card">
-                <table class="stock-table">
-                    <thead>
-                        <tr>
-                            <th style="width:55px;">STT</th>
-                            <th>Tài Khoản (User)</th>
-                            <th>Mật Khẩu (Pass)</th>
-                            <th>Ghi Chú</th>
-                            <th style="width:125px;">Trạng Thái</th>
-                            <th style="width:140px;">Mã Key</th>
-                            <th style="width:160px;">Ngày Giờ Phát</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stockTableBody">
-                        <tr>
-                            <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu kho Acc...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <!-- Ô Tìm Kiếm Thực Tế -->
+                <div class="search-box-wrap">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm theo Tài khoản, Mật khẩu, Mã Key, Ghi chú...">
+                </div>
 
-        </section>
+                <!-- Bảng Dữ Liệu Acc (Có Ngày Giờ Phát Rõ Ràng) -->
+                <div class="table-responsive-card">
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th style="width:55px;">STT</th>
+                                <th>Tài Khoản (User)</th>
+                                <th>Mật Khẩu (Pass)</th>
+                                <th>Ghi Chú</th>
+                                <th style="width:125px;">Trạng Thái</th>
+                                <th style="width:140px;">Mã Key</th>
+                                <th style="width:160px;">Ngày Giờ Phát</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu kho Acc...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- VIEW 2: QUẢN LÝ YÊU CẦU LIKE & ĐỘ HOT LQ                       -->
+        <!-- ============================================================== -->
+        <div id="viewHotContainer" class="admin-view-panel" style="display:none;">
+            <!-- 3 Thẻ Thống Kê Độ Hot -->
+            <section class="kpi-grid">
+                <!-- Tổng Yêu Cầu -->
+                <div class="kpi-card kpi-total">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">Tổng Yêu Cầu Buff</span>
+                        <i class="fa-solid fa-fire kpi-icon" style="color:#f59e0b;"></i>
+                    </div>
+                    <div class="kpi-value" id="kpiHotTotal">0</div>
+                    <div class="kpi-hint">Toàn bộ yêu cầu tăng Độ Hot đã gửi</div>
+                </div>
+
+                <!-- Đang Chờ Buff -->
+                <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">🟡 Đang Chờ Buff</span>
+                        <i class="fa-solid fa-clock kpi-icon" style="color:#f59e0b;"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#fbbf24;" id="kpiHotPending">0</div>
+                    <div class="kpi-hint">Cần Admin vào game buff sớm nhất</div>
+                </div>
+
+                <!-- Đã Buff Xong -->
+                <div class="kpi-card kpi-available">
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">🟢 Đã Buff Xong</span>
+                        <i class="fa-solid fa-circle-check kpi-icon" style="color:var(--success);"></i>
+                    </div>
+                    <div class="kpi-value" style="color:#34d399;" id="kpiHotDone">0</div>
+                    <div class="kpi-hint">Yêu cầu đã hoàn tất thành công</div>
+                </div>
+            </section>
+
+            <!-- Bảng Dữ Liệu Quản Lý Like & Độ Hot -->
+            <section class="dashboard-card">
+                <!-- Toolbar trên đầu bảng -->
+                <div class="toolbar-row">
+                    <!-- Bộ lọc trạng thái Độ Hot -->
+                    <div class="filter-tabs">
+                        <button type="button" class="filter-btn is-active" data-hot-filter="all" id="btnFilterHotAll">Tất Cả (<span id="countHotAll">0</span>)</button>
+                        <button type="button" class="filter-btn" data-hot-filter="pending" id="btnFilterHotPending">🟡 Chờ Buff (<span id="countHotPending">0</span>)</button>
+                        <button type="button" class="filter-btn" data-hot-filter="done" id="btnFilterHotDone">🟢 Đã Buff (<span id="countHotDone">0</span>)</button>
+                    </div>
+
+                    <!-- Nút làm mới -->
+                    <div class="toolbar-actions">
+                        <button type="button" class="btn-action-sm btn-refresh" id="btnRefreshHot" title="Làm mới danh sách Độ Hot">
+                            <i class="fa-solid fa-rotate"></i> Làm Mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ô Tìm Kiếm Độ Hot -->
+                <div class="search-box-wrap">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInputHot" class="search-input" placeholder="Tìm kiếm theo UID, Tên nhân vật, Mã Key, Gói buff...">
+                </div>
+
+                <!-- Bảng Dữ Liệu Yêu Cầu Like & Độ Hot LQ -->
+                <div class="table-responsive-card">
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th style="width:55px;">STT</th>
+                                <th style="min-width:220px;">UID / Tên Nhân Vật Game</th>
+                                <th style="width:170px;">Mã Key</th>
+                                <th style="min-width:190px;">Gói Buff Yêu Cầu</th>
+                                <th style="width:160px;">Thời Gian Gửi</th>
+                                <th style="width:145px;">Trạng Thái</th>
+                                <th style="width:125px;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hotTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách yêu cầu Độ Hot...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
 
         <!-- Footer -->
         <footer style="text-align:center; padding:10px 0; font-size:11px; color:var(--text-muted);">
@@ -748,22 +1012,23 @@
             const pinError = document.getElementById("pinAlertError");
             const adminMain = document.getElementById("adminMainContent");
 
-            // KPI elements
+            // KPI elements - Kho Acc
             const kpiTotal = document.getElementById("kpiTotal");
             const kpiClaimed = document.getElementById("kpiClaimed");
             const kpiAvailable = document.getElementById("kpiAvailable");
+            const badgeAccAvailable = document.getElementById("badgeAccAvailable");
 
-            // Filter counts
+            // Filter counts - Kho Acc
             const countAll = document.getElementById("countAll");
             const countReady = document.getElementById("countReady");
             const countClaimed = document.getElementById("countClaimed");
 
-            // Table & controls
+            // Table & controls - Kho Acc
             const tableBody = document.getElementById("stockTableBody");
             const searchInput = document.getElementById("searchInput");
             const btnRefresh = document.getElementById("btnRefresh");
 
-            // Drawer
+            // Drawer - Kho Acc
             const btnToggleDeposit = document.getElementById("btnToggleDeposit");
             const btnCloseDeposit = document.getElementById("btnCloseDeposit");
             const depositDrawer = document.getElementById("depositDrawer");
@@ -772,8 +1037,31 @@
             const btnCleanSamples = document.getElementById("btnCleanSamples");
             const depositFeedback = document.getElementById("depositFeedback");
 
+            // Tabs Admin Navigation
+            const tabNavAcc = document.getElementById("tabNavAcc");
+            const tabNavHot = document.getElementById("tabNavHot");
+            const viewAccContainer = document.getElementById("viewAccContainer");
+            const viewHotContainer = document.getElementById("viewHotContainer");
+
+            // KPI & Controls - Độ Hot LQ
+            const kpiHotTotal = document.getElementById("kpiHotTotal");
+            const kpiHotPending = document.getElementById("kpiHotPending");
+            const kpiHotDone = document.getElementById("kpiHotDone");
+            const badgeHotPending = document.getElementById("badgeHotPending");
+
+            const countHotAll = document.getElementById("countHotAll");
+            const countHotPending = document.getElementById("countHotPending");
+            const countHotDone = document.getElementById("countHotDone");
+
+            const hotTableBody = document.getElementById("hotTableBody");
+            const searchInputHot = document.getElementById("searchInputHot");
+            const btnRefreshHot = document.getElementById("btnRefreshHot");
+
             let fullAccountList = [];
             let currentFilter = "all";
+
+            let fullHotList = [];
+            let currentHotFilter = "all";
 
             /* ================= 1. ĐĂNG NHẬP AN TOÀN ================= */
             function grantAccess() {
@@ -782,6 +1070,7 @@
                 pinOverlay.classList.add("is-hidden");
                 adminMain.style.display = "flex";
                 loadDashboardData();
+                loadHotData();
             }
 
             function attemptLogin() {
@@ -806,7 +1095,29 @@
                 grantAccess();
             }
 
-            /* ================= 2. TẢI DỮ LIỆU BẢNG & THỐNG KÊ ================= */
+            /* ================= CHUYỂN ĐỔI TAB ADMIN ================= */
+            if (tabNavAcc && tabNavHot) {
+                tabNavAcc.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    tabNavAcc.classList.add("is-active");
+                    tabNavHot.classList.remove("is-active");
+                    viewAccContainer.style.display = "flex";
+                    viewHotContainer.style.display = "none";
+                });
+
+                tabNavHot.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    tabNavHot.classList.add("is-active");
+                    tabNavAcc.classList.remove("is-active");
+                    viewHotContainer.style.display = "flex";
+                    viewAccContainer.style.display = "none";
+                    if (fullHotList.length === 0) {
+                        loadHotData();
+                    }
+                });
+            }
+
+            /* ================= 2. TẢI DỮ LIỆU KHO ACC ================= */
             async function loadDashboardData() {
                 if (!apiUrl) return;
                 
@@ -831,7 +1142,7 @@
                 }
             }
 
-            /* ================= 3. THỐNG KÊ & BỘ ĐẾM ================= */
+            /* ================= 3. THỐNG KÊ KHO ACC ================= */
             function updateStatsAndCounts() {
                 const total = fullAccountList.length;
                 let claimed = 0;
@@ -849,9 +1160,10 @@
                 countAll.textContent = total;
                 countReady.textContent = available;
                 countClaimed.textContent = claimed;
+                if (badgeAccAvailable) badgeAccAvailable.textContent = `${available} còn`;
             }
 
-            /* ================= 4. HIỂN THỊ BẢNG ACC & NGÀY GIỜ PHÁT ================= */
+            /* ================= 4. HIỂN THỊ BẢNG KHO ACC ================= */
             function renderTable() {
                 const searchKeyword = searchInput.value.trim().toLowerCase();
 
@@ -912,6 +1224,161 @@
                 }).join("");
             }
 
+            /* ================= 5. TẢI DỮ LIỆU ĐỘ HOT LQ ================= */
+            async function loadHotData() {
+                if (!apiUrl) return;
+
+                if (btnRefreshHot && btnRefreshHot.querySelector("i")) {
+                    btnRefreshHot.querySelector("i").classList.add("fa-spin");
+                }
+
+                try {
+                    const resp = await fetch(`${apiUrl}?action=admin_get_hot_list&_t=${Date.now()}`);
+                    const res = await resp.json();
+
+                    if (res && res.success && Array.isArray(res.list)) {
+                        fullHotList = res.list;
+                        updateHotStatsAndCounts();
+                        renderHotTable();
+                    } else {
+                        hotTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải danh sách yêu cầu Độ Hot từ Google Sheets.</td></tr>`;
+                    }
+                } catch (err) {
+                    console.error("Lỗi kết nối Độ Hot:", err);
+                    hotTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Lỗi kết nối máy chủ!</td></tr>`;
+                } finally {
+                    if (btnRefreshHot && btnRefreshHot.querySelector("i")) {
+                        btnRefreshHot.querySelector("i").classList.remove("fa-spin");
+                    }
+                }
+            }
+
+            /* ================= 6. THỐNG KÊ ĐỘ HOT LQ ================= */
+            function updateHotStatsAndCounts() {
+                const total = fullHotList.length;
+                let pending = 0;
+                let done = 0;
+
+                fullHotList.forEach(item => {
+                    const st = String(item.status || "").toUpperCase();
+                    if (st.includes("CHỜ")) pending++;
+                    else if (st.includes("BUFF XONG") || st.includes("HOÀN THÀNH")) done++;
+                });
+
+                if (kpiHotTotal) kpiHotTotal.textContent = total;
+                if (kpiHotPending) kpiHotPending.textContent = pending;
+                if (kpiHotDone) kpiHotDone.textContent = done;
+
+                if (countHotAll) countHotAll.textContent = total;
+                if (countHotPending) countHotPending.textContent = pending;
+                if (countHotDone) countHotDone.textContent = done;
+
+                if (badgeHotPending) {
+                    badgeHotPending.textContent = `${pending} chờ buff`;
+                    badgeHotPending.style.background = pending > 0 ? "rgba(245, 158, 11, 0.3)" : "rgba(255, 255, 255, 0.1)";
+                }
+            }
+
+            /* ================= 7. HIỂN THỊ BẢNG YÊU CẦU ĐỘ HOT ================= */
+            function renderHotTable() {
+                const searchKeyword = searchInputHot ? searchInputHot.value.trim().toLowerCase() : "";
+
+                let filtered = fullHotList.filter(item => {
+                    const st = String(item.status || "").toUpperCase();
+                    const isPending = st.includes("CHỜ");
+                    const isDone = st.includes("BUFF XONG") || st.includes("HOÀN THÀNH");
+
+                    if (currentHotFilter === "pending" && !isPending) return false;
+                    if (currentHotFilter === "done" && !isDone) return false;
+
+                    if (searchKeyword) {
+                        const u = String(item.uid || "").toLowerCase();
+                        const k = String(item.key || "").toLowerCase();
+                        const b = String(item.buff_type || "").toLowerCase();
+                        return u.includes(searchKeyword) || k.includes(searchKeyword) || b.includes(searchKeyword);
+                    }
+                    return true;
+                });
+
+                if (filtered.length === 0) {
+                    hotTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Không tìm thấy yêu cầu tăng Độ Hot nào.</td></tr>`;
+                    return;
+                }
+
+                // Sắp xếp: Yêu cầu mới nhất hoặc đang chờ buff lên đầu
+                filtered.sort((a, b) => {
+                    const aPending = String(a.status || "").includes("CHỜ") ? 1 : 0;
+                    const bPending = String(b.status || "").includes("CHỜ") ? 1 : 0;
+                    if (aPending !== bPending) return bPending - aPending;
+                    return (b.rowIndex || 0) - (a.rowIndex || 0);
+                });
+
+                hotTableBody.innerHTML = filtered.map(item => {
+                    const isPending = String(item.status || "").includes("CHỜ");
+                    const statusBadge = isPending
+                        ? `<span class="badge-status-pending"><i class="fa-solid fa-clock"></i> Chờ Buff</span>`
+                        : `<span class="badge-status-done"><i class="fa-solid fa-check"></i> Đã Buff</span>`;
+
+                    const actionBtn = isPending
+                        ? `<button type="button" class="btn-mark-buff-done" onclick="updateHotStatus(${item.rowIndex}, '🟢 ĐÃ BUFF XONG')">
+                               <i class="fa-solid fa-check"></i> Đã Buff
+                           </button>`
+                        : `<button type="button" class="btn-mark-buff-revert" onclick="updateHotStatus(${item.rowIndex}, '🟡 ĐANG CHỜ BUFF')">
+                               <i class="fa-solid fa-rotate-left"></i> Chờ Lại
+                           </button>`;
+
+                    const timeFormatted = formatClaimTime(item.time);
+
+                    return `
+                        <tr>
+                            <td class="val-stt">#${item.stt}</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                    <span class="val-mono" style="color:var(--cyan); font-weight:800; font-size:13px;">${escapeHtml(item.uid)}</span>
+                                    <button type="button" class="btn-copy-uid" onclick="copySnippet('${escapeHtml(item.uid)}', 'Đã sao chép UID!')" title="Sao chép UID để vào game buff">
+                                        <i class="fa-solid fa-copy"></i> Chép UID
+                                    </button>
+                                </div>
+                            </td>
+                            <td><span class="tag-key">${escapeHtml(item.key)}</span></td>
+                            <td style="color:#fde047; font-weight:700; font-size:12px;">${escapeHtml(item.buff_type)}</td>
+                            <td>${timeFormatted}</td>
+                            <td>${statusBadge}</td>
+                            <td>${actionBtn}</td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            /* ================= 8. CẬP NHẬT TRẠNG THÁI BUFF CHO ADMIN ================= */
+            window.updateHotStatus = async function (rowIndex, newStatus) {
+                if (!apiUrl || !rowIndex) return;
+
+                const targetItem = fullHotList.find(x => x.rowIndex === rowIndex);
+                if (targetItem) {
+                    targetItem.status = newStatus;
+                    updateHotStatsAndCounts();
+                    renderHotTable();
+                }
+
+                try {
+                    const resp = await fetch(`${apiUrl}?action=admin_update_hot_status&row_index=${rowIndex}&status=${encodeURIComponent(newStatus)}&_t=${Date.now()}`);
+                    const res = await resp.json();
+
+                    if (res && res.success) {
+                        if (typeof sounds !== 'undefined' && sounds.playSuccess) sounds.playSuccess();
+                        window.copySnippet("", `✓ Đã chuyển trạng thái dòng #${rowIndex}: ${newStatus}`);
+                    } else {
+                        alert(res.message || "Lỗi cập nhật trạng thái!");
+                        loadHotData();
+                    }
+                } catch (err) {
+                    console.error("Lỗi cập nhật:", err);
+                    alert("Lỗi kết nối máy chủ khi cập nhật trạng thái!");
+                    loadHotData();
+                }
+            };
+
             /* Định dạng ngày giờ chuẩn Việt Nam: HH:mm:ss • dd/MM/yyyy */
             function formatClaimTime(rawTime) {
                 if (!rawTime || !String(rawTime).trim()) {
@@ -938,12 +1405,12 @@
                 }
             }
 
-            /* ================= 5. TÌM KIẾM & BỘ LỌC TABS ================= */
+            /* ================= 9. TÌM KIẾM & BỘ LỌC TABS KHO ACC ================= */
             searchInput.addEventListener("input", renderTable);
 
-            document.querySelectorAll(".filter-btn").forEach(btn => {
+            document.querySelectorAll(".filter-btn[data-filter]").forEach(btn => {
                 btn.addEventListener("click", () => {
-                    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("is-active"));
+                    document.querySelectorAll(".filter-btn[data-filter]").forEach(b => b.classList.remove("is-active"));
                     btn.classList.add("is-active");
                     currentFilter = btn.dataset.filter;
                     renderTable();
@@ -954,6 +1421,27 @@
                 if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
                 loadDashboardData();
             });
+
+            /* ================= 10. TÌM KIẾM & BỘ LỌC TABS ĐỘ HOT LQ ================= */
+            if (searchInputHot) {
+                searchInputHot.addEventListener("input", renderHotTable);
+            }
+
+            document.querySelectorAll(".filter-btn[data-hot-filter]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".filter-btn[data-hot-filter]").forEach(b => b.classList.remove("is-active"));
+                    btn.classList.add("is-active");
+                    currentHotFilter = btn.dataset.hotFilter;
+                    renderHotTable();
+                });
+            });
+
+            if (btnRefreshHot) {
+                btnRefreshHot.addEventListener("click", () => {
+                    if (typeof sounds !== 'undefined' && sounds.playClick) sounds.playClick();
+                    loadHotData();
+                });
+            }
 
             /* ================= 6. NẠP ACC TỪ FILE TXT ================= */
             btnToggleDeposit.addEventListener("click", () => {

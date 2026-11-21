@@ -164,6 +164,22 @@ class BypassClaimManager {
     }
 
     bindEvents() {
+        // Chuyển đổi giữa 2 Tab Dịch Vụ: Nhận Acc Free vs Tặng Độ HOT Free
+        const tabBtnAcc = document.getElementById("tabBtnAcc");
+        const tabBtnHot = document.getElementById("tabBtnHot");
+
+        if (tabBtnAcc && tabBtnHot) {
+            tabBtnAcc.addEventListener("click", () => {
+                sounds.playClick();
+                this.switchTab("tab-acc");
+            });
+
+            tabBtnHot.addEventListener("click", () => {
+                sounds.playClick();
+                this.switchTab("tab-hot");
+            });
+        }
+
         // Nút mở link vượt - mở thẳng tab mới ngay lập tức
         const bypassBtn = document.getElementById("btnMainBypass");
         if (bypassBtn) {
@@ -189,7 +205,7 @@ class BypassClaimManager {
             });
         }
 
-        // Nút Kích hoạt mã Key
+        // Nút Kích hoạt mã Key (Tab 1: Nhận Acc)
         const btnActivate = document.getElementById("btnActivateKey");
         const inputKey = document.getElementById("inputActivationKey");
 
@@ -211,6 +227,73 @@ class BypassClaimManager {
                 }
             });
         }
+
+        // Nút Gửi Yêu Cầu Tăng Độ Hot (Tab 2: Tặng Độ HOT Liên Quân)
+        const btnSubmitHot = document.getElementById("btnSubmitHot");
+        const inputHotKey = document.getElementById("inputHotKey");
+        const inputHotUid = document.getElementById("inputHotUid");
+        const selectHotPackage = document.getElementById("selectHotPackage");
+
+        if (btnSubmitHot && inputHotKey && inputHotUid) {
+            btnSubmitHot.addEventListener("click", () => {
+                const keyVal = inputHotKey.value.trim();
+                const uidVal = inputHotUid.value.trim();
+                const pkgVal = selectHotPackage ? selectHotPackage.value : "Tăng +500 Độ Hot & Like Profile";
+
+                if (!keyVal) {
+                    sounds.playError();
+                    this.showToast("Vui lòng dán mã Key vừa vượt link vào ô 1!", "warning");
+                    inputHotKey.focus();
+                    return;
+                }
+
+                if (!uidVal) {
+                    sounds.playError();
+                    this.showToast("Vui lòng nhập UID hoặc Tên nhân vật game vào ô 2!", "warning");
+                    inputHotUid.focus();
+                    return;
+                }
+
+                this.executeSubmitHot(keyVal, uidVal, pkgVal);
+            });
+
+            inputHotUid.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    btnSubmitHot.click();
+                }
+            });
+
+            inputHotKey.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    inputHotUid.focus();
+                }
+            });
+        }
+    }
+
+    switchTab(tabId) {
+        const tabBtnAcc = document.getElementById("tabBtnAcc");
+        const tabBtnHot = document.getElementById("tabBtnHot");
+        const headerPanelAcc = document.getElementById("headerPanelAcc");
+        const headerPanelHot = document.getElementById("headerPanelHot");
+        const formPanelAcc = document.getElementById("formPanelAcc");
+        const formPanelHot = document.getElementById("formPanelHot");
+
+        if (tabId === "tab-hot") {
+            if (tabBtnHot) tabBtnHot.classList.add("is-active");
+            if (tabBtnAcc) tabBtnAcc.classList.remove("is-active");
+            if (headerPanelHot) headerPanelHot.style.display = "block";
+            if (headerPanelAcc) headerPanelAcc.style.display = "none";
+            if (formPanelHot) formPanelHot.style.display = "block";
+            if (formPanelAcc) formPanelAcc.style.display = "none";
+        } else {
+            if (tabBtnAcc) tabBtnAcc.classList.add("is-active");
+            if (tabBtnHot) tabBtnHot.classList.remove("is-active");
+            if (headerPanelAcc) headerPanelAcc.style.display = "block";
+            if (headerPanelHot) headerPanelHot.style.display = "none";
+            if (formPanelAcc) formPanelAcc.style.display = "block";
+            if (formPanelHot) formPanelHot.style.display = "none";
+        }
     }
 
     openBypassConfirmModal(url) {
@@ -230,18 +313,124 @@ class BypassClaimManager {
         this.openModal("bypassConfirmModal");
     }
 
-    // Tự động kích hoạt nếu URL có ?key=... (từ trang key.html chuyển về)
+    // Tự động điền mã Key khi từ trang key.html chuyển về (?key=...)
     checkUrlForActivationKey() {
         const urlParams = new URLSearchParams(window.location.search);
         const key = urlParams.get("key") || urlParams.get("claim_key");
+        const tabParam = urlParams.get("tab");
 
         if (key && key.trim()) {
-            const inputKey = document.getElementById("inputActivationKey");
-            if (inputKey) inputKey.value = key.trim();
+            const trimmedKey = key.trim();
+            const inputAcc = document.getElementById("inputActivationKey");
+            const inputHot = document.getElementById("inputHotKey");
 
-            setTimeout(() => {
-                this.executeActivateKey(key.trim(), true);
-            }, 600);
+            if (inputAcc) inputAcc.value = trimmedKey;
+            if (inputHot) inputHot.value = trimmedKey;
+
+            if (tabParam === "hot") {
+                this.switchTab("tab-hot");
+            }
+
+            sounds.playSuccess();
+            this.showToast("Đã nạp mã Key! Bạn có thể chọn Nhận Acc hoặc Buff Độ Hot bên dưới.", "success");
+        }
+    }
+
+    // THỰC THI GỬI YÊU CẦU BUFF ĐỘ HOT LIÊN QUÂN (DÙNG MÃ KEY)
+    async executeSubmitHot(key, uid, buffType) {
+        if (!key || !uid || this.isProcessing) return;
+        this.isProcessing = true;
+
+        const btnSubmit = document.getElementById("btnSubmitHot");
+        const originalBtnHtml = btnSubmit ? btnSubmit.innerHTML : "";
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang xác minh Key & Gửi dữ liệu...</span>`;
+        }
+
+        try {
+            let result = null;
+
+            if (this.apiUrl) {
+                const resp = await fetch(`${this.apiUrl}?action=submit_hot_request&key=${encodeURIComponent(key)}&uid=${encodeURIComponent(uid)}&buff_type=${encodeURIComponent(buffType)}&client_info=${encodeURIComponent(navigator.userAgent)}`);
+                const textResp = await resp.text();
+                try {
+                    result = JSON.parse(textResp);
+                } catch (parseErr) {
+                    console.error("Lỗi phản hồi Google Apps Script:", textResp);
+                    result = {
+                        success: false,
+                        message: "Máy chủ Google Apps Script đang bận hoặc phản hồi không đúng định dạng. Vui lòng thử lại sau vài giây!"
+                    };
+                }
+            } else {
+                // Mô phỏng Demo
+                await new Promise(r => setTimeout(r, 1200));
+                result = {
+                    success: true,
+                    message: "🎉 Gửi yêu cầu tăng Độ Hot thành công! Admin sẽ vào game buff cho bạn sớm nhất.",
+                    data: {
+                        stt: 1,
+                        uid: uid,
+                        key: key,
+                        buff_type: buffType,
+                        time: new Date().toLocaleTimeString("vi-VN") + " - " + new Date().toLocaleDateString("vi-VN"),
+                        status: "🟡 ĐANG CHỜ BUFF"
+                    }
+                };
+            }
+
+            if (result && result.success && result.data) {
+                sounds.playSuccess();
+
+                // Điền thông tin vào Modal Xác Nhận
+                const modalPkg = document.getElementById("hotModalPackage");
+                const modalUid = document.getElementById("hotModalUid");
+                const modalKey = document.getElementById("hotModalKey");
+                const modalTime = document.getElementById("hotModalTime");
+
+                if (modalPkg) modalPkg.textContent = result.data.buff_type || buffType;
+                if (modalUid) modalUid.value = result.data.uid || uid;
+                if (modalKey) modalKey.textContent = result.data.key || key;
+                if (modalTime) modalTime.textContent = result.data.time || (new Date().toLocaleTimeString("vi-VN") + " - " + new Date().toLocaleDateString("vi-VN"));
+
+                this.openModal("hotRequestSuccessModal");
+
+                // Xóa ô nhập để tránh gửi lặp
+                const inputHotKey = document.getElementById("inputHotKey");
+                const inputHotUid = document.getElementById("inputHotUid");
+                const inputAccKey = document.getElementById("inputActivationKey");
+                if (inputHotKey) inputHotKey.value = "";
+                if (inputHotUid) inputHotUid.value = "";
+                if (inputAccKey) inputAccKey.value = "";
+
+                // Đánh dấu Key này đã dùng trong localStorage
+                localStorage.setItem("mg_claimed_key_" + key, "true");
+                localStorage.removeItem("mg_active_bypass_session");
+                localStorage.removeItem("mg_bypass_start_time");
+
+                // Reset nhiệm vụ
+                this.taskState = {};
+                localStorage.removeItem("mg_tasks_status");
+                this.renderTasks();
+                this.updateTaskProgressUI();
+
+                this.showToast("🎉 Gửi yêu cầu tăng Độ Hot thành công!", "success");
+
+            } else {
+                sounds.playError();
+                this.showToast(result.message || "Mã Key không hợp lệ hoặc đã được sử dụng!", "error");
+            }
+
+        } catch (err) {
+            sounds.playError();
+            this.showToast((err && err.message) || "Lỗi kết nối máy chủ Google Sheets!", "error");
+        } finally {
+            this.isProcessing = false;
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalBtnHtml;
+            }
         }
     }
 

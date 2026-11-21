@@ -84,27 +84,61 @@
             <!-- Render động 3 nút: TikTok | Telegram | YouTube -->
         </nav>
 
+        <!-- THANH CHUYỂN ĐỔI 2 DỊCH VỤ CHÍNH -->
+        <nav class="main-service-tabs" id="serviceTabsNav">
+            <button type="button" class="service-tab-btn is-active" data-service-tab="tab-acc" id="tabBtnAcc">
+                <i class="fa-solid fa-gift"></i>
+                <span>Nhận Acc Liên Quân Free</span>
+            </button>
+            <button type="button" class="service-tab-btn tab-hot-btn" data-service-tab="tab-hot" id="tabBtnHot">
+                <i class="fa-solid fa-fire text-warning"></i>
+                <span>Tặng Độ HOT Liên Quân Free</span>
+            </button>
+        </nav>
+
         <!-- ============================================================== -->
-        <!-- KHỐI CHỨC NĂNG DUY NHẤT: VƯỢT LINK NHẬN ACC                     -->
+        <!-- KHỐI CHỨC NĂNG CHÍNH: 2 DỊCH VỤ THEO TAB                       -->
         <!-- ============================================================== -->
         <section class="claim-container-box" id="claimSection">
-            <div class="claim-header-row">
-                <div class="claim-title-clean">
-                    <i class="fa-solid fa-gift text-cyan"></i>
-                    <span>VƯỢT LINK NHẬN ACC</span>
+            
+            <!-- HEADER TAB 1: NHẬN ACC -->
+            <div class="service-header-panel is-active" id="headerPanelAcc">
+                <div class="claim-header-row">
+                    <div class="claim-title-clean">
+                        <i class="fa-solid fa-gift text-cyan"></i>
+                        <span>VƯỢT LINK NHẬN ACC</span>
+                    </div>
+                    <div class="claim-stock-badge">
+                        <span class="stat-dot-live"></span>
+                        <span>Kho: <b id="stockCountReady">...</b> acc</span>
+                    </div>
                 </div>
-                <div class="claim-stock-badge">
-                    <span class="stat-dot-live"></span>
-                    <span>Kho: <b id="stockCountReady">...</b> acc</span>
+
+                <!-- Live Ticker Người Vừa Nhận Acc -->
+                <div class="live-ticker-wrap" id="liveClaimTicker">
+                    <!-- Render từ bypass-claim.js -->
                 </div>
             </div>
 
-            <!-- Live Ticker Người Vừa Nhận -->
-            <div class="live-ticker-wrap" id="liveClaimTicker">
-                <!-- Render từ bypass-claim.js -->
+            <!-- HEADER TAB 2: TẶNG ĐỘ HOT -->
+            <div class="service-header-panel" id="headerPanelHot" style="display:none;">
+                <div class="claim-header-row">
+                    <div class="claim-title-clean" style="color: #fde047;">
+                        <i class="fa-solid fa-fire text-warning"></i>
+                        <span>TẶNG ĐỘ HOT & LIKE PROFILE</span>
+                    </div>
+                    <div class="claim-stock-badge" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1);">
+                        <span class="stat-dot-live" style="background:#f59e0b; box-shadow:0 0 8px #f59e0b;"></span>
+                        <span style="color:#fde047;">All Server LQ</span>
+                    </div>
+                </div>
+
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 8px 12px; font-size: 11.5px; color: #fde047; margin: 4px 0 10px 0; line-height: 1.4;">
+                    <i class="fa-solid fa-circle-check text-warning"></i> Hoàn thành 3 nhiệm vụ ➔ Vượt link lấy Key ➔ Nhập Key + UID/Tên nhân vật để gửi yêu cầu buff Độ Hot miễn phí!
+                </div>
             </div>
 
-            <!-- KHỐI 3 NHIỆM VỤ GỌN GÀNG -->
+            <!-- KHỐI 3 NHIỆM VỤ GỌN GÀNG (DÙNG CHUNG CHO CẢ 2 DỊCH VỤ) -->
             <div class="tasks-compact-box">
                 <div class="tasks-compact-head">
                     <span class="tasks-compact-label">Nhiệm Vụ Mở Khóa Link</span>
@@ -126,21 +160,66 @@
                 <span>HOÀN THÀNH 3 NHIỆM VỤ ĐỂ MỞ LINK</span>
             </button>
 
-            <!-- KHUNG NHẬP MÃ KEY ĐỂ KÍCH HOẠT NHẬN ACC -->
-            <div class="key-activate-card">
-                <div class="key-activate-head">
-                    <i class="fa-solid fa-key text-warning"></i>
-                    <span>NHẬP KEY KÍCH HOẠT ACC</span>
-                </div>
+            <!-- FORM PANEL 1: NHẬP KEY KÍCH HOẠT NHẬN ACC -->
+            <div class="service-form-panel is-active" id="formPanelAcc">
+                <div class="key-activate-card">
+                    <div class="key-activate-head">
+                        <i class="fa-solid fa-key text-warning"></i>
+                        <span>NHẬP KEY KÍCH HOẠT ACC</span>
+                    </div>
 
-                <div class="key-activate-input-wrap">
-                    <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Nhập mã Key vào đây..." autocomplete="off">
-                    <button type="button" id="btnActivateKey" class="btn-activate-submit">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>NHẬN ACC</span>
-                    </button>
+                    <div class="key-activate-input-wrap">
+                        <input type="text" id="inputActivationKey" class="key-activate-input" placeholder="Nhập mã Key vào đây..." autocomplete="off">
+                        <button type="button" id="btnActivateKey" class="btn-activate-submit">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>NHẬN ACC</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- FORM PANEL 2: NHẬP KEY VÀ UID ĐỂ BUFF ĐỘ HOT LIÊN QUÂN -->
+            <div class="service-form-panel" id="formPanelHot" style="display:none;">
+                <div class="hot-activate-card">
+                    <div class="hot-activate-head">
+                        <div>
+                            <i class="fa-solid fa-fire text-warning"></i>
+                            <span>GỬI YÊU CẦU ĐỘ HOT LIÊN QUÂN</span>
+                        </div>
+                        <span style="font-size:10px; color:#cbd5e1; font-weight:700;">MIỄN PHÍ 100%</span>
+                    </div>
+
+                    <div class="hot-input-fields">
+                        <!-- Ô 1: Mã Key vừa vượt link -->
+                        <div class="hot-input-wrap">
+                            <i class="fa-solid fa-key hot-field-icon text-warning"></i>
+                            <input type="text" id="inputHotKey" placeholder="Dán mã Key vừa vượt link..." autocomplete="off">
+                        </div>
+
+                        <!-- Ô 2: UID hoặc Tên nhân vật ingame -->
+                        <div class="hot-input-wrap">
+                            <i class="fa-solid fa-id-card hot-field-icon text-cyan"></i>
+                            <input type="text" id="inputHotUid" placeholder="Nhập UID hoặc Tên nhân vật game..." autocomplete="off">
+                        </div>
+
+                        <!-- Ô 3: Chọn gói Độ Hot -->
+                        <div class="hot-input-wrap">
+                            <i class="fa-solid fa-award hot-field-icon text-rose"></i>
+                            <select id="selectHotPackage">
+                                <option value="Tặng +500 Độ Hot & Like Profile">🔥 Gói VIP: +500 Điểm Độ Hot & Like Profile (Khuyên dùng)</option>
+                                <option value="Tặng +1,000 Điểm Độ Hot Profile">⭐ Gói Siêu Cấp: +1,000 Điểm Độ Hot Profile</option>
+                                <option value="Tặng Gói 50 Like Profile & Tủ Đồ">👑 Gói Đặc Biệt: 50 Lượt Like Profile & Tủ Đồ</option>
+                            </select>
+                        </div>
+
+                        <button type="button" id="btnSubmitHot" class="btn-hot-submit">
+                            <i class="fa-solid fa-fire"></i>
+                            <span>GỬI YÊU CẦU TĂNG ĐỘ HOT</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- FOOTER -->
@@ -283,6 +362,67 @@
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 <span>BẮT ĐẦU VƯỢT LINK NGAY</span>
             </a>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- POPUP MODAL 3: XÁC NHẬN GỬI YÊU CẦU ĐỘ HOT THÀNH CÔNG          -->
+    <!-- ============================================================== -->
+    <div class="modal-overlay" id="hotRequestSuccessModal">
+        <div class="modal-card">
+            <button type="button" class="modal-close-trigger" onclick="closeAllModals()" aria-label="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div style="text-align:center; padding: 10px 0 16px 0;">
+                <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1.5px solid rgba(245, 158, 11, 0.45); color: #f59e0b; display: grid; place-items: center; font-size: 26px; margin: 0 auto 12px auto; box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <h3 style="font-family: var(--font-heading); color: #fde047; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">GỬI YÊU CẦU THÀNH CÔNG!</h3>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Thông tin đã gửi trực tiếp lên hệ thống quản trị Like & Độ Hot LQ</p>
+            </div>
+
+            <div class="acc-card-revealed" style="background: rgba(15, 23, 42, 0.85); border-color: rgba(245, 158, 11, 0.35);">
+                <div class="acc-card-head" style="margin-bottom: 8px;">
+                    <span class="ditem-cat-tag" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fde047;"><i class="fa-solid fa-fire"></i> BUFF ĐỘ HOT LIÊN QUÂN</span>
+                    <span class="badge-success-mini" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.35); color: #fbbf24;"><i class="fa-solid fa-clock"></i> Đang Chờ Buff</span>
+                </div>
+
+                <div class="acc-field-row">
+                    <label class="acc-field-label">Gói Độ Hot Yêu Cầu:</label>
+                    <div style="font-weight: 700; color: #fde047; font-size: 13px;" id="hotModalPackage">...</div>
+                </div>
+
+                <div class="acc-field-row">
+                    <label class="acc-field-label">UID / Tên Nhân Vật Game:</label>
+                    <div class="acc-field-input-wrap">
+                        <input type="text" class="acc-field-input" id="hotModalUid" readonly style="color: #38bdf8; font-weight: 800; font-family: var(--font-mono);">
+                        <button type="button" class="btn-field-copy" onclick="copyToClipboard(document.getElementById('hotModalUid').value, 'Đã copy UID!')" title="Sao chép UID">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="acc-field-row">
+                    <label class="acc-field-label">Mã Key Đã Xác Thực:</label>
+                    <div style="font-family: var(--font-mono); font-size: 12px; color: #10b981; font-weight: 700;" id="hotModalKey">...</div>
+                </div>
+
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                    <i class="fa-solid fa-circle-check text-warning"></i> Admin đã nhận yêu cầu và sẽ vào game buff Like Profile & Độ Hot theo đúng thông tin trên trong ít phút.
+                </div>
+
+                <div style="font-size: 10px; color: var(--text-muted); display:flex; justify-content:space-between; margin-top:10px;">
+                    <span>Thời gian gửi: <b id="hotModalTime">...</b></span>
+                    <span>Trạng thái: <b style="color: #fbbf24;">🟡 Chờ Admin Buff</b></span>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button type="button" class="btn-sub-action" style="flex:1; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; font-weight:800; border:none; padding:11px; border-radius:10px; cursor:pointer;" onclick="closeAllModals()">
+                        <i class="fa-solid fa-check"></i> ĐÃ HIỂU & HOÀN TẤT
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

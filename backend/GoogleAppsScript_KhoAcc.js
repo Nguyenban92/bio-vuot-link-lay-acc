@@ -10,12 +10,14 @@
 const TAB_KHO_ACC = "KHO_ACC";
 const TAB_KHO_KEY = "KHO_KEY";
 const TAB_CAU_HINH = "CẤU HÌNH HỆ THỐNG";
+const TAB_LIKE_HOT = "LIKE_HOT_LQ";
 
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("⚡ MA GIÁO AOV - KHO ACC & KEY")
     .addItem("🚀 Khởi Tạo Hệ Thống Bảng Tính (1-Click)", "setupFullSystem")
     .addSeparator()
+    .addItem("🔥 Quản Lý Yêu Cầu Like & Độ Hot LQ", "showHotStats")
     .addItem("🧹 Xóa 11 Acc Mẫu Demo (Chỉ Giữ Acc Thật)", "clearSampleAccounts")
     .addItem("🛠️ Sửa Lỗi Xác Thực Cột H (Data Validation)", "fixDataValidation")
     .addItem("➕ Nạp Acc Hàng Loạt Vào Kho (Dán Text)", "showQuickAddAccModal")
@@ -515,6 +517,113 @@ function handleRequest(e) {
       }));
       return jsonResponse({ success: true, list: list });
     }
+
+    // 6. ACTION: GỬI YÊU CẦU TẶNG LIKE & ĐỘ HOT LIÊN QUÂN (DÙNG MÃ KEY)
+    if (action === "submit_hot_request" || action === "claim_hot") {
+      const key = (params.key || postData.key || "").trim().toUpperCase();
+      const uid = (params.uid || postData.uid || "").trim();
+      const buffType = (params.buff_type || postData.buff_type || "Tăng +500 Độ Hot & Like Profile").trim();
+      const clientInfo = params.client_info || postData.client_info || "Web";
+
+      if (!key) return jsonResponse({ success: false, error: "EMPTY_KEY", message: "Vui lòng nhập mã Key kích hoạt!" });
+      if (!uid) return jsonResponse({ success: false, error: "EMPTY_UID", message: "Vui lòng nhập UID hoặc Tên nhân vật Liên Quân!" });
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetKey = ss.getSheetByName(TAB_KHO_KEY);
+      const sheetHot = getOrCreateLikeHotSheet(ss);
+
+      if (!sheetKey || sheetKey.getLastRow() < 2) {
+        return jsonResponse({ success: false, error: "NO_KEYS", message: "Hệ thống chưa thiết lập kho Key!" });
+      }
+
+      const keyData = sheetKey.getRange(2, 1, sheetKey.getLastRow() - 1, 5).getValues();
+      let foundIndex = -1;
+      let targetKeyRow = null;
+
+      for (let i = 0; i < keyData.length; i++) {
+        if (String(keyData[i][0] || "").trim().toUpperCase() === key) {
+          foundIndex = i + 2;
+          targetKeyRow = keyData[i];
+          break;
+        }
+      }
+
+      if (!targetKeyRow || foundIndex === -1) {
+        return jsonResponse({ success: false, error: "INVALID_KEY", message: `Mã Key '${key}' không chính xác hoặc không tồn tại!` });
+      }
+
+      if (String(targetKeyRow[1] || "").includes("ĐÃ DÙNG")) {
+        return jsonResponse({ success: false, error: "ALREADY_USED", message: `Mã Key '${key}' này đã được sử dụng trước đó!` });
+      }
+
+      const now = new Date();
+      const nowFormatted = Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
+
+      // 1. Khóa vĩnh viễn Key sang trạng thái ĐÃ DÙNG
+      try {
+        sheetKey.getRange(foundIndex, 2).setValue("🔴 ĐÃ DÙNG");
+        sheetKey.getRange(foundIndex, 4).setValue("🔥 Buff Hot: " + uid);
+        sheetKey.getRange(foundIndex, 5).setValue(nowFormatted);
+        sheetKey.getRange(foundIndex, 6).setValue(clientInfo);
+      } catch (eKey) {}
+
+      // 2. Ghi yêu cầu vào TAB_LIKE_HOT
+      const nextSTT = sheetHot.getLastRow();
+      sheetHot.appendRow([
+        nextSTT,
+        uid,
+        key,
+        buffType,
+        nowFormatted,
+        "🟡 ĐANG CHỜ BUFF",
+        "",
+        clientInfo
+      ]);
+
+      return jsonResponse({
+        success: true,
+        message: "🎉 Gửi yêu cầu tăng Độ Hot thành công! Admin sẽ vào game buff cho bạn sớm nhất.",
+        data: {
+          stt: nextSTT,
+          uid: uid,
+          key: key,
+          buff_type: buffType,
+          time: nowFormatted,
+          status: "🟡 ĐANG CHỜ BUFF"
+        }
+      });
+    }
+
+    // 7. ACTION: LẤY DANH SÁCH YÊU CẦU LIKE & ĐỘ HOT CHO ADMIN
+    if (action === "admin_get_hot_list") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetHot = getOrCreateLikeHotSheet(ss);
+      if (sheetHot.getLastRow() < 2) return jsonResponse({ success: true, list: [] });
+      const data = sheetHot.getRange(2, 1, sheetHot.getLastRow() - 1, 8).getValues();
+      const list = data.map((r, idx) => ({
+        rowIndex: idx + 2,
+        stt: r[0],
+        uid: String(r[1] || "").trim(),
+        key: String(r[2] || "").trim(),
+        buff_type: String(r[3] || "").trim(),
+        time: r[4],
+        status: String(r[5] || "🟡 ĐANG CHỜ BUFF").trim(),
+        note: String(r[6] || "").trim(),
+        device: String(r[7] || "").trim()
+      }));
+      return jsonResponse({ success: true, list: list });
+    }
+
+    // 8. ACTION: ADMIN CẬP NHẬT TRẠNG THÁI BUFF ĐỘ HOT (ĐÃ BUFF / CHỜ BUFF)
+    if (action === "admin_update_hot_status") {
+      const rowIndex = parseInt(params.row_index || postData.row_index);
+      const newStatus = (params.status || postData.status || "🟢 ĐÃ BUFF XONG").trim();
+      if (!rowIndex || rowIndex < 2) return jsonResponse({ success: false, message: "Thiếu rowIndex hợp lệ!" });
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheetHot = getOrCreateLikeHotSheet(ss);
+      sheetHot.getRange(rowIndex, 6).setValue(newStatus);
+      return jsonResponse({ success: true, message: "Đã cập nhật trạng thái thành công!", status: newStatus });
+    }
     
     return jsonResponse({ success: false, error: "INVALID_ACTION", message: "Yêu cầu không hợp lệ." });
     
@@ -656,4 +765,41 @@ function getRecentClaimsLog(limit) {
 
 function jsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getOrCreateLikeHotSheet(ss) {
+  let sheet = ss.getSheetByName(TAB_LIKE_HOT);
+  if (!sheet) {
+    sheet = ss.insertSheet(TAB_LIKE_HOT);
+    const headers = ["STT", "UID / TÊN NHÂN VẬT", "MÃ KEY", "LOẠI BUFF", "THỜI GIAN GỬI", "TRẠNG THÁI", "GHI CHÚ / ADMIN", "IP / THIẾT BỊ"];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    formatHeaderRange(sheet.getRange(1, 1, 1, headers.length), "#3b0764", "#f43f5e");
+    sheet.setRowHeight(1, 40);
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 55);
+    sheet.setColumnWidth(2, 240);
+    sheet.setColumnWidth(3, 190);
+    sheet.setColumnWidth(4, 220);
+    sheet.setColumnWidth(5, 170);
+    sheet.setColumnWidth(6, 170);
+    sheet.setColumnWidth(7, 200);
+    sheet.setColumnWidth(8, 160);
+  }
+  return sheet;
+}
+
+function showHotStats() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetHot = getOrCreateLikeHotSheet(ss);
+  let total = 0, pending = 0, done = 0;
+  if (sheetHot.getLastRow() >= 2) {
+    const data = sheetHot.getRange(2, 6, sheetHot.getLastRow() - 1, 1).getValues();
+    total = data.length;
+    data.forEach(r => {
+      const st = String(r[0] || "").trim();
+      if (st.includes("CHỜ")) pending++;
+      else if (st.includes("BUFF XONG") || st.includes("HOÀN THÀNH")) done++;
+    });
+  }
+  SpreadsheetApp.getUi().alert(`🔥 THỐNG KÊ YÊU CẦU LIKE & ĐỘ HOT LQ:\n• Tổng yêu cầu: ${total}\n• 🟡 Đang chờ buff: ${pending}\n• 🟢 Đã hoàn thành: ${done}`);
 }
