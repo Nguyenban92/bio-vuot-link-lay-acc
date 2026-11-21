@@ -522,7 +522,7 @@ function handleRequest(e) {
     if (action === "submit_hot_request" || action === "claim_hot") {
       const key = (params.key || postData.key || "").trim().toUpperCase();
       const uid = (params.uid || postData.uid || "").trim();
-      const buffType = (params.buff_type || postData.buff_type || "Tăng +500 Độ Hot & Like Profile").trim();
+      const buffType = (params.buff_type || postData.buff_type || "Tăng 200 Like Profile").trim();
       const clientInfo = params.client_info || postData.client_info || "Web";
 
       if (!key) return jsonResponse({ success: false, error: "EMPTY_KEY", message: "Vui lòng nhập mã Key kích hoạt!" });
@@ -559,10 +559,10 @@ function handleRequest(e) {
       const now = new Date();
       const nowFormatted = Utilities.formatDate(now, "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
 
-      // 1. Khóa vĩnh viễn Key sang trạng thái ĐÃ DÙNG
+      // 1. Khóa vĩnh viễn Key sang trạng thái ĐÃ DÙNG (Không thể dùng lại cho Acc hay Like)
       try {
         sheetKey.getRange(foundIndex, 2).setValue("🔴 ĐÃ DÙNG");
-        sheetKey.getRange(foundIndex, 4).setValue("🔥 Buff Hot: " + uid);
+        sheetKey.getRange(foundIndex, 4).setValue("🔥 Buff 200 Like: " + uid);
         sheetKey.getRange(foundIndex, 5).setValue(nowFormatted);
         sheetKey.getRange(foundIndex, 6).setValue(clientInfo);
       } catch (eKey) {}
@@ -582,7 +582,7 @@ function handleRequest(e) {
 
       return jsonResponse({
         success: true,
-        message: "🎉 Gửi yêu cầu tăng Độ Hot thành công! Admin sẽ vào game buff cho bạn sớm nhất.",
+        message: "🎉 Gửi yêu cầu tăng 200 Like thành công! Admin sẽ vào game buff cho bạn sớm nhất.",
         data: {
           stt: nextSTT,
           uid: uid,

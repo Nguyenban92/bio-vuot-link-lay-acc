@@ -148,7 +148,7 @@ class BypassClaimManager {
                 bypassBtn.disabled = false;
                 bypassBtn.innerHTML = `
                     <i class="fa-solid fa-bolt"></i>
-                    <span>VƯỢT LINK LẤY KEY</span>
+                    <span>VƯỢT LINK NHẬN KEY</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 `;
             } else {
@@ -157,7 +157,7 @@ class BypassClaimManager {
                 bypassBtn.disabled = true;
                 bypassBtn.innerHTML = `
                     <i class="fa-solid fa-lock"></i>
-                    <span>HOÀN THÀNH 3 NHIỆM VỤ ĐỂ MỞ LINK</span>
+                    <span>VƯỢT LINK NHẬN KEY</span>
                 `;
             }
         }
@@ -228,17 +228,16 @@ class BypassClaimManager {
             });
         }
 
-        // Nút Gửi Yêu Cầu Tăng Độ Hot (Tab 2: Tặng Độ HOT Liên Quân)
+        // Nút Gửi Yêu Cầu Tăng Like (Tab 2: Tặng Độ HOT Liên Quân)
         const btnSubmitHot = document.getElementById("btnSubmitHot");
         const inputHotKey = document.getElementById("inputHotKey");
         const inputHotUid = document.getElementById("inputHotUid");
-        const selectHotPackage = document.getElementById("selectHotPackage");
 
         if (btnSubmitHot && inputHotKey && inputHotUid) {
             btnSubmitHot.addEventListener("click", () => {
                 const keyVal = inputHotKey.value.trim();
                 const uidVal = inputHotUid.value.trim();
-                const pkgVal = selectHotPackage ? selectHotPackage.value : "Tăng +500 Độ Hot & Like Profile";
+                const pkgVal = "Tăng 200 Like Profile";
 
                 if (!keyVal) {
                     sounds.playError();
@@ -415,7 +414,7 @@ class BypassClaimManager {
                 this.renderTasks();
                 this.updateTaskProgressUI();
 
-                this.showToast("🎉 Gửi yêu cầu tăng Độ Hot thành công!", "success");
+                this.showToast("🎉 Gửi yêu cầu tăng 200 Like thành công!", "success");
 
             } else {
                 sounds.playError();
