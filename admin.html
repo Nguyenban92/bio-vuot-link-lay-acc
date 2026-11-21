@@ -1718,10 +1718,23 @@
                 // 1. Phân tách bằng dấu gạch đứng | (chuẩn tool check acc & list acc garena)
                 if (line.includes("|")) {
                     const rawParts = line.split("|").map(p => p.trim());
-                    if (rawParts.length >= 2) {
-                        user = rawParts[0];
-                        pass = rawParts[1];
-                        noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                    
+                    // Kiểm tra thông minh: rawParts[0] có chứa dạng user:pass không? (ví dụ: linhlovefon:nhatlinh12 | UID : 352957124379761 ...)
+                    const firstPart = rawParts[0] || "";
+                    const cleanFirst = firstPart.replace(/^(id|user|username|tài\s*khoản|tai\s*khoan|tk|acc)\s*[:=-]\s*/i, "").trim();
+                    
+                    if (cleanFirst.includes(":")) {
+                        const colonIdx = cleanFirst.indexOf(":");
+                        user = cleanFirst.substring(0, colonIdx).trim();
+                        pass = cleanFirst.substring(colonIdx + 1).trim();
+                        noteParts = rawParts.slice(1).filter(p => p.length > 0);
+                    } else {
+                        // Trường hợp chuẩn: user|pass|extra (ví dụ: lesaohoang27908@gmail.com|Hoang1234@| UID : ...)
+                        if (rawParts.length >= 2) {
+                            user = rawParts[0];
+                            pass = rawParts[1];
+                            noteParts = rawParts.slice(2).filter(p => p.length > 0);
+                        }
                     }
                 }
                 // 2. Phân tách bằng Tab
@@ -1789,6 +1802,18 @@
                 // Bỏ dấu nháy kép / nháy đơn
                 user = user.replace(/^["'`]|["'`]$/g, "").trim();
                 pass = pass.replace(/^["'`]|["'`]$/g, "").trim();
+
+                // LỚP BẢO VỆ CHẶNG CUỐI: UID / THÔNG SỐ CHECK TOOL KHÔNG BAO GIỜ ĐƯỢC LÀ MẬT KHẨU
+                if (/^(uid|name|rank|level|tướng|tuong|skin|vip|cccd|email|authen|sđt|sdt|fb|band|region)\s*[:=-]/i.test(pass)) {
+                    if (user.includes(":")) {
+                        const idx = user.indexOf(":");
+                        const realUser = user.substring(0, idx).trim();
+                        const realPass = user.substring(idx + 1).trim();
+                        noteParts.unshift(pass);
+                        user = realUser;
+                        pass = realPass;
+                    }
+                }
 
                 if (!user || !pass) return null;
 
