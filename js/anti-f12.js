@@ -1,196 +1,170 @@
 /**
  * ====================================================================
- * MA GIÁO AOV - HỆ THỐNG BẢO VỆ CHỐNG F12 & SOI MÃ NGUỒN CẤP ĐỘ CAO NHẤT
+ * MA GIÁO AOV - HỆ THỐNG BẢO VỆ CHỐNG F12 & SOI MÃ NGUỒN (ANTI-DEVTOOLS)
  * ====================================================================
  * - Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+Shift+K
  * - Chặn Ctrl+U (Xem nguồn), Ctrl+S (Lưu trang), Ctrl+P (In trang)
- * - Chặn macOS: Cmd+Option+I/J/C/U
- * - Chặn chuột phải (Context Menu) - vẫn cho phép nhập liệu trong input/textarea
- * - Chặn kéo thả hình ảnh (Anti-drag)
- * - PHÁT HIỆN DEVTOOLS MỞ SẴN KỂ CẢ KHI DÁN LINK VÀO SAU
- * - Tự động ghi đè giao diện bằng màn hình cảnh báo đỏ (Lockout Screen)
- * - Đóng băng luồng thực thi (Debugger Freeze Loop)
+ * - Chặn chuột phải (Context Menu) - vẫn cho phép nhập liệu ô text
+ * - Chặn kéo thả hình ảnh
+ * - Nhận diện chính xác thiết bị di động (Mobile) để KHÔNG báo nhầm
+ * - Khung cảnh báo tối giản, tinh tế, hiện đại
  */
 
 (function () {
     'use strict';
 
+    // 1. NHẬN DIỆN THIẾT BỊ DI ĐỘNG (MOBILE / TABLET)
+    const isMobileDevice = (function () {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i;
+        const isTouch = (navigator.maxTouchPoints && navigator.maxTouchPoints > 1) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+        const isSmallScreen = window.innerWidth <= 850;
+        return mobileRegex.test(ua) || (isTouch && isSmallScreen);
+    })();
+
     let isBlocked = false;
 
-    // GIAO DIỆN KHÓA TOÀN BỘ TRANG WEB KHI PHÁT HIỆN F12 / DEVTOOLS
+    // 2. GIAO DIỆN CẢNH BÁO TỐI GIẢN & TINH TẾ (MINIMALIST)
     function triggerSecurityLockout() {
+        // Tuyệt đối không chặn trên thiết bị di động
+        if (isMobileDevice) return;
         if (isBlocked) return;
         isBlocked = true;
 
         try {
-            document.title = "⛔ CẢNH BÁO BẢO MẬT • MA GIÁO AOV";
+            document.title = "Cảnh Báo Bảo Mật • MA GIÁO AOV";
             document.documentElement.innerHTML = `
             <!DOCTYPE html>
             <html lang="vi">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>⛔ CẢNH BÁO BẢO MẬT • MA GIÁO AOV</title>
+                <title>Cảnh Báo Bảo Mật</title>
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
                     body {
-                        background: #060913;
-                        color: #f8fafc;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                        background-color: #0b0f19;
+                        color: #f1f5f9;
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
                         height: 100vh;
-                        width: 100vw;
-                        overflow: hidden;
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        padding: 16px;
+                    }
+                    .alert-card {
+                        background: #111827;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-top: 3px solid #f43f5e;
+                        border-radius: 16px;
+                        padding: 32px 24px;
+                        max-width: 380px;
+                        width: 100%;
                         text-align: center;
-                        padding: 20px;
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
                     }
-                    .lock-card {
-                        background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.99));
-                        border: 2px solid #f43f5e;
-                        border-radius: 24px;
-                        padding: 40px 30px;
-                        max-width: 520px;
-                        box-shadow: 0 0 60px rgba(244, 63, 94, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-                        animation: shake 0.5s ease-in-out;
-                    }
-                    @keyframes shake {
-                        0%, 100% { transform: translateX(0); }
-                        20%, 60% { transform: translateX(-8px); }
-                        40%, 80% { transform: translateX(8px); }
-                    }
-                    .icon-shield {
-                        font-size: 64px;
-                        margin-bottom: 20px;
-                        display: inline-block;
-                        filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.6));
-                    }
-                    h1 {
-                        font-size: 22px;
-                        font-weight: 900;
+                    .alert-icon {
+                        width: 52px;
+                        height: 52px;
+                        background: rgba(244, 63, 94, 0.12);
                         color: #f43f5e;
-                        letter-spacing: 0.5px;
-                        margin-bottom: 14px;
-                        text-transform: uppercase;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 24px;
+                        margin: 0 auto 16px auto;
+                    }
+                    h2 {
+                        font-size: 18px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        margin-bottom: 10px;
                     }
                     p {
-                        font-size: 14.5px;
-                        line-height: 1.7;
-                        color: #cbd5e1;
-                        margin-bottom: 25px;
+                        font-size: 13.5px;
+                        line-height: 1.6;
+                        color: #94a3b8;
+                        margin-bottom: 22px;
                     }
-                    .highlight {
-                        color: #fbbf24;
-                        font-weight: 700;
-                    }
-                    .btn-action {
+                    .btn-reload {
                         display: inline-block;
-                        background: linear-gradient(135deg, #f43f5e, #e11d48);
+                        width: 100%;
+                        padding: 11px 0;
+                        background: #f43f5e;
                         color: #ffffff;
-                        font-weight: 800;
-                        font-size: 14px;
-                        padding: 13px 28px;
-                        border-radius: 12px;
+                        font-size: 13.5px;
+                        font-weight: 600;
+                        border-radius: 10px;
                         border: none;
                         cursor: pointer;
-                        box-shadow: 0 10px 20px -5px rgba(244, 63, 94, 0.5);
-                        transition: all 0.2s ease;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
+                        transition: background 0.2s ease;
                     }
-                    .btn-action:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 15px 25px -5px rgba(244, 63, 94, 0.65);
+                    .btn-reload:hover {
+                        background: #e11d48;
                     }
                 </style>
             </head>
             <body>
-                <div class="lock-card">
-                    <div class="icon-shield">⛔</div>
-                    <h1>CẢNH BÁO AN NINH HỆ THỐNG</h1>
-                    <p>Hệ thống phát hiện bạn đang bật <span class="highlight">F12 / Công Cụ Nhà Phát Triển (DevTools)</span>.<br><br>
-                    Để bảo vệ bản quyền phần mềm và kho tài nguyên Acc, toàn bộ nội dung đã được tự động ẩn.<br><br>
-                    👉 <b>Vui lòng ĐÓNG F12 / DevTools và bấm nút bên dưới để tải lại trang!</b></p>
-                    <button class="btn-action" onclick="window.location.reload()">ĐÃ ĐÓNG F12 - TẢI LẠI TRANG</button>
+                <div class="alert-card">
+                    <div class="alert-icon">⚠️</div>
+                    <h2>Cảnh Báo Bảo Mật</h2>
+                    <p>Phát hiện <b>F12 / DevTools</b> đang mở.<br>Vui lòng tắt để tiếp tục truy cập trang web.</p>
+                    <button class="btn-reload" onclick="window.location.reload()">Đã Tắt F12 - Tải Lại Trang</button>
                 </div>
             </body>
             </html>
             `;
         } catch (err) {}
 
-        // Kích hoạt bẫy debugger đóng băng liên tục
+        // Bẫy ngắt nhẹ
         setInterval(function () {
             (function () { return false; }['constructor']('debugger')());
-        }, 50);
+        }, 300);
     }
 
-    // 1. CẢNH BÁO TRÊN CONSOLE
-    try {
-        console.clear();
-        console.log('%c⚡ MA GIÁO AOV • HỆ THỐNG AN NINH BẢO MẬT ⚡', 'color: #f43f5e; font-size: 24px; font-weight: 900;');
-        console.log('%c⛔ KHU VỰC ĐƯỢC BẢO VỆ NGHIÊM NGẶT! Vui lòng đóng DevTools.', 'color: #38bdf8; font-size: 14px; font-weight: bold;');
-    } catch (e) {}
-
-    // 2. PHÁT HIỆN DEVTOOLS BẰNG TIMING TRICK (CỰC NHẠY KHI MỞ SẴN)
-    function checkTimingDebugger() {
-        const start = performance.now();
-        (function () { return false; }['constructor']('debugger')());
-        const end = performance.now();
-        if (end - start > 100) {
-            triggerSecurityLockout();
+    // NẾU LÀ ĐIỆN THOẠI: Bỏ qua toàn bộ bẫy DevTools để người dùng lướt mượt 100%
+    if (!isMobileDevice) {
+        // 3. KHỞI CHẠY DISABLE-DEVTOOL (Chỉ trên máy tính / Laptop)
+        function initDevtoolDetect() {
+            if (typeof window.DisableDevtool === 'function') {
+                try {
+                    window.DisableDevtool({
+                        ondevtoolopen: function () {
+                            triggerSecurityLockout();
+                        },
+                        interval: 600,
+                        disableMenu: true,
+                        clearLog: true,
+                        disableSelect: false,
+                        disableCopy: false,
+                        disableCut: false,
+                        disablePaste: false,
+                        // KHÔNG dùng detector 2 (Size) để tránh báo nhầm khi zoom màn hình
+                        detectors: [0, 1, 3, 4, 5, 6, 7]
+                    });
+                } catch (err) {}
+            }
         }
-    }
 
-    // 3. PHÁT HIỆN DEVTOOLS BẰNG CHÊNH LỆCH KÍCH THƯỚC (DOCK TRÁI/PHẢI/DƯỚI)
-    function checkWindowSizeDiff() {
-        const widthThreshold = window.outerWidth - window.innerWidth > 160;
-        const heightThreshold = window.outerHeight - window.innerHeight > 160;
-        if (widthThreshold || heightThreshold) {
-            triggerSecurityLockout();
+        initDevtoolDetect();
+        window.addEventListener('DOMContentLoaded', initDevtoolDetect);
+
+        // 4. KIỂM TRA ĐỘ TRỄ TIMING (Chỉ trên máy tính)
+        function checkTiming() {
+            const t0 = performance.now();
+            (function () { return false; }['constructor']('debugger')());
+            const t1 = performance.now();
+            if (t1 - t0 > 100) {
+                triggerSecurityLockout();
+            }
         }
+
+        checkTiming();
+        setInterval(checkTiming, 800);
     }
 
-    // 4. KHỞI CHẠY DISABLE-DEVTOOL NẾU ĐÃ NẠP
-    function initDisableDevtoolLibrary() {
-        if (typeof window.DisableDevtool === 'function') {
-            try {
-                window.DisableDevtool({
-                    ondevtoolopen: function () {
-                        triggerSecurityLockout();
-                    },
-                    interval: 400,
-                    disableMenu: true,
-                    clearLog: true,
-                    disableSelect: false,
-                    disableCopy: false,
-                    disableCut: false,
-                    disablePaste: false,
-                    detectors: [0, 1, 2, 3, 4, 5, 6, 7]
-                });
-            } catch (err) {}
-        }
-    }
-
-    // Chạy kiểm tra ngay lập tức khi script vừa được load
-    checkTimingDebugger();
-    checkWindowSizeDiff();
-    initDisableDevtoolLibrary();
-
-    // Vòng lặp kiểm tra liên tục
-    setInterval(function () {
-        checkTimingDebugger();
-        checkWindowSizeDiff();
-    }, 600);
-
-    // Chờ window load để thử lại thư viện nếu tải bất đồng bộ
-    window.addEventListener('DOMContentLoaded', function () {
-        initDisableDevtoolLibrary();
-        checkTimingDebugger();
-        checkWindowSizeDiff();
-    });
-
-    // 5. CHẶN CHUỘT PHẢI (VẪN CHO PHÉP TRONG INPUT/TEXTAREA)
+    // 5. CHẶN CHUỘT PHẢI (Áp dụng chung, nhưng cho phép trong input/textarea)
     document.addEventListener('contextmenu', function (e) {
         const tagName = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
         if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
@@ -201,7 +175,7 @@
         return false;
     }, { capture: true, passive: false });
 
-    // 6. CHẶN KÉO THẢ ẢNH
+    // 6. CHẶN KÉO THẢ HÌNH ẢNH
     document.addEventListener('dragstart', function (e) {
         if (e.target && e.target.tagName === 'IMG') {
             e.preventDefault();
@@ -209,7 +183,7 @@
         }
     }, { passive: false });
 
-    // 7. CHẶN CÁC PHÍM TẮT MỞ DEVTOOLS / SOI CODE
+    // 7. CHẶN PHÍM TẮT TRÊN BÀN PHÍM
     window.addEventListener('keydown', function (e) {
         const key = e.key;
         const keyCode = e.keyCode || e.which;
@@ -253,7 +227,7 @@
             return false;
         }
 
-        // macOS: Cmd + Alt + I/J/U
+        // macOS Cmd + Alt + I/J/U
         if (ctrl && alt && (
             keyCode === 73 || key === 'I' || key === 'i' ||
             keyCode === 74 || key === 'J' || key === 'j' ||
