@@ -16,6 +16,42 @@ const TAB_KHO_KEY = "KHO_KEY";                // Kho Mã Key kích hoạt
 const TAB_CAU_HINH = "CẤU HÌNH HỆ THỐNG";     // Cấu hình tên, PIN, link rút gọn
 const TAB_LIKE_HOT = "LIKE_HOT_LQ";           // Quản lý yêu cầu Like & Độ Hot LQ
 
+// 🔐 MÃ PIN BẢO MẬT QUẢN TRỊ VIÊN BACKEND (MẶC ĐỊNH: 123456)
+// Bạn có thể đổi mã PIN này ngay tại đây hoặc điền vào ô MÃ PIN trong tab CẤU HÌNH HỆ THỐNG
+const ADMIN_DEFAULT_PIN = "123456";
+
+/**
+ * Lấy Mã PIN quản trị viên bí mật (Tự động đọc từ Google Sheet hoặc dùng mặc định)
+ */
+function getAdminSecretPin() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const cfgSheet = ss.getSheetByName(TAB_CAU_HINH);
+    if (cfgSheet && cfgSheet.getLastRow() >= 2) {
+      const data = cfgSheet.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        const key = String(data[i][0] || "").trim().toUpperCase();
+        if (key.includes("PIN") || key.includes("MÃ PIN") || key.includes("ADMIN_PIN")) {
+          const val = String(data[i][1] || "").trim();
+          if (val) return val;
+        }
+      }
+    }
+  } catch (e) {}
+  return ADMIN_DEFAULT_PIN;
+}
+
+/**
+ * Kiểm tra xác thực quyền Admin: So khớp PIN gửi từ client với PIN bí mật
+ */
+function verifyAdminAccess(params, postData) {
+  params = params || {};
+  postData = postData || {};
+  const clientPin = String(params.pin || postData.pin || params.admin_pin || postData.admin_pin || "").trim();
+  const secretPin = String(getAdminSecretPin()).trim();
+  return Boolean(clientPin && clientPin === secretPin);
+}
+
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("⚡ MA GIÁO AOV - HỆ THỐNG 2 KHO ACC & KEY")
@@ -671,14 +707,38 @@ function handleRequest(e) {
     
     const action = params.action || postData.action || "get_stats";
     
-    // 0. ACTION: SỬA LỖI XÁC THỰC CỘT H (TỰ ĐỘNG)
+    // 0.0 ACTION MỚI: XÁC THỰC MÃ PIN QUẢN TRỊ VIÊN
+    if (action === "admin_verify_pin" || action === "verify_pin") {
+      if (verifyAdminAccess(params, postData)) {
+        return jsonResponse({
+          success: true,
+          authorized: true,
+          message: "✅ Xác thực quyền Quản Trị Viên thành công!"
+        });
+      } else {
+        return jsonResponse({
+          success: false,
+          authorized: false,
+          error: "INVALID_PIN",
+          message: "🚫 Mã PIN quản trị không chính xác!"
+        });
+      }
+    }
+
+    // 0. ACTION: SỬA LỖI XÁC THỰC CỘT H (BẢO MẬT ADMIN)
     if (action === "fix_validation" || action === "fix_column_h") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({ success: false, error: "ACCESS_DENIED", message: "🚫 TỪ CHỐI: Cần mã PIN Admin để sửa cấu hình!" });
+      }
       fixDataValidation();
       return jsonResponse({ success: true, message: "Đã gỡ bỏ toàn bộ quy tắc xác thực gây lỗi trên Cột H thành công!" });
     }
 
-    // 0.1 ACTION: XÓA ACC MẪU DEMO (CHỈ GIỮ LẠI ACC THẬT CỦA ADMIN)
+    // 0.1 ACTION: XÓA ACC MẪU DEMO (BẢO MẬT ADMIN)
     if (action === "clear_samples") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({ success: false, error: "ACCESS_DENIED", message: "🚫 TỪ CHỐI: Cần mã PIN Admin để xóa dữ liệu kho!" });
+      }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const targetCategory = (params.acc_type || postData.acc_type || "").trim().toLowerCase();
       let deleteCount = 0;
@@ -733,8 +793,15 @@ function handleRequest(e) {
       });
     }
     
-    // 2. ACTION: NẠP ACC HÀNG LOẠT VÀO KHO TƯƠNG ỨNG (SKIN HOẶC CHUNG SỨC) - NHẬN DIỆN THÔNG MINH
+    // 2. ACTION: NẠP ACC HÀNG LOẠT VÀO KHO TƯƠNG ỨNG (BẢO MẬT ADMIN)
     if (action === "import_txt" || action === "add_bulk_acc") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({
+          success: false,
+          error: "ACCESS_DENIED",
+          message: "🚫 TỪ CHỐI TRUY CẬP: Cần mã PIN bảo mật của Admin để nạp tài khoản vào kho!"
+        });
+      }
       const rawText = params.text || postData.text || "";
       const parsedList = params.accounts || postData.accounts || null;
       const accType = (params.acc_type || postData.acc_type || "skin").trim();
@@ -838,8 +905,15 @@ function handleRequest(e) {
       return jsonResponse(result);
     }
     
-    // 5. ACTION: LẤY DANH SÁCH ACC CHO TRANG ADMIN XEM (TRẢ VỀ TÁCH BIỆT SKIN VÀ CHUNG SỨC)
+    // 5. ACTION: LẤY DANH SÁCH ACC CHO TRANG ADMIN XEM (BẢO MẬT ADMIN TUYỆT ĐỐI)
     if (action === "admin_get_list") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({
+          success: false,
+          error: "ACCESS_DENIED",
+          message: "🚫 TỪ CHỐI TRUY CẬP: Cần mã PIN bảo mật của Admin để xem danh sách tài khoản!"
+        });
+      }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       let skinList = [];
       let chungSucList = [];
@@ -971,8 +1045,15 @@ function handleRequest(e) {
       });
     }
 
-    // 7. ACTION: LẤY DANH SÁCH YÊU CẦU LIKE & ĐỘ HOT CHO ADMIN
+    // 7. ACTION: LẤY DANH SÁCH YÊU CẦU LIKE & ĐỘ HOT CHO ADMIN (BẢO MẬT ADMIN)
     if (action === "admin_get_hot_list") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({
+          success: false,
+          error: "ACCESS_DENIED",
+          message: "🚫 TỪ CHỐI TRUY CẬP: Cần mã PIN bảo mật của Admin để xem danh sách Độ Hot!"
+        });
+      }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const sheetHot = getOrCreateLikeHotSheet(ss);
       if (sheetHot.getLastRow() < 2) return jsonResponse({ success: true, list: [] });
@@ -991,8 +1072,15 @@ function handleRequest(e) {
       return jsonResponse({ success: true, list: list });
     }
 
-    // 8. ACTION: ADMIN CẬP NHẬT TRẠNG THÁI BUFF ĐỘ HOT (ĐÃ BUFF / CHỜ BUFF)
+    // 8. ACTION: ADMIN CẬP NHẬT TRẠNG THÁI BUFF ĐỘ HOT (BẢO MẬT ADMIN)
     if (action === "admin_update_hot_status") {
+      if (!verifyAdminAccess(params, postData)) {
+        return jsonResponse({
+          success: false,
+          error: "ACCESS_DENIED",
+          message: "🚫 TỪ CHỐI TRUY CẬP: Cần mã PIN bảo mật của Admin để cập nhật trạng thái!"
+        });
+      }
       const rowIndex = parseInt(params.row_index || postData.row_index);
       const newStatus = (params.status || postData.status || "🟢 ĐÃ BUFF XONG").trim();
       if (!rowIndex || rowIndex < 2) return jsonResponse({ success: false, message: "Thiếu rowIndex hợp lệ!" });

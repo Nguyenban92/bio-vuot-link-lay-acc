@@ -1005,6 +1005,71 @@
             font-size: 11px;
             font-weight: 800;
         }
+
+        /* Nút Đăng Xuất & Mặt Nạ Mật Khẩu Bảo Mật */
+        .btn-logout {
+            padding: 8px 14px;
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            color: #fda4af;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(244, 63, 94, 0.3);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+        }
+
+        .pass-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 100%;
+        }
+
+        .pass-text {
+            font-family: var(--font-mono);
+            color: #fde047;
+            font-size: 12px;
+            font-weight: 700;
+            user-select: text;
+        }
+
+        .pass-text.masked {
+            letter-spacing: 2px;
+            color: #94a3b8;
+            user-select: none;
+        }
+
+        .btn-pass-action {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 11px;
+            padding: 2px 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pass-action:hover {
+            color: #38bdf8;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -1023,9 +1088,14 @@
                     <p class="admin-sub">Quản trị kho Acc tự động & Quản lý duyệt buff Like Độ Hot LQ</p>
                 </div>
             </div>
-            <a href="index.html" class="btn-nav-bio">
-                <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
-            </a>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="index.html" class="btn-nav-bio">
+                    <i class="fa-solid fa-arrow-left"></i> Về Trang Bio
+                </a>
+                <button type="button" class="btn-logout" id="btnAdminLogout" title="Đăng Xuất Khỏi Admin">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+                </button>
+            </div>
         </header>
 
         <!-- THANH CHUYỂN TAB ADMIN: 3 TRANG RIÊNG BIỆT -->
@@ -1405,7 +1475,6 @@
         (function () {
             'use strict';
 
-            const ADMIN_PIN = "123456";
             const apiUrl = (CONFIG.GOOGLE_SHEET_API_URL || "").trim();
 
             const pinOverlay = document.getElementById("pinModalOverlay");
@@ -1413,6 +1482,7 @@
             const pinBtn = document.getElementById("btnAdminLogin");
             const pinError = document.getElementById("pinAlertError");
             const adminMain = document.getElementById("adminMainContent");
+            const btnAdminLogout = document.getElementById("btnAdminLogout");
 
             // Main Tabs Navigation
             const tabNavSkin = document.getElementById("tabNavSkin");
@@ -1492,24 +1562,74 @@
             let fullHotList = [];
             let currentHotFilter = "all";
 
-            /* ================= 1. ĐĂNG NHẬP AN TOÀN ================= */
+            /* ================= 1. BẢO MẬT XÁC THỰC MÃ PIN QUA BACKEND (ZERO-TRUST) ================= */
+            function getStoredAdminPin() {
+                return sessionStorage.getItem("mg_admin_pin") || "";
+            }
+
+            function setStoredAdminPin(pin) {
+                if (pin) {
+                    sessionStorage.setItem("mg_admin_pin", pin);
+                    sessionStorage.setItem("mg_admin_authorized", "true");
+                } else {
+                    sessionStorage.removeItem("mg_admin_pin");
+                    sessionStorage.removeItem("mg_admin_authorized");
+                }
+            }
+
+            function lockAccess(message) {
+                setStoredAdminPin("");
+                pinOverlay.classList.remove("is-hidden");
+                adminMain.style.display = "none";
+                if (message) {
+                    pinError.textContent = message;
+                    pinError.style.display = "block";
+                }
+                pinInput.value = "";
+                pinInput.focus();
+            }
+
             function grantAccess() {
                 if (typeof sounds !== 'undefined' && sounds.playSuccess) sounds.playSuccess();
-                sessionStorage.setItem("mg_admin_authorized", "true");
                 pinOverlay.classList.add("is-hidden");
                 adminMain.style.display = "flex";
                 loadDashboardData();
                 loadHotData();
             }
 
-            function attemptLogin() {
-                if (pinInput.value.trim() === ADMIN_PIN) {
-                    grantAccess();
-                } else {
-                    if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
+            async function attemptLogin() {
+                const enteredPin = pinInput.value.trim();
+                if (!enteredPin) {
+                    pinError.textContent = "Vui lòng nhập mã PIN quản trị!";
                     pinError.style.display = "block";
-                    pinInput.value = "";
                     pinInput.focus();
+                    return;
+                }
+
+                pinBtn.disabled = true;
+                pinBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xác thực...`;
+                pinError.style.display = "none";
+
+                try {
+                    const resp = await fetch(`${apiUrl}?action=admin_verify_pin&pin=${encodeURIComponent(enteredPin)}&_t=${Date.now()}`);
+                    const res = await resp.json();
+
+                    if (res && res.success) {
+                        setStoredAdminPin(enteredPin);
+                        grantAccess();
+                    } else {
+                        if (typeof sounds !== 'undefined' && sounds.playError) sounds.playError();
+                        pinError.textContent = res.message || "Mã PIN quản trị không chính xác!";
+                        pinError.style.display = "block";
+                        pinInput.value = "";
+                        pinInput.focus();
+                    }
+                } catch (e) {
+                    pinError.textContent = "Không thể kết nối máy chủ xác thực!";
+                    pinError.style.display = "block";
+                } finally {
+                    pinBtn.disabled = false;
+                    pinBtn.innerHTML = `ĐĂNG NHẬP`;
                 }
             }
 
@@ -1518,9 +1638,24 @@
                 if (e.key === "Enter") attemptLogin();
             });
 
-            // Tự động vào nếu có param ?pin=123456 hoặc đã đăng nhập trong session
+            // Nút Đăng Xuất An Toàn
+            if (btnAdminLogout) {
+                btnAdminLogout.addEventListener("click", () => {
+                    if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi trang Quản Trị không?")) {
+                        lockAccess("Đã đăng xuất an toàn!");
+                    }
+                });
+            }
+
+            // Tự động kiểm tra phiên đăng nhập từ session hoặc URL param ?pin=...
             const urlQuery = new URLSearchParams(window.location.search);
-            if (urlQuery.get("pin") === ADMIN_PIN || sessionStorage.getItem("mg_admin_authorized") === "true") {
+            const queryPin = urlQuery.get("pin");
+            const savedPin = getStoredAdminPin();
+
+            if (queryPin) {
+                pinInput.value = queryPin;
+                attemptLogin();
+            } else if (savedPin) {
                 grantAccess();
             }
 
@@ -1545,15 +1680,21 @@
             if (tabNavChungSuc) tabNavChungSuc.addEventListener("click", () => switchAdminTab("chungsuc"));
             if (tabNavHot) tabNavHot.addEventListener("click", () => switchAdminTab("hot"));
 
-            /* ================= 3. TẢI DỮ LIỆU CẢ 2 KHO ACC ================= */
+            /* ================= 3. TẢI DỮ LIỆU CẢ 2 KHO ACC (BẢO MẬT ADMIN) ================= */
             async function loadDashboardData() {
                 if (!apiUrl) return;
+
+                const pin = getStoredAdminPin();
+                if (!pin) {
+                    lockAccess("Vui lòng đăng nhập để xem dữ liệu quản trị!");
+                    return;
+                }
 
                 if (btnRefreshSkin && btnRefreshSkin.querySelector("i")) btnRefreshSkin.querySelector("i").classList.add("fa-spin");
                 if (btnRefreshChungSuc && btnRefreshChungSuc.querySelector("i")) btnRefreshChungSuc.querySelector("i").classList.add("fa-spin");
 
                 try {
-                    const resp = await fetch(`${apiUrl}?action=admin_get_list&_t=${Date.now()}`);
+                    const resp = await fetch(`${apiUrl}?action=admin_get_list&pin=${encodeURIComponent(pin)}&_t=${Date.now()}`);
                     const res = await resp.json();
 
                     if (res && res.success) {
@@ -1572,9 +1713,11 @@
 
                         updateSkinStatsAndTable();
                         updateChungSucStatsAndTable();
+                    } else if (res && res.error === "ACCESS_DENIED") {
+                        lockAccess("🚫 Mã PIN không chính xác hoặc phiên đã hết hạn!");
                     } else {
-                        skinTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải dữ liệu từ Google Sheets.</td></tr>`;
-                        chungsucTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">Không thể tải dữ liệu từ Google Sheets.</td></tr>`;
+                        skinTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">${escapeHtml(res.message || "Không thể tải dữ liệu.")}</td></tr>`;
+                        chungsucTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#ef4444;">${escapeHtml(res.message || "Không thể tải dữ liệu.")}</td></tr>`;
                     }
                 } catch (err) {
                     console.error("Lỗi kết nối:", err);
@@ -1649,14 +1792,20 @@
                         <tr>
                             <td class="val-stt">#${item.stt}</td>
                             <td>
-                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép">
+                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép User">
                                     ${escapeHtml(item.user)}
                                 </span>
                             </td>
                             <td>
-                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.pass)}', 'Đã chép Pass!')" title="Click để sao chép" style="color:#fde047;">
-                                    ${escapeHtml(item.pass)}
-                                </span>
+                                <div class="pass-wrapper">
+                                    <span class="pass-text masked" data-pass="${escapeHtml(item.pass)}" title="Click mắt để xem / ẩn">••••••••</span>
+                                    <button type="button" class="btn-pass-action" onclick="togglePassMask(this)" title="Xem/Ẩn Mật Khẩu">
+                                        <i class="fa-solid fa-eye-slash"></i>
+                                    </button>
+                                    <button type="button" class="btn-pass-action" onclick="copySnippet('${escapeHtml(item.pass)}', 'Đã chép Pass!')" title="Sao chép Mật Khẩu">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
                             </td>
                             <td style="color:var(--text-secondary); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                 ${escapeHtml(item.note || "---")}
@@ -1929,7 +2078,8 @@
                                 action: "import_txt",
                                 acc_type: "skin",
                                 text: text,
-                                accounts: validAccs
+                                accounts: validAccs,
+                                pin: getStoredAdminPin()
                             })
                         });
                         const res = await resp.json();
@@ -1974,7 +2124,7 @@
                     btnCleanSkinSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xóa...`;
 
                     try {
-                        const resp = await fetch(`${apiUrl}?action=clear_samples&acc_type=skin`);
+                        const resp = await fetch(`${apiUrl}?action=clear_samples&acc_type=skin&pin=${encodeURIComponent(getStoredAdminPin())}`);
                         const res = await resp.json();
                         if (res && res.success) {
                             alert(res.message);
@@ -2054,14 +2204,20 @@
                         <tr>
                             <td class="val-stt">#${item.stt}</td>
                             <td>
-                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép">
+                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.user)}', 'Đã chép User!')" title="Click để sao chép User">
                                     ${escapeHtml(item.user)}
                                 </span>
                             </td>
                             <td>
-                                <span class="val-mono" onclick="copySnippet('${escapeHtml(item.pass)}', 'Đã chép Pass!')" title="Click để sao chép" style="color:#fde047;">
-                                    ${escapeHtml(item.pass)}
-                                </span>
+                                <div class="pass-wrapper">
+                                    <span class="pass-text masked" data-pass="${escapeHtml(item.pass)}" title="Click mắt để xem / ẩn">••••••••</span>
+                                    <button type="button" class="btn-pass-action" onclick="togglePassMask(this)" title="Xem/Ẩn Mật Khẩu">
+                                        <i class="fa-solid fa-eye-slash"></i>
+                                    </button>
+                                    <button type="button" class="btn-pass-action" onclick="copySnippet('${escapeHtml(item.pass)}', 'Đã chép Pass!')" title="Sao chép Mật Khẩu">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
                             </td>
                             <td style="color:var(--text-secondary); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                 ${escapeHtml(item.note || "---")}
@@ -2154,7 +2310,8 @@
                                 action: "import_txt",
                                 acc_type: "chung_suc",
                                 text: text,
-                                accounts: validAccs
+                                accounts: validAccs,
+                                pin: getStoredAdminPin()
                             })
                         });
                         const res = await resp.json();
@@ -2199,7 +2356,7 @@
                     btnCleanChungSucSamples.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xóa...`;
 
                     try {
-                        const resp = await fetch(`${apiUrl}?action=clear_samples&acc_type=chung_suc`);
+                        const resp = await fetch(`${apiUrl}?action=clear_samples&acc_type=chung_suc&pin=${encodeURIComponent(getStoredAdminPin())}`);
                         const res = await resp.json();
                         if (res && res.success) {
                             alert(res.message);
@@ -2225,7 +2382,7 @@
                 }
 
                 try {
-                    const resp = await fetch(`${apiUrl}?action=admin_get_hot_list&_t=${Date.now()}`);
+                    const resp = await fetch(`${apiUrl}?action=admin_get_hot_list&pin=${encodeURIComponent(getStoredAdminPin())}&_t=${Date.now()}`);
                     const res = await resp.json();
 
                     if (res && res.success && Array.isArray(res.list)) {
@@ -2350,7 +2507,7 @@
                 }
 
                 try {
-                    const resp = await fetch(`${apiUrl}?action=admin_update_hot_status&row_index=${rowIndex}&status=${encodeURIComponent(newStatus)}&_t=${Date.now()}`);
+                    const resp = await fetch(`${apiUrl}?action=admin_update_hot_status&row_index=${rowIndex}&status=${encodeURIComponent(newStatus)}&pin=${encodeURIComponent(getStoredAdminPin())}&_t=${Date.now()}`);
                     const res = await resp.json();
 
                     if (res && res.success) {
@@ -2364,6 +2521,27 @@
                     console.error("Lỗi cập nhật:", err);
                     alert("Lỗi kết nối máy chủ khi cập nhật trạng thái!");
                     loadHotData();
+                }
+            };
+
+            /* ================= TIỆN ÍCH MẶT NẠ BẢO MẬT PASS ================= */
+            window.togglePassMask = function (btn) {
+                if (!btn) return;
+                const wrapper = btn.closest(".pass-wrapper");
+                if (!wrapper) return;
+                const textEl = wrapper.querySelector(".pass-text");
+                const icon = btn.querySelector("i");
+                const realPass = textEl.dataset.pass || "";
+                if (textEl.classList.contains("masked")) {
+                    textEl.classList.remove("masked");
+                    textEl.textContent = realPass;
+                    if (icon) icon.className = "fa-solid fa-eye";
+                    btn.title = "Ẩn Mật Khẩu";
+                } else {
+                    textEl.classList.add("masked");
+                    textEl.textContent = "••••••••";
+                    if (icon) icon.className = "fa-solid fa-eye-slash";
+                    btn.title = "Xem Mật Khẩu";
                 }
             };
 
