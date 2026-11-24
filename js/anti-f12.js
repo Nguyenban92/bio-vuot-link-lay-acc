@@ -1,93 +1,207 @@
 /**
  * ====================================================================
- * MA GIÁO AOV - HỆ THỐNG BẢO VỆ CHỐNG F12 & SOI MÃ NGUỒN (ANTI-DEVTOOLS)
+ * MA GIÁO AOV - HỆ THỐNG BẢO VỆ CHỐNG F12 & SOI MÃ NGUỒN CẤP ĐỘ CAO NHẤT
  * ====================================================================
  * - Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+Shift+K
  * - Chặn Ctrl+U (Xem nguồn), Ctrl+S (Lưu trang), Ctrl+P (In trang)
  * - Chặn macOS: Cmd+Option+I/J/C/U
- * - Chặn chuột phải (Context Menu) - vẫn cho phép chuột phải trong ô input/textarea
- * - Chặn kéo thả hình ảnh (Anti-drag images)
- * - Bẫy Debugger tự động đóng băng khi DevTools bị mở lén
- * - Toast cảnh báo giao diện Cyberpunk sang trọng
+ * - Chặn chuột phải (Context Menu) - vẫn cho phép nhập liệu trong input/textarea
+ * - Chặn kéo thả hình ảnh (Anti-drag)
+ * - PHÁT HIỆN DEVTOOLS MỞ SẴN KỂ CẢ KHI DÁN LINK VÀO SAU
+ * - Tự động ghi đè giao diện bằng màn hình cảnh báo đỏ (Lockout Screen)
+ * - Đóng băng luồng thực thi (Debugger Freeze Loop)
  */
 
 (function () {
     'use strict';
 
-    // 1. CẢNH BÁO TRÊN CONSOLE NẾU CỐ TÌNH MỞ
-    try {
-        const titleStyle = 'color: #f43f5e; font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(244,63,94,0.5);';
-        const subStyle = 'color: #38bdf8; font-size: 13.5px; font-weight: bold; line-height: 1.6;';
-        const warnStyle = 'color: #fbbf24; font-size: 12.5px; font-style: italic;';
-        
-        console.clear();
-        console.log('%c⚡ MA GIÁO AOV • HỆ THỐNG AN NINH BẢO MẬT ⚡', titleStyle);
-        console.log('%c⛔ CẢNH BÁO BẢN QUYỀN: Khu vực này được bảo vệ nghiêm ngặt!\nToàn bộ mã nguồn, API và tài nguyên đã được mã hóa và kiểm soát từ xa.', subStyle);
-        console.log('%c⚠️ Mọi hành vi cố tình dịch ngược, trích xuất dữ liệu trái phép sẽ bị ghi log và từ chối phục vụ.', warnStyle);
-    } catch (e) {}
+    let isBlocked = false;
 
-    // 2. TẠO HỘP TOAST CẢNH BÁO HIỆN ĐẠI
-    let toastTimeout = null;
-    function showAntiWarnToast(msg) {
-        let toast = document.getElementById('antiF12Toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'antiF12Toast';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 25px;
-                left: 50%;
-                transform: translateX(-50%) translateY(50px);
-                background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.98));
-                border: 1px solid rgba(244, 63, 94, 0.6);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(244, 63, 94, 0.35);
-                color: #f8fafc;
-                padding: 12px 22px;
-                border-radius: 999px;
-                font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-                font-size: 13.5px;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                z-index: 99999999;
-                opacity: 0;
-                pointer-events: none;
-                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-                white-space: nowrap;
-                max-width: 90vw;
+    // GIAO DIỆN KHÓA TOÀN BỘ TRANG WEB KHI PHÁT HIỆN F12 / DEVTOOLS
+    function triggerSecurityLockout() {
+        if (isBlocked) return;
+        isBlocked = true;
+
+        try {
+            document.title = "⛔ CẢNH BÁO BẢO MẬT • MA GIÁO AOV";
+            document.documentElement.innerHTML = `
+            <!DOCTYPE html>
+            <html lang="vi">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>⛔ CẢNH BÁO BẢO MẬT • MA GIÁO AOV</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        background: #060913;
+                        color: #f8fafc;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                        height: 100vh;
+                        width: 100vw;
+                        overflow: hidden;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        padding: 20px;
+                    }
+                    .lock-card {
+                        background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.99));
+                        border: 2px solid #f43f5e;
+                        border-radius: 24px;
+                        padding: 40px 30px;
+                        max-width: 520px;
+                        box-shadow: 0 0 60px rgba(244, 63, 94, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+                        animation: shake 0.5s ease-in-out;
+                    }
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        20%, 60% { transform: translateX(-8px); }
+                        40%, 80% { transform: translateX(8px); }
+                    }
+                    .icon-shield {
+                        font-size: 64px;
+                        margin-bottom: 20px;
+                        display: inline-block;
+                        filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.6));
+                    }
+                    h1 {
+                        font-size: 22px;
+                        font-weight: 900;
+                        color: #f43f5e;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 14px;
+                        text-transform: uppercase;
+                    }
+                    p {
+                        font-size: 14.5px;
+                        line-height: 1.7;
+                        color: #cbd5e1;
+                        margin-bottom: 25px;
+                    }
+                    .highlight {
+                        color: #fbbf24;
+                        font-weight: 700;
+                    }
+                    .btn-action {
+                        display: inline-block;
+                        background: linear-gradient(135deg, #f43f5e, #e11d48);
+                        color: #ffffff;
+                        font-weight: 800;
+                        font-size: 14px;
+                        padding: 13px 28px;
+                        border-radius: 12px;
+                        border: none;
+                        cursor: pointer;
+                        box-shadow: 0 10px 20px -5px rgba(244, 63, 94, 0.5);
+                        transition: all 0.2s ease;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    .btn-action:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 15px 25px -5px rgba(244, 63, 94, 0.65);
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="lock-card">
+                    <div class="icon-shield">⛔</div>
+                    <h1>CẢNH BÁO AN NINH HỆ THỐNG</h1>
+                    <p>Hệ thống phát hiện bạn đang bật <span class="highlight">F12 / Công Cụ Nhà Phát Triển (DevTools)</span>.<br><br>
+                    Để bảo vệ bản quyền phần mềm và kho tài nguyên Acc, toàn bộ nội dung đã được tự động ẩn.<br><br>
+                    👉 <b>Vui lòng ĐÓNG F12 / DevTools và bấm nút bên dưới để tải lại trang!</b></p>
+                    <button class="btn-action" onclick="window.location.reload()">ĐÃ ĐÓNG F12 - TẢI LẠI TRANG</button>
+                </div>
+            </body>
+            </html>
             `;
-            document.body.appendChild(toast);
-        }
+        } catch (err) {}
 
-        toast.innerHTML = `<i class="fa-solid fa-shield-halved" style="color: #f43f5e; font-size: 16px;"></i> <span>${msg || 'Chức năng này đã bị khóa để bảo vệ bản quyền!'}</span>`;
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-
-        if (toastTimeout) clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-            if (toast) {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(50px)';
-            }
-        }, 2200);
+        // Kích hoạt bẫy debugger đóng băng liên tục
+        setInterval(function () {
+            (function () { return false; }['constructor']('debugger')());
+        }, 50);
     }
 
-    // 3. CHẶN CHUỘT PHẢI (CONTEXT MENU)
+    // 1. CẢNH BÁO TRÊN CONSOLE
+    try {
+        console.clear();
+        console.log('%c⚡ MA GIÁO AOV • HỆ THỐNG AN NINH BẢO MẬT ⚡', 'color: #f43f5e; font-size: 24px; font-weight: 900;');
+        console.log('%c⛔ KHU VỰC ĐƯỢC BẢO VỆ NGHIÊM NGẶT! Vui lòng đóng DevTools.', 'color: #38bdf8; font-size: 14px; font-weight: bold;');
+    } catch (e) {}
+
+    // 2. PHÁT HIỆN DEVTOOLS BẰNG TIMING TRICK (CỰC NHẠY KHI MỞ SẴN)
+    function checkTimingDebugger() {
+        const start = performance.now();
+        (function () { return false; }['constructor']('debugger')());
+        const end = performance.now();
+        if (end - start > 100) {
+            triggerSecurityLockout();
+        }
+    }
+
+    // 3. PHÁT HIỆN DEVTOOLS BẰNG CHÊNH LỆCH KÍCH THƯỚC (DOCK TRÁI/PHẢI/DƯỚI)
+    function checkWindowSizeDiff() {
+        const widthThreshold = window.outerWidth - window.innerWidth > 160;
+        const heightThreshold = window.outerHeight - window.innerHeight > 160;
+        if (widthThreshold || heightThreshold) {
+            triggerSecurityLockout();
+        }
+    }
+
+    // 4. KHỞI CHẠY DISABLE-DEVTOOL NẾU ĐÃ NẠP
+    function initDisableDevtoolLibrary() {
+        if (typeof window.DisableDevtool === 'function') {
+            try {
+                window.DisableDevtool({
+                    ondevtoolopen: function () {
+                        triggerSecurityLockout();
+                    },
+                    interval: 400,
+                    disableMenu: true,
+                    clearLog: true,
+                    disableSelect: false,
+                    disableCopy: false,
+                    disableCut: false,
+                    disablePaste: false,
+                    detectors: [0, 1, 2, 3, 4, 5, 6, 7]
+                });
+            } catch (err) {}
+        }
+    }
+
+    // Chạy kiểm tra ngay lập tức khi script vừa được load
+    checkTimingDebugger();
+    checkWindowSizeDiff();
+    initDisableDevtoolLibrary();
+
+    // Vòng lặp kiểm tra liên tục
+    setInterval(function () {
+        checkTimingDebugger();
+        checkWindowSizeDiff();
+    }, 600);
+
+    // Chờ window load để thử lại thư viện nếu tải bất đồng bộ
+    window.addEventListener('DOMContentLoaded', function () {
+        initDisableDevtoolLibrary();
+        checkTimingDebugger();
+        checkWindowSizeDiff();
+    });
+
+    // 5. CHẶN CHUỘT PHẢI (VẪN CHO PHÉP TRONG INPUT/TEXTAREA)
     document.addEventListener('contextmenu', function (e) {
-        // Cho phép click chuột phải trên các ô nhập liệu input/textarea để Paste hoặc Copy
         const tagName = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
         if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
             return;
         }
-
         e.preventDefault();
         e.stopPropagation();
-        showAntiWarnToast('Đã vô hiệu hóa chuột phải để bảo vệ mã nguồn!');
         return false;
     }, { capture: true, passive: false });
 
-    // 4. CHẶN KÉO THẢ HÌNH ẢNH (ANTI-DRAG)
+    // 6. CHẶN KÉO THẢ ẢNH
     document.addEventListener('dragstart', function (e) {
         if (e.target && e.target.tagName === 'IMG') {
             e.preventDefault();
@@ -95,26 +209,23 @@
         }
     }, { passive: false });
 
-    // 5. CHẶN CÁC PHÍM TẮT SOI CODE & MỞ DEVTOOLS
+    // 7. CHẶN CÁC PHÍM TẮT MỞ DEVTOOLS / SOI CODE
     window.addEventListener('keydown', function (e) {
         const key = e.key;
         const keyCode = e.keyCode || e.which;
-        const ctrl = e.ctrlKey || e.metaKey; // Windows Ctrl hoặc macOS Cmd
+        const ctrl = e.ctrlKey || e.metaKey;
         const shift = e.shiftKey;
         const alt = e.altKey;
 
-        // F12 (123)
+        // F12
         if (keyCode === 123 || key === 'F12') {
             e.preventDefault();
             e.stopPropagation();
-            showAntiWarnToast('Phím F12 (Kiểm tra phần tử) đã bị vô hiệu hóa!');
+            triggerSecurityLockout();
             return false;
         }
 
-        // Ctrl + Shift + I (Inspect)
-        // Ctrl + Shift + J (Console)
-        // Ctrl + Shift + C (Inspect Cursor)
-        // Ctrl + Shift + K (Firefox Console)
+        // Ctrl + Shift + I/J/C/K
         if (ctrl && shift && (
             keyCode === 73 || key === 'I' || key === 'i' ||
             keyCode === 74 || key === 'J' || key === 'j' ||
@@ -123,35 +234,26 @@
         )) {
             e.preventDefault();
             e.stopPropagation();
-            showAntiWarnToast('Tổ hợp phím DevTools đã bị vô hiệu hóa!');
+            triggerSecurityLockout();
             return false;
         }
 
-        // Ctrl + U (View Source)
+        // Ctrl + U
         if (ctrl && (keyCode === 85 || key === 'u' || key === 'U')) {
             e.preventDefault();
             e.stopPropagation();
-            showAntiWarnToast('Xem mã nguồn trang web đã bị vô hiệu hóa!');
+            triggerSecurityLockout();
             return false;
         }
 
-        // Ctrl + S (Lưu trang web về máy)
-        if (ctrl && (keyCode === 83 || key === 's' || key === 'S')) {
+        // Ctrl + S, Ctrl + P
+        if (ctrl && (keyCode === 83 || key === 's' || key === 'S' || keyCode === 80 || key === 'p' || key === 'P')) {
             e.preventDefault();
             e.stopPropagation();
-            showAntiWarnToast('Chức năng lưu trang web đã bị khóa!');
             return false;
         }
 
-        // Ctrl + P (In trang web)
-        if (ctrl && (keyCode === 80 || key === 'p' || key === 'P')) {
-            e.preventDefault();
-            e.stopPropagation();
-            showAntiWarnToast('Chức năng in trang web đã bị khóa!');
-            return false;
-        }
-
-        // macOS: Cmd + Alt + I, Cmd + Alt + J, Cmd + Alt + U
+        // macOS: Cmd + Alt + I/J/U
         if (ctrl && alt && (
             keyCode === 73 || key === 'I' || key === 'i' ||
             keyCode === 74 || key === 'J' || key === 'j' ||
@@ -159,26 +261,9 @@
         )) {
             e.preventDefault();
             e.stopPropagation();
-            showAntiWarnToast('DevTools trên macOS đã bị vô hiệu hóa!');
+            triggerSecurityLockout();
             return false;
         }
     }, { capture: true, passive: false });
-
-    // 6. BẪY DEBUGGER LOOP KHI DEVTOOLS BỊ MỞ
-    // Khi DevTools đang mở, lệnh debugger sẽ làm đứng luồng thực thi để ngăn chặn can thiệp
-    function debugTrap() {
-        try {
-            (function () {
-                return false;
-            }['constructor']('debugger')());
-        } catch (err) {}
-    }
-
-    // Chạy nhẹ nhàng định kỳ
-    let trapInterval = setInterval(debugTrap, 1500);
-
-    window.addEventListener('beforeunload', function () {
-        if (trapInterval) clearInterval(trapInterval);
-    });
 
 })();
